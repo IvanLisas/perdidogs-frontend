@@ -1,10 +1,9 @@
+import * as Linking from 'expo-linking'
 /**
  * Learn more about deep linking with React Navigation
  * https://reactnavigation.org/docs/deep-linking
  * https://reactnavigation.org/docs/configuring-links
  */
-
-import * as Linking from 'expo-linking';
 
 export default {
   prefixes: [Linking.makeUrl('/')],
@@ -14,17 +13,17 @@ export default {
         screens: {
           TabOne: {
             screens: {
-              TabOneScreen: 'one',
-            },
+              TabOneScreen: 'one'
+            }
           },
           TabTwo: {
             screens: {
-              TabTwoScreen: 'two',
-            },
-          },
-        },
+              TabTwoScreen: 'two'
+            }
+          }
+        }
       },
-      NotFound: '*',
-    },
-  },
-};
+      NotFound: '*'
+    }
+  }
+}
