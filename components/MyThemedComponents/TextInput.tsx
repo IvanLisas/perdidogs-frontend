@@ -6,18 +6,20 @@ import useTheme from '../../hooks/useTheme'
 type TextInputProps = DefaultTextInput['props']
 
 function TextInput(props: TextInputProps) {
-  const { style, ...otherProps } = props
-
   const colors = useTheme()
 
-  return <DefaultTextInput style={[{ backgroundColor: colors.input }, style, styles.input]} {...otherProps} />
+  const { style, ...otherProps } = props
+
+  const styles = StyleSheet.create({
+    input: {
+      borderRadius: 15,
+      padding: 16,
+      backgroundColor: colors.input,
+      color: 'black'
+    }
+  })
+
+  return <DefaultTextInput placeholderTextColor={'grey'} style={[style, styles.input]} {...otherProps} />
 }
 
 export default TextInput
-
-const styles = StyleSheet.create({
-  input: {
-    borderRadius: 5,
-    padding: 8
-  }
-})

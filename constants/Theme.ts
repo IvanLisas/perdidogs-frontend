@@ -33,6 +33,6 @@ export const MyDarkTheme: MyTheme = {
   colors: {
     ...MyDefaultTheme.colors,
     text: '#FFFF',
-    background: 'rgb(8, 6, 11)'
+    background: '#202122'
   }
 }

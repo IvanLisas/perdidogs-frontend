@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { StyleSheet, View, Image, ImageBackground } from 'react-native'
+import { StyleSheet, View, Image, ImageBackground, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { useTheme } from '@react-navigation/native'
 import { useNavigation } from '@react-navigation/native'
 import Text from '../../components/MyThemedComponents/Text'
@@ -9,6 +9,7 @@ import { useContext, useState } from 'react'
 import UserContext from '../../contexts/UserContext'
 import TextInput from '../../components/MyThemedComponents/TextInput'
 import Button from '../../components/MyThemedComponents/Button'
+import userService from '../../services/UserService'
 
 type authScreenProp = StackNavigationProp<LoginStackParamList>
 
@@ -23,43 +24,53 @@ export default function Profile() {
 
   const login = async () => {
     try {
-      setUser({ id: 4, username: 'Pepe' })
+      setUser(await userService.login(email, password))
     } catch (error) {
       console.log(error)
     }
   }
 
   return (
-    <View style={styles.root}>
-      <View style={styles.titleContainer}>
-        <View style={styles.logoContainer}>
-          <Image style={styles.logo} source={logo} />
+    /*   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}> */
+    <View style={styles.root2}>
+      <View style={styles.root}>
+        <View style={styles.titleContainer}>
+          <View style={styles.logoContainer}>
+            <Image style={styles.logo} source={logo} />
+          </View>
+          <Text style={styles.tittleLabel}>Perdidogs</Text>
         </View>
-        <Text style={styles.tittleLabel}>Perdidogs</Text>
+
+        <TextInput
+          textContentType="emailAddress"
+          placeholder="Email"
+          autoCompleteType="email"
+          onChangeText={setEmail}
+          value={email}
+          style={styles.input}
+        />
+
+        <TextInput
+          textContentType="newPassword"
+          placeholder="Contraseña"
+          onChangeText={setPassword}
+          autoCompleteType="password"
+          value={password}
+          secureTextEntry={true}
+          style={styles.input}
+        />
+
+        <View style={styles.button}>
+          <Button title="Ingresar" onPress={login} />
+        </View>
+        <View style={styles.linksContainer}>
+          <Text style={styles.link}>Registrate con tu correo</Text>
+          <Text style={styles.link}>Olvidaste tu contraseña?</Text>
+        </View>
+        {/*  <View style={styles.logoContainer}> */}
+        {/*   <Image style={styles.labrador} source={labrador} /> */}
+        {/*   </View> */}
       </View>
-      <TextInput
-        textContentType="emailAddress"
-        placeholder="Email"
-        autoCompleteType="email"
-        onChangeText={setEmail}
-        value={email}
-        style={styles.input}
-      />
-      <TextInput
-        textContentType="newPassword"
-        placeholder="Contraseña"
-        onChangeText={setPassword}
-        autoCompleteType="password"
-        value={password}
-        secureTextEntry={true}
-        style={styles.input}
-      />
-      <Text style={styles.link}>No tenes una cuenta? Registrate</Text>
-      <Text style={styles.link}>Olvidaste tu contraseña?</Text>
-      <Button title="Ingresar" style={styles.input} onPress={login} />
-      {/*  <View style={styles.logoContainer}> */}
-      {/*   <Image style={styles.labrador} source={labrador} /> */}
-      {/*   </View> */}
       <ImageBackground
         source={labrador}
         style={styles.labrador}
@@ -69,10 +80,20 @@ export default function Profile() {
         }}
       ></ImageBackground>
     </View>
+    /*    </TouchableWithoutFeedback> */
   )
 }
 
 const styles = StyleSheet.create({
+  root2: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    /*   width: 248, */
+    alignSelf: 'center',
+    paddingTop: 32
+  },
   root: {
     flex: 1,
     alignItems: 'center',
@@ -83,12 +104,17 @@ const styles = StyleSheet.create({
   },
   input: {
     alignSelf: 'stretch',
-    margin: 8
+    marginVertical: 8
+  },
+  button: {
+    alignSelf: 'stretch',
+    marginTop: 16
   },
   titleContainer: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingVertical: 16
   },
   logoContainer: {
     paddingRight: 8
@@ -111,7 +137,9 @@ const styles = StyleSheet.create({
   },
   link: {
     fontWeight: '600',
-    /*    border: ' 1px solid #FFFFFF', */
-    lineHeight: 19
+    paddingVertical: 2
+  },
+  linksContainer: {
+    paddingTop: 16
   }
 })
