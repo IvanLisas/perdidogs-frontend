@@ -7,13 +7,14 @@ import useTheme from '../hooks/useTheme'
 import Svg, { Path, SvgProps } from 'react-native-svg'
 import { View, Image, StyleSheet } from 'react-native'
 import Icon from '../components/icon/index'
-const HomeStack = createStackNavigator<ProfileStackParamList>()
+import Map from '../screens/Map/Map'
+const MapStack = createStackNavigator()
 
-function ProfileStackScreen() {
+function MapStackScreen() {
   const colors = useTheme()
 
   return (
-    <HomeStack.Navigator
+    <MapStack.Navigator
       screenOptions={{
         headerTintColor: colors.text,
         cardStyle: {
@@ -37,11 +38,11 @@ function ProfileStackScreen() {
         headerBackTitleVisible: false
       }}
     >
-      <HomeStack.Screen name="Main" options={{ headerShown: false }} component={Profile} />
-      <HomeStack.Screen name="Edit" options={{ title: 'Editar Perfil' }} component={EditProfile} />
+      <MapStack.Screen name="Main" options={{ headerShown: false }} component={Map} />
+      {/*  <MapStack.Screen name="Edit" component={EditProfile} /> */}
       {/*  <HomeStack.Screen name="Details" component={TabOneScreen} /> */}
-    </HomeStack.Navigator>
+    </MapStack.Navigator>
   )
 }
 
-export default ProfileStackScreen
+export default MapStackScreen

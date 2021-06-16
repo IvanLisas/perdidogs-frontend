@@ -1,6 +1,6 @@
 type BottomTabParamList = {
   Perfil: undefined
-  Home: undefined
+  Map: undefined
   Alertas: undefined
   Camara: undefined
 }

@@ -4,8 +4,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomTabParamList from '../types/BottomTabParamList'
 import ProfileStackScreen from './ProfileStackScreen'
 import useTheme from '../hooks/useTheme'
-import { HeaderBackground } from '@react-navigation/stack'
 import Icon from '../components/icon/index'
+import MapStackScreen from './MapStackScreen'
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
 
@@ -26,35 +26,35 @@ export default function BottomTabNavigator() {
           backgroundColor: colors.navigation
         }
       }}
-      initialRouteName="Home"
+      initialRouteName="Map"
     >
-      <Tab.Screen
+      {/*       <Tab.Screen
         name="Camara"
         component={ProfileStackScreen}
         options={{
           tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="arrow-pointing-to-left-hand-drawn-outline" />
         }}
-      />
+      /> */}
       <Tab.Screen
-        name="Home"
-        component={ProfileStackScreen}
+        name="Map"
+        component={MapStackScreen}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="ios-map" color={color} />
         }}
       />
 
-      <Tab.Screen
+      {/*       <Tab.Screen
         name="Alertas"
         component={ProfileStackScreen}
         options={{
           tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? 'ios-notifications' : 'ios-notifications-outline'} color={color} />
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Perfil"
         component={ProfileStackScreen}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-person" color={color} />
+          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="arrow-pointing-to-left-hand-drawn-outline" />
         }}
       />
       {/*       <BottomTab.Screen

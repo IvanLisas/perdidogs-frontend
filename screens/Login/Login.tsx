@@ -37,9 +37,9 @@ export default function Login() {
 
   const login = async () => {
     try {
-      /*   setUser({ name: 'pepe' } as User) */
-      if (email === '1' && password === '1') setUser({ firstName: 'pepe' } as User)
-      else setUser(await userService.login(email, password))
+      setUser({ firstName: 'pepe' } as User)
+      /*       if (email === '1' && password === '1') setUser({ firstName: 'pepe' } as User)
+      else setUser(await userService.login(email, password)) */
     } catch (error) {
       ;(inputEmail.current as any).shake()
       ;(inputPassword.current as any).shake()
