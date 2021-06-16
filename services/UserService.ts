@@ -3,9 +3,13 @@ import { SERVER_URL } from '../constants/Rest'
 import { User } from '../types/User'
 
 class UserService {
-  async login(username: string, password: string): Promise<User> {
-    console.log(username, password)
-    return (await axios.put<User>(`${SERVER_URL}/user/login`, { username, password })).data
+  async login(email: string, password: string): Promise<User> {
+    return (await axios.put<User>(`${SERVER_URL}/user/login`, { email, password })).data
+  }
+
+  async registration(user: User): Promise<User> {
+    console.log(user)
+    return (await axios.post<User>(`${SERVER_URL}/user/registration`, user)).data
   }
 }
 

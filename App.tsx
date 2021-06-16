@@ -4,7 +4,7 @@ import React from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import useCachedResources from './hooks/useCachedResources'
 import useColorScheme from './hooks/useColorScheme'
-import Navigation from './navigation/Navigator'
+import Navigation from './navigation/IndexNavigator'
 import { UserContextProvider } from './contexts/UserContext'
 import { ThemeContextProvider } from './contexts/ThemeContext'
 

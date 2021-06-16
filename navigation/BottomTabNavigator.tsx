@@ -2,9 +2,10 @@ import React, { ComponentProps } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomTabParamList from '../types/BottomTabParamList'
-import ProfileStackScreen from '../screens/Profile/ProfileStackScreen'
+import ProfileStackScreen from './ProfileStackScreen'
 import useTheme from '../hooks/useTheme'
 import { HeaderBackground } from '@react-navigation/stack'
+import Icon from '../components/icon/index'
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
 
@@ -19,7 +20,7 @@ export default function BottomTabNavigator() {
     <Tab.Navigator
       tabBarOptions={{
         inactiveTintColor: 'grey',
-        activeTintColor: 'black',
+        activeTintColor: '#F7A59E',
         showLabel: false,
         style: {
           backgroundColor: colors.navigation
@@ -31,7 +32,7 @@ export default function BottomTabNavigator() {
         name="Camara"
         component={ProfileStackScreen}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-camera" color={color} />
+          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="arrow-pointing-to-left-hand-drawn-outline" />
         }}
       />
       <Tab.Screen
@@ -46,9 +47,7 @@ export default function BottomTabNavigator() {
         name="Alertas"
         component={ProfileStackScreen}
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'ios-notifications' : 'ios-notifications-outline'} color={color} />
-          )
+          tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? 'ios-notifications' : 'ios-notifications-outline'} color={color} />
         }}
       />
       <Tab.Screen

@@ -12,6 +12,7 @@ export type MyTheme = {
     border: string
     notification: string
     input: string
+    loginBackground: string
   }
 }
 export const MyDefaultTheme: MyTheme = {
@@ -22,9 +23,10 @@ export const MyDefaultTheme: MyTheme = {
     primary: '#E3BCFB',
     card: '#B5B4FB',
     text: '#3F414E',
-    border: '#1C1C1E',
+    border: '#F7A59E',
     background: '#B4C4FB',
-    input: '#F6F6F6'
+    input: '#F6F6F6',
+    loginBackground: '#B4C4FB'
   }
 }
 
@@ -33,6 +35,7 @@ export const MyDarkTheme: MyTheme = {
   colors: {
     ...MyDefaultTheme.colors,
     text: '#FFFF',
-    background: '#202122'
+    navigation: '#19191B',
+    background: '#101420'
   }
 }

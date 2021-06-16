@@ -1,114 +1,165 @@
 import * as React from 'react'
-import { StyleSheet, View, Image, ImageBackground, TouchableWithoutFeedback, Keyboard } from 'react-native'
-import { useTheme } from '@react-navigation/native'
+import { StyleSheet, View, Image, ImageBackground, TouchableWithoutFeedback, Keyboard, TextInput as DefaultTextInput } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Text from '../../components/MyThemedComponents/Text'
 import LoginStackParamList from '../../types/LoginStackParamList'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { useContext, useState } from 'react'
 import UserContext from '../../contexts/UserContext'
-import TextInput from '../../components/MyThemedComponents/TextInput'
 import Button from '../../components/MyThemedComponents/Button'
 import userService from '../../services/UserService'
+import { LinearGradient } from 'expo-linear-gradient'
+import { User } from '../../types/User'
+import { Input } from 'react-native-elements'
+import useUser from '../../hooks/useUser'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 type authScreenProp = StackNavigationProp<LoginStackParamList>
 
-export default function Profile() {
+export default function Login() {
   const { setUser } = useContext(UserContext)
+
   const [email, setEmail] = useState('')
+
   const [password, setPassword] = useState('')
+
+  const navigation = useNavigation<authScreenProp>()
+
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const inputEmail = React.createRef<DefaultTextInput>()
+
+  const inputPassword = React.createRef<DefaultTextInput>()
 
   const logo = require('../../assets/images/login-logo.png')
 
-  const labrador = require('../../assets/images/logo3.png')
+  const labrador = require('../../assets/images/golden.png')
 
   const login = async () => {
     try {
-      setUser(await userService.login(email, password))
+      /*   setUser({ name: 'pepe' } as User) */
+      if (email === '1' && password === '1') setUser({ firstName: 'pepe' } as User)
+      else setUser(await userService.login(email, password))
     } catch (error) {
-      console.log(error)
+      ;(inputEmail.current as any).shake()
+      ;(inputPassword.current as any).shake()
+      setErrorMessage('Email o contraseña no validos')
+
+      console.log(error.request.response)
     }
   }
 
   return (
-    /*   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}> */
-    <View style={styles.root2}>
-      <View style={styles.root}>
-        <View style={styles.titleContainer}>
-          <View style={styles.logoContainer}>
-            <Image style={styles.logo} source={logo} />
+    /*  <TouchableWithoutFeedback  onPress={() => Keyboard.dismiss() }> */
+    <LinearGradient colors={['#FFE5B2', '#EFB865']} style={styles.background}>
+      <KeyboardAwareScrollView contentContainerStyle={styles.root} showsVerticalScrollIndicator={false}>
+        <View style={styles.root}>
+          <ImageBackground
+            source={labrador}
+            style={styles.labrador}
+            imageStyle={{
+              resizeMode: 'contain',
+              alignSelf: 'flex-start'
+            }}
+          ></ImageBackground>
+          <View style={styles.content}>
+            <View style={styles.titleContainer}>
+              <View style={styles.logoContainer}>
+                <Image style={styles.logo} source={logo} />
+              </View>
+              <Text style={styles.tittleLabel}>Perdidogs</Text>
+            </View>
+
+            <Input
+              ref={inputEmail}
+              inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
+              textContentType="emailAddress"
+              placeholder="Email"
+              autoCompleteType="email"
+              onChangeText={setEmail}
+              value={email}
+              containerStyle={{ paddingHorizontal: 0 }}
+              style={styles.input}
+              /*               errorStyle={{ color: 'red' }}
+              errorMessage="Email no valido" */
+            />
+
+            <Input
+              ref={inputPassword}
+              textContentType="newPassword"
+              placeholder="Contraseña"
+              inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
+              onChangeText={setPassword}
+              autoCompleteType="password"
+              value={password}
+              secureTextEntry={true}
+              /*    inputStyle={styles.input} */
+              style={styles.input}
+              errorStyle={{ color: 'red' }}
+              errorMessage={errorMessage}
+              containerStyle={{ paddingHorizontal: 0 }}
+            />
+            <View style={styles.forgotPasswordContainer}>
+              <Text style={styles.link}>Olvidaste tu contraseña?</Text>
+            </View>
+            <View style={styles.button}>
+              <Button title="Ingresar" onPress={login} />
+            </View>
+            <View style={styles.registerContainer}>
+              <Text style={styles.link}>Sin cuenta? </Text>
+              <Text onPress={() => navigation.navigate('Registration')} style={styles.register}>
+                Registrate!
+              </Text>
+            </View>
+            {/*  <View style={styles.logoContainer}> */}
+            {/*   <Image style={styles.labrador} source={labrador} /> */}
+            {/*   </View> */}
           </View>
-          <Text style={styles.tittleLabel}>Perdidogs</Text>
         </View>
-
-        <TextInput
-          textContentType="emailAddress"
-          placeholder="Email"
-          autoCompleteType="email"
-          onChangeText={setEmail}
-          value={email}
-          style={styles.input}
-        />
-
-        <TextInput
-          textContentType="newPassword"
-          placeholder="Contraseña"
-          onChangeText={setPassword}
-          autoCompleteType="password"
-          value={password}
-          secureTextEntry={true}
-          style={styles.input}
-        />
-
-        <View style={styles.button}>
-          <Button title="Ingresar" onPress={login} />
-        </View>
-        <View style={styles.linksContainer}>
-          <Text style={styles.link}>Registrate con tu correo</Text>
-          <Text style={styles.link}>Olvidaste tu contraseña?</Text>
-        </View>
-        {/*  <View style={styles.logoContainer}> */}
-        {/*   <Image style={styles.labrador} source={labrador} /> */}
-        {/*   </View> */}
-      </View>
-      <ImageBackground
-        source={labrador}
-        style={styles.labrador}
-        imageStyle={{
-          resizeMode: 'center',
-          alignSelf: 'flex-end'
-        }}
-      ></ImageBackground>
-    </View>
-    /*    </TouchableWithoutFeedback> */
+      </KeyboardAwareScrollView>
+    </LinearGradient>
+    /*  </KeyboardAwareScrollView> */
   )
 }
 
 const styles = StyleSheet.create({
-  root2: {
+  background: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: '100%',
+    width: '100%'
+  },
+  root: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    /*   justifyContent: 'space-between', */
 
     /*   width: 248, */
     alignSelf: 'center',
     paddingTop: 32
   },
-  root: {
+  content: {
     flex: 1,
+    width: 310,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
-    /*   width: 248, */
-    alignSelf: 'center'
+    padding: 16
+
+    /*     alignSelf: 'center' */
   },
   input: {
-    alignSelf: 'stretch',
-    marginVertical: 8
+    marginVertical: 2,
+    borderRadius: 15,
+    padding: 16,
+    backgroundColor: 'white',
+    /*   alignSelf: 'center', */
+    width: 234
   },
   button: {
     alignSelf: 'stretch',
-    marginTop: 16
+    marginTop: 8
   },
   titleContainer: {
     display: 'flex',
@@ -126,20 +177,33 @@ const styles = StyleSheet.create({
   },
   tittleLabel: {
     fontFamily: 'LoveMeLikeASister',
-    fontSize: 36
+    fontSize: 36,
+    color: 'black'
   },
   labrador: {
-    width: 700,
-    height: 142,
-    /* position: 'absolute', */
-    bottom: 0
+    width: 300,
+    height: 200,
+    position: 'absolute',
+    top: -70,
+    transform: [{ rotate: '180deg' }]
     /*    alignSelf: 'stretch' */
   },
   link: {
-    fontWeight: '600',
-    paddingVertical: 2
+    fontWeight: '500',
+    color: 'black',
+    fontFamily: 'LoveMeLikeASister',
+    fontSize: 11
   },
-  linksContainer: {
-    paddingTop: 16
+  registerContainer: {
+    flexDirection: 'row',
+    paddingTop: 24
+  },
+  register: {
+    fontFamily: 'LoveMeLikeASister',
+    fontSize: 11,
+    color: 'blue'
+  },
+  forgotPasswordContainer: {
+    padding: 8
   }
 })

@@ -14,19 +14,19 @@ function Button(props: ButtonProps) {
 
   const styles = StyleSheet.create({
     button: {
-      /*    borderWidth: 1, */
-      borderColor: '#000',
+      borderWidth: 0.5,
+      borderColor: '#B80000',
       borderRadius: 15,
-      padding: 8,
-      backgroundColor: colors.primary
+      padding: 12,
+      backgroundColor: 'transparent'
     },
 
     box: {
-      borderBottomWidth: 0,
+      /*      borderBottomWidth: 0,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.5,
-      shadowRadius: 2
+      shadowRadius: 2 */
       /*   elevation: 1 */
     }
   })
@@ -34,6 +34,12 @@ function Button(props: ButtonProps) {
   return (
     <View style={[styles.box, style]}>
       <DefaultButton
+        /*     ViewComponent={LinearGradient} // Don't forget this!
+        linearGradientProps={{
+          colors: ['red', 'pink'],
+          start: { x: 0, y: 0.5 },
+          end: { x: 1, y: 0.5 }
+        }} */
         buttonStyle={styles.button}
         disabledStyle={{
           borderWidth: 1,

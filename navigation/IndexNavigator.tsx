@@ -8,7 +8,7 @@ import LinkingConfiguration from '../types/LinkingConfiguration'
 import { MyDefaultTheme, MyDarkTheme } from '../constants/Theme'
 import { useContext } from 'react'
 import UserContext from '../contexts/UserContext'
-import LoginStackScreen from '../screens/Login/LoginStackScreen'
+import LoginStackScreen from './LoginStackScreen'
 
 export default function Navigation() {
   const Stack = createStackNavigator<RootStackParamList>()
