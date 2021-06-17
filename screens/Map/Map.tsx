@@ -1,58 +1,172 @@
-import React, { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { useTheme } from '@react-navigation/native'
+import React, { useEffect, useState } from 'react'
+import { Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, TouchableOpacity } from 'react-native'
+
 import { useNavigation } from '@react-navigation/native'
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
-import { mapStyle } from '../../styles/Map'
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import { mapStyleDay } from '../../styles/MapDay'
 import { useMap } from '../../hooks/useMap'
 import { Input } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { Appearance } from 'react-native-appearance'
+import { mapStyleNight } from '../../styles/MapNight'
+import * as Location from 'expo-location'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import { usePermissions } from 'expo-permissions'
+import { ScrollView, TextInput } from 'react-native'
+import { GoogleAutoComplete } from 'react-native-google-autocomplete'
+import useTheme from '../../hooks/useTheme'
+import { Post } from '../../types/models/Post'
 
 export default function Map() {
-  const { colors } = useTheme()
+  const colorMode = Appearance.getColorScheme()
+
+  const [data, askPermissions, getPermissions] = usePermissions('location')
+  /* 
+  const marca = {latlng:{lat:}} */
+
+  const colors = useTheme()
 
   const navigation = useNavigation()
 
   const [keyword, setKeyword] = useState('')
 
+  const [location, setLocation] = useState<Location.LocationObject>()
+
   const { mapRef, selectedMarker, handleNavigateToPoint, handelResetInitialPosition } = useMap()
 
+  const [marker, setMarker] = useState()
+
+  const post1 = { Id: 1, description: 'Post numero 1', location: { Id: 1, x: -34.54289695652187, y: -58.54144144943036 } } as Post
+  const post2 = { Id: 2, description: 'Post numero 2', location: { Id: 1, x: -34.54309695652187, y: -58.54244144943036 } } as Post
+  const post3 = { Id: 3, description: 'Post numero 3', location: { Id: 1, x: -34.54309695652187, y: -58.53244144943036 } } as Post
+  const post4 = { Id: 4, description: 'Post numero 4', location: { Id: 1, x: -34.54309695652187, y: -58.52244144943036 } } as Post
+  const posts: Post[] = [post1, post2, post3, post4]
+
+  const findCurrentLocationAsync = async () => {
+    await askPermissions()
+
+    /*   if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied'
+      })
+    } */
+
+    let location = await Location.getCurrentPositionAsync({})
+    handleNavigateToPoint(1, location.coords.latitude, location.coords.longitude)
+    setLocation(location)
+  }
+
+  /*   useEffect(() => {
+    findCoordinates()
+  }, [])
+ */
   return (
-    <View style={styles.content}>
-      <MapView
-        ref={mapRef}
-        customMapStyle={mapStyle}
-        provider={PROVIDER_GOOGLE}
-        style={styles.mapStyle}
-        initialRegion={{
-          latitude: -34.535532,
-          longitude: -58.541518,
-          latitudeDelta: 0.003,
-          longitudeDelta: 0.003
-        }}
-        mapType="standard"
-      />
-      <View style={styles.content}>
-        <KeyboardAwareScrollView scrollEnabled={false} showsVerticalScrollIndicator={false}>
-          <Input
-            inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
-            textContentType="emailAddress"
-            placeholder="Email"
-            autoCompleteType="email"
-            onChangeText={setKeyword}
-            value={keyword}
-            containerStyle={{ paddingHorizontal: 0 }}
-            style={styles.input}
-            /*               errorStyle={{ color: 'red' }}
-              errorMessage="Email no valido" */
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={StyleSheet.absoluteFillObject}>
+        {(console.disableYellowBox = true)}
+        <MapView
+          ref={mapRef}
+          showsMyLocationButton={false}
+          /*   mapPadding={{ top: 516, bottom: 16, left: 16, right: 16 }} */
+          showsUserLocation={true}
+          /* showsCompass={false} */
+          /*    showsPointsOfInterest={false}
+          showsBuildings={false}
+          showsScale={false} */
+          showsPointsOfInterest={false}
+          customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
+          provider={PROVIDER_GOOGLE}
+          /*    loadingEnabled={true} */
+
+          style={StyleSheet.absoluteFillObject}
+          initialRegion={{
+            latitude: -34.535532,
+            longitude: -58.541518,
+            latitudeDelta: 0.003,
+            longitudeDelta: 0.003
+          }}
+          /*   mapType="standard" */
+          onPress={() => Keyboard.dismiss()}
+        >
+          {posts.map((post, index) => (
+            <Marker key={post.Id} coordinate={{ latitude: post.location.x, longitude: post.location.y }} title={post.description} />
+          ))}
+        </MapView>
+
+        {/*   <View style={{ position: 'absolute', top: 100 }} /> */}
+        <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={findCurrentLocationAsync}>
+          <Text> Mi Ubicacion </Text>
+        </TouchableOpacity>
+        <View style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
+          <GooglePlacesAutocomplete
+            placeholder="Buscar"
+            /*  currentLocation={true} */
+            textInputProps={{ placeholderTextColor: colors.text }}
+            fetchDetails={true}
+            suppressDefaultStyles={true}
+            /* onNotFound={() => <Text>No se encontaron resultados</Text>} */
+            /*   currentLocation={true} */
+            styles={{
+              textInputContainer: {
+                backgroundColor: colors.background,
+                borderRadius: 16
+              },
+              textInput: {
+                padding: 12,
+                placeholderTextColor: 'black',
+                fontFamily: 'LoveMeLikeASister',
+                paddingLeft: 18,
+                color: colors.text
+              },
+              predefinedPlacesDescription: {
+                color: '#1faadb'
+              },
+              listView: {
+                borderRadius: 16,
+                marginTop: 8,
+                backgroundColor: colors.background,
+                /*   padding: 16, */
+
+                overflow: 'scroll'
+              },
+              description: {
+                fontSize: 12,
+                padding: 16,
+                color: colors.text
+              },
+              separator: {
+                height: 0.5,
+                backgroundColor: '#c8c7cc'
+              },
+              poweredContainer: {
+                alignItems: 'flex-end',
+                padding: 16,
+                width: '100%'
+              }
+            }}
+            /*   styles={{ position: 'absolute', top: 300 }} */
+            onPress={(data, details = null) => {
+              console.log(data, details)
+              handleNavigateToPoint(1, details?.geometry.location.lat, details?.geometry.location.lng)
+            }}
+            query={{
+              key: 'AIzaSyCahzx0wpr4G7jiI_LfsAUf0JWJ3-FZVDs',
+              language: 'es',
+              components: 'country:arg'
+            }}
           />
-        </KeyboardAwareScrollView>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   )
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   content: {
     flex: 1,
     padding: 16,

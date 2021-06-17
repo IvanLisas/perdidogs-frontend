@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react'
-import { User } from '../types/User'
+import { User } from '../types/models/User'
 import useLocalStorage from '../hooks/useLocalStorage'
 
 interface ContextProps {

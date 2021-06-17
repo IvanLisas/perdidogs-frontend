@@ -15,7 +15,7 @@ export function useMap() {
               latitude: lat - DEVIATION,
               longitude: long
             },
-            zoom: 18.5
+            zoom: 14.5
           },
           500
         )

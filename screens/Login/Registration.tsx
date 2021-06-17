@@ -9,7 +9,7 @@ import { useContext, useState } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Button from '../../components/MyThemedComponents/Button'
 import userService from '../../services/UserService'
-import { User } from '../../types/User'
+import { User } from '../../types/models/User'
 import UserContext from '../../contexts/UserContext'
 
 type ProfileScreenNavigationProp = StackNavigationProp<LoginStackParamList, 'Registration'>
@@ -168,6 +168,7 @@ export default function Registration({ navigation }: Props) {
             errorStyle={{ color: 'red' }}
             errorMessage={passwordError}
           />
+
           <Input
             ref={inputRepetedPassword}
             inputContainerStyle={{ borderBottomWidth: 0, width: '100%' }}

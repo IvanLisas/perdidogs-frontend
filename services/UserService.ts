@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { SERVER_URL } from '../constants/Rest'
-import { User } from '../types/User'
+import { User } from '../types/models/User'
 
 class UserService {
   async login(email: string, password: string): Promise<User> {

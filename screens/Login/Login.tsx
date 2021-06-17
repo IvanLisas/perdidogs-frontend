@@ -9,7 +9,7 @@ import UserContext from '../../contexts/UserContext'
 import Button from '../../components/MyThemedComponents/Button'
 import userService from '../../services/UserService'
 import { LinearGradient } from 'expo-linear-gradient'
-import { User } from '../../types/User'
+import { User } from '../../types/models/User'
 import { Input } from 'react-native-elements'
 import useUser from '../../hooks/useUser'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -52,7 +52,7 @@ export default function Login() {
   return (
     /*  <TouchableWithoutFeedback  onPress={() => Keyboard.dismiss() }> */
     <LinearGradient colors={['#FFE5B2', '#EFB865']} style={styles.background}>
-      <KeyboardAwareScrollView contentContainerStyle={styles.root} showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView contentContainerStyle={styles.root} scrollEnabled={false} showsVerticalScrollIndicator={false}>
         <View style={styles.root}>
           <ImageBackground
             source={labrador}
