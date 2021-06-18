@@ -3,5 +3,5 @@ import { ThemeContext } from '../contexts/ThemeContext'
 
 export default function useTheme() {
   const { theme } = useContext(ThemeContext)
-  return theme.colors
+  return theme
 }

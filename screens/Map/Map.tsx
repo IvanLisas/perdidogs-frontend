@@ -7,11 +7,12 @@ import { useMap } from '../../hooks/useMap'
 import { Appearance } from 'react-native-appearance'
 import { mapStyleNight } from '../../styles/MapNight'
 import { requestForegroundPermissionsAsync } from 'expo-location'
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import GooglePlacesAutocomplete from './GooglePlacesAutocomplete'
 import useTheme from '../../hooks/useTheme'
 import { BottomSheetModal as DefaultBottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { Post } from '../../types/models/Post'
 import postService from '../../services/PostService'
+import PostPreview from './PostPreview'
 
 export default function Map() {
   const colorMode = Appearance.getColorScheme()
@@ -48,9 +49,15 @@ export default function Map() {
 
   const [marker, setMarker] = useState()
 
-  const snapPoints = useMemo(() => ['30%', '30%'], [])
+  const snapPoints = useMemo(() => [250, '90%'], [])
 
   const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.latitude, myLocation?.longitude)
+
+  const handleMapPress = () => {
+    console.log('press smap')
+    Keyboard.dismiss()
+    sheetModalef.current?.dismiss()
+  }
 
   useEffect(() => {
     const permission = async () => {
@@ -66,39 +73,27 @@ export default function Map() {
   }, [])
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    <TouchableWithoutFeedback /* onPress={() => sheetModalef.current?.close()} */>
       <BottomSheetModalProvider>
         <View style={StyleSheet.absoluteFillObject}>
-          {/*    {(console.disableYellowBox = true)} */}
           <MapView
             ref={mapRef}
-            onRegionChange={(region) => console.log(region)}
+            /*     onRegionChange={(region) => console.log(region)} */
             onUserLocationChange={(event) => setMyLocation(event.nativeEvent.coordinate)}
             showsMyLocationButton={true}
-            /*   mapPadding={{ top: 516, bottom: 16, left: 16, right: 16 }} */
             showsUserLocation={true}
-            /* showsCompass={false} */
-            /*    showsPointsOfInterest={false}
-          showsBuildings={false}
-          showsScale={false} */
-
             showsPointsOfInterest={false}
             customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
             provider={PROVIDER_GOOGLE}
-            /*    loadingEnabled={true} */
-
             style={StyleSheet.absoluteFillObject}
             initialRegion={{
               latitude: -34.535532,
               longitude: -58.541518,
-              latitudeDelta: 0.003,
-              longitudeDelta: 0.003
+              latitudeDelta: 1.003,
+              longitudeDelta: 1.003
             }}
-            /*   mapType="standard" */
-            onPress={() => {
-              Keyboard.dismiss()
-              sheetModalef.current?.close()
-            }}
+            onPress={handleMapPress}
+            /*mapType="standard" */
           >
             {posts.map((post, index) => (
               <Marker
@@ -107,86 +102,35 @@ export default function Map() {
                   handleNavigateToPoint(index, post.location.lat, post.location.long)
                   sheetModalef.current?.present()
                 }}
+                stopPropagation={true}
                 key={post.Id}
-                onDeselect={() => sheetModalef.current?.dismiss()}
+                onDeselect={() => console.log('deselected')}
+                onSelect={() => console.log('selected')}
                 coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
-                title={post.description}
+                zIndex={19999}
+                /*  title={post.description} */
               />
             ))}
           </MapView>
-
           {/*   <View style={{ position: 'absolute', top: 100 }} /> */}
           <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={handleMyLocation}>
             <Text> Mi Ubicacion </Text>
           </TouchableOpacity>
           <View style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
-            <GooglePlacesAutocomplete
-              placeholder="Buscar"
-              /*  currentLocation={true} */
-              textInputProps={{ placeholderTextColor: colors.text }}
-              fetchDetails={true}
-              suppressDefaultStyles={true}
-              /* onNotFound={() => <Text>No se encontaron resultados</Text>} */
-              /*   currentLocation={true} */
-              styles={{
-                textInputContainer: {
-                  backgroundColor: colors.background,
-                  borderRadius: 16
-                },
-                textInput: {
-                  /*             padding: 12,
-                  placeholderTextColor: 'black',
-                  fontFamily: 'LoveMeLikeASister',
-                  paddingLeft: 18,
-                  color: colors.text */
-                },
-                predefinedPlacesDescription: {
-                  color: '#1faadb'
-                },
-                listView: {
-                  borderRadius: 16,
-                  marginTop: 8,
-                  backgroundColor: colors.background,
-                  /*   padding: 16, */
-
-                  overflow: 'scroll'
-                },
-                description: {
-                  fontSize: 12,
-                  padding: 16,
-                  color: colors.text
-                },
-                separator: {
-                  height: 0.5,
-                  backgroundColor: '#c8c7cc'
-                },
-                poweredContainer: {
-                  alignItems: 'flex-end',
-                  padding: 16,
-                  width: '100%'
-                }
-              }}
-              /*   styles={{ position: 'absolute', top: 300 }} */
-              onPress={(data, details, index = null) => {
-                console.log(data, details)
-                handleNavigateToPoint('g' + index, details?.geometry.location.lat, details?.geometry.location.lng)
-              }}
-              query={{
-                key: 'AIzaSyCahzx0wpr4G7jiI_LfsAUf0JWJ3-FZVDs',
-                language: 'es',
-                components: 'country:arg'
-              }}
-            />
+            <GooglePlacesAutocomplete handleNavigateToPoint={handleNavigateToPoint} />
           </View>
           <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
-            <View style={styles.container}>
-              {/*    <Button onPress={handlePresentModalPress} title="Present Modal" color="black" /> */}
-              <DefaultBottomSheetModal ref={sheetModalef} index={1} snapPoints={snapPoints}>
-                <View style={styles.contentContainer}>
-                  <Text>{selectedPost?.description}</Text>
-                </View>
-              </DefaultBottomSheetModal>
-            </View>
+            {/*    <Button onPress={handlePresentModalPress} title="Present Modal" color="black" /> */}
+            <DefaultBottomSheetModal
+              ref={sheetModalef}
+              enableContentPanningGesture
+              enableFlashScrollableIndicatorOnExpand
+              backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
+              style={{ backgroundColor: colors.navigation, borderRadius: 22 }}
+              snapPoints={snapPoints}
+            >
+              <PostPreview post={selectedPost} />
+            </DefaultBottomSheetModal>
           </View>
         </View>
       </BottomSheetModalProvider>
@@ -224,9 +168,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 24,
     justifyContent: 'center'
-    /*   backgroundColor: 'grey' */
   },
   contentContainer: {
     flex: 1,
@@ -234,9 +176,6 @@ const styles = StyleSheet.create({
   }
 })
 
-function componentDidMount() {
-  throw new Error('Function not implemented.')
-}
 /*   const post1 = { Id: 13, description: 'Post numero 1', location: { Id: 1, x: -34.54289695652187, y: -58.54144144943036 } } as Post
   const post2 = { Id: 24, description: 'Post numero 2', location: { Id: 1, x: -34.54309695652187, y: -58.54244144943036 } } as Post
   const post3 = { Id: 35, description: 'Post numero 3', location: { Id: 1, x: -34.54309695652187, y: -58.53244144943036 } } as Post

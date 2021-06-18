@@ -11,7 +11,7 @@ const BottomSheetModal: React.FC<BottomSheetModalProps> = (props) => {
   // ref
   const { ref, children } = props
   // variables
-  const snapPoints = useMemo(() => ['25%', '50%'], [])
+  const snapPoints = useMemo(() => ['10%', '80%'], [])
 
   // callbacks
   /*   const handlePresentModalPress = useCallback(() => {
@@ -27,7 +27,7 @@ const BottomSheetModal: React.FC<BottomSheetModalProps> = (props) => {
     <BottomSheetModalProvider>
       <View style={styles.container}>
         {/*    <Button onPress={handlePresentModalPress} title="Present Modal" color="black" /> */}
-        <DefaultBottomSheetModal ref={ref} index={1} snapPoints={snapPoints} onChange={handleSheetChanges}>
+        <DefaultBottomSheetModal ref={ref} style={{ overflow: 'scroll' }} index={1} snapPoints={snapPoints} onChange={handleSheetChanges}>
           <View style={styles.contentContainer}>{children}</View>
         </DefaultBottomSheetModal>
       </View>
