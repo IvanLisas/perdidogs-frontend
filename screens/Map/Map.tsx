@@ -1,99 +1,87 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, TouchableOpacity, Button } from 'react-native'
-
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { mapStyleDay } from '../../styles/MapDay'
 import { useMap } from '../../hooks/useMap'
-import { Input } from 'react-native-elements'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Appearance } from 'react-native-appearance'
 import { mapStyleNight } from '../../styles/MapNight'
-import * as Location from 'expo-location'
+import { requestForegroundPermissionsAsync } from 'expo-location'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
-import { usePermissions } from 'expo-permissions'
-import { ScrollView, TextInput } from 'react-native'
-import { GoogleAutoComplete } from 'react-native-google-autocomplete'
 import useTheme from '../../hooks/useTheme'
-import { Post } from '../../types/models/Post'
-import BottomSheetModal from './BottomSheetModal'
 import { BottomSheetModal as DefaultBottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { Post } from '../../types/models/Post'
+import postService from '../../services/PostService'
 
 export default function Map() {
   const colorMode = Appearance.getColorScheme()
 
-  const [data, askPermissions, getPermissions] = usePermissions('location')
-  /* 
-  const marca = {latlng:{lat:}} */
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const [selectedPost, setSelectedPost] = useState<Post>()
+
+  const [myLocation, setMyLocation] = useState<LatLng>()
+
+  const [posts, setPosts] = useState<Post[]>([])
 
   const colors = useTheme()
 
   const navigation = useNavigation()
-
-  const [keyword, setKeyword] = useState('')
-
-  const [location, setLocation] = useState<Location.LocationObject>()
+  /* 
+  const [location, setLocation] = useState<Location.LocationObject>() */
 
   const { mapRef, selectedMarker, handleNavigateToPoint, handelResetInitialPosition } = useMap()
 
-  const ref = useRef<DefaultBottomSheetModal>(null)
+  const sheetModalef = useRef<DefaultBottomSheetModal>(null)
 
-  /*   useEffect(( () =>
-    console.log(await mapRef.current?.getMapBoundaries().northEast)
-  ) ,[])
- */
+  useEffect(() => {
+    const getPosts = async () => {
+      try {
+        setPosts(await postService.getAll())
+      } catch (error) {
+        console.log(error.response)
+        setErrorMessage('Error al conectar con el servidor: ' + error.message)
+      }
+    }
+    getPosts()
+  }, [])
+
   const [marker, setMarker] = useState()
-
-  const post1 = { Id: 13, description: 'Post numero 1', location: { Id: 1, x: -34.54289695652187, y: -58.54144144943036 } } as Post
-  const post2 = { Id: 24, description: 'Post numero 2', location: { Id: 1, x: -34.54309695652187, y: -58.54244144943036 } } as Post
-  const post3 = { Id: 35, description: 'Post numero 3', location: { Id: 1, x: -34.54309695652187, y: -58.53244144943036 } } as Post
-  const post4 = { Id: 46, description: 'Post numero 4', location: { Id: 1, x: -34.54309695652187, y: -58.52244144943036 } } as Post
-  const posts: Post[] = [post1, post2, post3, post4]
 
   const snapPoints = useMemo(() => ['30%', '30%'], [])
 
-  const findCurrentLocationAsync = async () => {
-    await askPermissions()
+  const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.latitude, myLocation?.longitude)
 
-    /*   if (status !== 'granted') {
-      this.setState({
-        errorMessage: 'Permission to access location was denied'
-      })
-    } */
-    /*     ref.current?.present() */
-    /*  let location = await Location.getCurrentPositionAsync({})
-     */
-    console.log(await mapRef.current?.getMapBoundaries())
-
-    /*     handleNavigateToPoint(1, location.coords.latitude, location.coords.longitude)
-    setLocation(location) */
-  }
-
-  const handlePresentModalPress = useCallback(() => {
-    console.log('hola')
-    ref.current?.present()
-    /*     bottomSheetModalRef.current?.close() */
+  useEffect(() => {
+    const permission = async () => {
+      const { status } = await requestForegroundPermissionsAsync()
+      if (status !== 'granted') {
+        setErrorMessage('Permission to access location was denied')
+        return
+      }
+      /*let location = await Location.getCurrentPositionAsync({});
+        setLocation(location); */
+      permission()
+    }
   }, [])
 
-  /*   useEffect(() => {
-    findCoordinates()
-  }, [])
- */
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <BottomSheetModalProvider>
         <View style={StyleSheet.absoluteFillObject}>
           {/*    {(console.disableYellowBox = true)} */}
-
           <MapView
             ref={mapRef}
-            showsMyLocationButton={false}
+            onRegionChange={(region) => console.log(region)}
+            onUserLocationChange={(event) => setMyLocation(event.nativeEvent.coordinate)}
+            showsMyLocationButton={true}
             /*   mapPadding={{ top: 516, bottom: 16, left: 16, right: 16 }} */
             showsUserLocation={true}
             /* showsCompass={false} */
             /*    showsPointsOfInterest={false}
           showsBuildings={false}
           showsScale={false} */
+
             showsPointsOfInterest={false}
             customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
             provider={PROVIDER_GOOGLE}
@@ -109,24 +97,26 @@ export default function Map() {
             /*   mapType="standard" */
             onPress={() => {
               Keyboard.dismiss()
-              ref.current?.close()
+              sheetModalef.current?.close()
             }}
           >
             {posts.map((post, index) => (
               <Marker
                 onPress={() => {
-                  handleNavigateToPoint(index, post.location.x, post.location.y)
-                  ref.current?.present()
+                  setSelectedPost(post)
+                  handleNavigateToPoint(index, post.location.lat, post.location.long)
+                  sheetModalef.current?.present()
                 }}
                 key={post.Id}
-                coordinate={{ latitude: post.location.x, longitude: post.location.y }}
+                onDeselect={() => sheetModalef.current?.dismiss()}
+                coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
                 title={post.description}
               />
             ))}
           </MapView>
 
           {/*   <View style={{ position: 'absolute', top: 100 }} /> */}
-          <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={findCurrentLocationAsync}>
+          <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={handleMyLocation}>
             <Text> Mi Ubicacion </Text>
           </TouchableOpacity>
           <View style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
@@ -144,11 +134,11 @@ export default function Map() {
                   borderRadius: 16
                 },
                 textInput: {
-                  padding: 12,
+                  /*             padding: 12,
                   placeholderTextColor: 'black',
                   fontFamily: 'LoveMeLikeASister',
                   paddingLeft: 18,
-                  color: colors.text
+                  color: colors.text */
                 },
                 predefinedPlacesDescription: {
                   color: '#1faadb'
@@ -191,9 +181,9 @@ export default function Map() {
           <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
             <View style={styles.container}>
               {/*    <Button onPress={handlePresentModalPress} title="Present Modal" color="black" /> */}
-              <DefaultBottomSheetModal ref={ref} index={1} snapPoints={snapPoints}>
+              <DefaultBottomSheetModal ref={sheetModalef} index={1} snapPoints={snapPoints}>
                 <View style={styles.contentContainer}>
-                  <Text>hola</Text>
+                  <Text>{selectedPost?.description}</Text>
                 </View>
               </DefaultBottomSheetModal>
             </View>
@@ -243,3 +233,12 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 })
+
+function componentDidMount() {
+  throw new Error('Function not implemented.')
+}
+/*   const post1 = { Id: 13, description: 'Post numero 1', location: { Id: 1, x: -34.54289695652187, y: -58.54144144943036 } } as Post
+  const post2 = { Id: 24, description: 'Post numero 2', location: { Id: 1, x: -34.54309695652187, y: -58.54244144943036 } } as Post
+  const post3 = { Id: 35, description: 'Post numero 3', location: { Id: 1, x: -34.54309695652187, y: -58.53244144943036 } } as Post
+  const post4 = { Id: 46, description: 'Post numero 4', location: { Id: 1, x: -34.54309695652187, y: -58.52244144943036 } } as Post
+  const posts: Post[] = [post1, post2, post3, post4] */

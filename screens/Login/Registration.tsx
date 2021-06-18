@@ -91,7 +91,7 @@ export default function Registration({ navigation }: Props) {
     }
     if (!hasErrors) {
       try {
-        setUser(await userService.registration({ firstName: firstName, lastName: lastName, email: email, password: password } as User))
+        setUser(await userService.register({ firstName: firstName, lastName: lastName, email: email, password: password } as User))
       } catch (error) {
         console.log(error.response)
         setError('Error al conectar con el servidor: ' + error.message)

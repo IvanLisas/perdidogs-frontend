@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { SERVER_URL } from '../constants/Rest'
+import { Bounderies } from '../types/models/Bounderies'
 import { Post } from '../types/models/Post'
 
 class PostService {
@@ -7,12 +8,12 @@ class PostService {
     return (await axios.get<Post>(`${SERVER_URL}/post/${id}`)).data
   }
 
-  async getAll(id: number): Promise<Post> {
-    return (await axios.get<Post>(`${SERVER_URL}/post/all/${id}`)).data
+  async getAll(): Promise<Post[]> {
+    return (await axios.get<Post[]>(`${SERVER_URL}/post/getAll`)).data
   }
 
-  async location(id: number, lat: number, long: number, rad: number): Promise<Post> {
-    return (await axios.get<Post>(`${SERVER_URL}/post/${id}/${lat}/${long}/${rad}`)).data
+  async location(bounderies: Bounderies): Promise<Post[]> {
+    return (await axios.put<Post[]>(`${SERVER_URL}/post/by-location}`, bounderies)).data
   }
 
   async create(id: number, post: Post): Promise<Post> {
