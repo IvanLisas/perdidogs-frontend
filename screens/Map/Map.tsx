@@ -38,6 +38,10 @@ export default function Map() {
 
   const ref = useRef<DefaultBottomSheetModal>(null)
 
+  /*   useEffect(( () =>
+    console.log(await mapRef.current?.getMapBoundaries().northEast)
+  ) ,[])
+ */
   const [marker, setMarker] = useState()
 
   const post1 = { Id: 13, description: 'Post numero 1', location: { Id: 1, x: -34.54289695652187, y: -58.54144144943036 } } as Post
@@ -50,16 +54,19 @@ export default function Map() {
 
   const findCurrentLocationAsync = async () => {
     await askPermissions()
-    handlePresentModalPress()
+
     /*   if (status !== 'granted') {
       this.setState({
         errorMessage: 'Permission to access location was denied'
       })
     } */
-    ref.current?.present()
-    let location = await Location.getCurrentPositionAsync({})
-    handleNavigateToPoint(1, location.coords.latitude, location.coords.longitude)
-    setLocation(location)
+    /*     ref.current?.present() */
+    /*  let location = await Location.getCurrentPositionAsync({})
+     */
+    console.log(await mapRef.current?.getMapBoundaries())
+
+    /*     handleNavigateToPoint(1, location.coords.latitude, location.coords.longitude)
+    setLocation(location) */
   }
 
   const handlePresentModalPress = useCallback(() => {
@@ -76,7 +83,8 @@ export default function Map() {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <BottomSheetModalProvider>
         <View style={StyleSheet.absoluteFillObject}>
-          {(console.disableYellowBox = true)}
+          {/*    {(console.disableYellowBox = true)} */}
+
           <MapView
             ref={mapRef}
             showsMyLocationButton={false}
