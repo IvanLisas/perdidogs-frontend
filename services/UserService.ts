@@ -7,9 +7,20 @@ class UserService {
     return (await axios.put<User>(`${SERVER_URL}/user/login`, { email, password })).data
   }
 
-  async registration(user: User): Promise<User> {
-    console.log(user)
-    return (await axios.post<User>(`${SERVER_URL}/user/registration`, user)).data
+  async getUser(id: number): Promise<User> {
+    return (await axios.put<User>(`${SERVER_URL}/user/${id}`)).data
+  }
+
+  async register(user: User): Promise<User> {
+    return (await axios.post<User>(`${SERVER_URL}/user/`, user)).data
+  }
+
+  async update(user: User): Promise<User> {
+    return (await axios.put<User>(`${SERVER_URL}/user/`, user)).data
+  }
+
+  async delete(id: number): Promise<User> {
+    return (await axios.delete<User>(`${SERVER_URL}/user/${id}`)).data
   }
 }
 
