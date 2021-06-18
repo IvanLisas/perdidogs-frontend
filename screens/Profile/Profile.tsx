@@ -1,44 +1,48 @@
-import * as React from 'react'
-import { StyleSheet, View, Button } from 'react-native'
-import { useTheme } from '@react-navigation/native'
-import { useNavigation } from '@react-navigation/native'
-import { StackNavigationProp } from '@react-navigation/stack'
-import Text from '../../components/MyThemedComponents/Text'
-import { ProfileStackParamList } from '../../types/ProfileStackParamList'
-import { useContext } from 'react'
-import UserContext from '../../contexts/UserContext'
+import React, { useCallback, useMemo, useRef } from 'react'
+import { View, Text, StyleSheet, Button } from 'react-native'
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
-type authScreenProp = StackNavigationProp<ProfileStackParamList, 'Edit'>
+const Profile = () => {
+  // ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null)
 
-export default function Profile() {
-  const { colors } = useTheme()
+  // variables
+  const snapPoints = useMemo(() => ['25%', '50%'], [])
 
-  const { logout } = useContext(UserContext)
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present()
+  }, [])
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index)
+  }, [])
 
-  const navigation = useNavigation<authScreenProp>()
-
+  // renders
   return (
-    <View style={styles.container}>
-      <Text>Tu perfil</Text>
-      <Button title="Editar Perfil" onPress={() => navigation.navigate('Edit')} />
-      <Button title="Salir" onPress={logout} />
-    </View>
+    <BottomSheetModalProvider>
+      <View style={styles.container}>
+        <Button onPress={handlePresentModalPress} title="Present Modal" color="black" />
+        <BottomSheetModal ref={bottomSheetModalRef} index={1} snapPoints={snapPoints} onChange={handleSheetChanges}>
+          <View style={styles.contentContainer}>
+            <Text>Awesome 🎉</Text>
+          </View>
+        </BottomSheetModal>
+      </View>
+    </BottomSheetModalProvider>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    padding: 24,
+    justifyContent: 'center',
+    backgroundColor: 'grey'
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold'
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%'
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center'
   }
 })
+
+export default Profile

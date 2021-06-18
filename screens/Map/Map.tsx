@@ -128,7 +128,6 @@ export default function Map() {
               textInputProps={{ placeholderTextColor: colors.text }}
               fetchDetails={true}
               suppressDefaultStyles={true}
-              renderRightButton={cargas el boton}
               /* onNotFound={() => <Text>No se encontaron resultados</Text>} */
               /*   currentLocation={true} */
               styles={{
