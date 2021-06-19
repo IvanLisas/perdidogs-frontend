@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { View, StyleSheet, Image, ScrollView, ImageBackground, FlatList, TouchableHighlight, TouchableWithoutFeedback } from 'react-native'
+import { View, StyleSheet, Image, ImageBackground, FlatList, TouchableHighlight, TouchableWithoutFeedback } from 'react-native'
 import { Post } from '../../types/models/Post'
 import useTheme from '../../hooks/useTheme'
 import { MyTheme } from '../../styles/Theme'
 import Text from '../../components/MyThemedComponents/Text'
 import { LinearGradient } from 'expo-linear-gradient'
 import BottomSheet, { BottomSheetFlatList, BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { ScrollView } from 'react-native-gesture-handler'
 
 interface PostPageProps {
   post: Post | undefined
@@ -18,7 +19,21 @@ const PostPreview: React.FC<PostPageProps> = ({ post }) => {
     <View>
       <View style={styles(theme).root}>
         <Text>asd</Text>
-        <BottomSheetFlatList
+
+        <ScrollView horizontal>
+          {post?.pictures.map((picture, index) => (
+            <View>
+              <ImageBackground key={picture.url + 34} imageStyle={{ borderRadius: 12 }} style={styles(theme).image} source={{ uri: picture.url }} />
+              <LinearGradient
+                colors={['rgba(0,0,0,0.5)', 'transparent']}
+                style={{ position: 'absolute', height: 120, width: 130, borderRadius: 12 }}
+                start={{ x: 0, y: 1.0 }}
+                end={{ x: 0, y: 0 }}
+              />
+            </View>
+          ))}
+        </ScrollView>
+        {/* <BottomSheetFlatList
           data={post?.pictures}
           keyExtractor={(i) => i.url}
           renderItem={({ item }) => (
@@ -33,7 +48,7 @@ const PostPreview: React.FC<PostPageProps> = ({ post }) => {
               />
             </View>
           )}
-        />
+        /> */}
       </View>
     </View>
   )
