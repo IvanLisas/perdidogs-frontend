@@ -49,7 +49,7 @@ export default function Map() {
 
   const [marker, setMarker] = useState()
 
-  const snapPoints = useMemo(() => [250, '90%'], [])
+  const snapPoints = useMemo(() => [330, '90%'], [])
 
   const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.latitude, myLocation?.longitude)
 

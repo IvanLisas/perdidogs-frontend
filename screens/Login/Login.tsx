@@ -19,9 +19,9 @@ type authScreenProp = StackNavigationProp<LoginStackParamList>
 export default function Login() {
   const { setUser } = useContext(UserContext)
 
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('ivanelisas@gmail.com')
 
-  const [password, setPassword] = useState('')
+  const [password, setPassword] = useState('12345678')
 
   const navigation = useNavigation<authScreenProp>()
 
@@ -37,9 +37,9 @@ export default function Login() {
 
   const login = async () => {
     try {
-      setUser({ firstName: 'pepe' } as User)
-      /*       if (email === '1' && password === '1') setUser({ firstName: 'pepe' } as User)
-      else setUser(await userService.login(email, password)) */
+      /*    setUser({ firstName: 'pepe' } as User) */
+      /*    if (email === '1' && password === '1') setUser({ firstName: 'pepe' } as User) */
+      setUser(await userService.login(email, password))
     } catch (error) {
       ;(inputEmail.current as any).shake()
       ;(inputPassword.current as any).shake()

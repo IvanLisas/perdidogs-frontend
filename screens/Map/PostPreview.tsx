@@ -7,7 +7,9 @@ import Text from '../../components/MyThemedComponents/Text'
 import { LinearGradient } from 'expo-linear-gradient'
 import BottomSheet, { BottomSheetFlatList, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { ScrollView } from 'react-native-gesture-handler'
-
+import Icon from '../../components/icon/index'
+import UserAvatar from '../../components/UserAvatar'
+import { Dimensions } from 'react-native'
 interface PostPageProps {
   post: Post | undefined
 }
@@ -16,58 +18,102 @@ const PostPreview: React.FC<PostPageProps> = ({ post }) => {
   const theme = useTheme()
 
   return (
-    <View>
-      <View style={styles(theme).root}>
-        <Text>asd</Text>
+    <BottomSheetScrollView>
+      <View>
+        <ScrollView style={styles(theme).root}>
+          <View style={{ minHeight: 250 }}>
+            <View style={{ paddingBottom: 4 }}>
+              <UserAvatar user={post?.owner} />
+            </View>
+            <View style={{ paddingLeft: 48 }}>
+              <Text numberOfLines={1} style={styles(theme).description2}>
+                {post?.description}
+              </Text>
 
-        <ScrollView horizontal>
-          {post?.pictures.map((picture, index) => (
-            <View>
-              <ImageBackground key={picture.url + 34} imageStyle={{ borderRadius: 12 }} style={styles(theme).image} source={{ uri: picture.url }} />
-              <LinearGradient
-                colors={['rgba(0,0,0,0.5)', 'transparent']}
-                style={{ position: 'absolute', height: 120, width: 130, borderRadius: 12 }}
-                start={{ x: 0, y: 1.0 }}
-                end={{ x: 0, y: 0 }}
-              />
+              {/*      <Text numberOfLines={1} style={styles(theme).tittle}>
+            {post?.description}
+          </Text> */}
+
+              <ScrollView showsHorizontalScrollIndicator={false} style={styles(theme).carousel} horizontal>
+                {post?.pictures.map((picture, index) => (
+                  <View key={picture.url + 'container'}>
+                    <ImageBackground
+                      key={picture.url + 'photo'}
+                      imageStyle={{ borderRadius: 12, width: '100%' }}
+                      style={{
+                        width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
+                        height: 220,
+                        borderRadius: 20,
+                        marginRight: 8
+                      }}
+                      source={{ uri: picture.url }}
+                    />
+                    {/*       <LinearGradient
+                      colors={['rgba(0,0,0,0.5)', 'transparent']}
+                      style={{ position: 'absolute', height: 120, width: 130, borderRadius: 12 }}
+                      start={{ x: 0, y: 1.0 }}
+                      end={{ x: 0, y: 0 }}
+                    /> */}
+                  </View>
+                ))}
+              </ScrollView>
+              <View style={styles(theme).descriptionsContainer}>
+                <View style={styles(theme).tinyDescriptionContainer}>
+                  <Icon style={styles(theme).icon} name="compass-hand-drawn-circular-tool-outline" />
+                  <Text style={styles(theme).tinyDescription}>A 5 kilometros - </Text>
+                </View>
+                <View style={styles(theme).tinyDescriptionContainer}>
+                  <Icon style={styles(theme).icon} name="time-hand-drawn-interface-symbol" />
+                  <Text style={styles(theme).tinyDescription}>Hace 2 horas</Text>
+                </View>
+              </View>
             </View>
-          ))}
+          </View>
+          {/*        <View style={{ paddingBottom: 4 }}>
+            <UserAvatar user={post?.owner} />
+          </View>
+          <Text style={styles(theme).description2}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+            <Text style={{ fontSize: 22, paddingBottom: 16 }}>Comentarios</Text>
+            */}
+          <View style={{ paddingBottom: 4 }}>
+            <UserAvatar user={post?.owner} />
+          </View>
+
+          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+          <View style={{ paddingBottom: 4 }}>
+            <UserAvatar user={post?.owner} />
+          </View>
+          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+          <View style={{ paddingBottom: 4 }}>
+            <UserAvatar user={post?.owner} />
+          </View>
+          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+          <View style={{ paddingBottom: 4 }}>
+            <UserAvatar user={post?.owner} />
+          </View>
+          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+          <View style={{ paddingBottom: 4 }}>
+            <UserAvatar user={post?.owner} />
+          </View>
+          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
         </ScrollView>
-        {/* <BottomSheetFlatList
-          data={post?.pictures}
-          keyExtractor={(i) => i.url}
-          renderItem={({ item }) => (
-            <View>
-              {console.log(item)}
-              <ImageBackground key={item.url + 34} imageStyle={{ borderRadius: 12 }} style={styles(theme).image} source={{ uri: item.url }} />
-              <LinearGradient
-                colors={['rgba(0,0,0,0.5)', 'transparent']}
-                style={{ position: 'absolute', height: 120, width: 130, borderRadius: 12 }}
-                start={{ x: 0, y: 1.0 }}
-                end={{ x: 0, y: 0 }}
-              />
-            </View>
-          )}
-        /> */}
       </View>
-    </View>
+    </BottomSheetScrollView>
   )
 }
 
 const styles = (theme: MyTheme) =>
   StyleSheet.create({
     root: {
-      /*     justifyContent: 'flex-start',
-      alignItems: 'flex-start', */
       backgroundColor: theme.navigation,
       paddingHorizontal: 16
     },
     tittle: {
-      fontSize: 18,
+      fontSize: 20,
       /*  width: '80%', */
       alignSelf: 'flex-start',
       overflow: 'scroll',
-      paddingBottom: 8
+      paddingBottom: 4
     },
     imageContainer: {
       /*  flex: 1, */
@@ -94,6 +140,47 @@ const styles = (theme: MyTheme) =>
       padding: 6,
       margin: 6,
       backgroundColor: '#eee'
+    },
+    description: {
+      fontSize: 16,
+      paddingBottom: 8,
+      paddingLeft: 48
+    },
+    description2: {
+      fontSize: 16
+
+      /*  paddingLeft: 48, */
+      /* borderBottomWidth: 0.5, */
+    },
+
+    tinyDescription: {
+      paddingBottom: 4
+    },
+    icon: {
+      fontSize: 16,
+      color: theme.text,
+      paddingRight: 8
+    },
+    tinyDescriptionContainer: {
+      /*   flex: 1, */
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingBottom: 0
+    },
+    carousel: {
+      /*  paddingBottom: 12, */
+
+      /*   marginBottom: 16, */
+      paddingVertical: 8,
+      /*   borderTopWidth: 1, */
+      /*    borderBottomWidth: 0.5, */
+      borderTopColor: '#E0E0E0',
+      borderBottomColor: '#E0E0E0'
+    },
+    descriptionsContainer: {
+      paddingBottom: 8,
+      flexDirection: 'row',
+      alignItems: 'center'
     }
   })
 
