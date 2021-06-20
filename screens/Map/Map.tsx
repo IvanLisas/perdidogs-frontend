@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, TouchableOpacity } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, TouchableOpacity, TouchableOpacityBase } from 'react-native'
+import { NavigationContainer, NavigationContainerProps, useNavigation } from '@react-navigation/native'
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { mapStyleDay } from '../../styles/MapDay'
 import { useMap } from '../../hooks/useMap'
@@ -13,8 +13,15 @@ import { BottomSheetModal as DefaultBottomSheetModal, BottomSheetModalProvider }
 import { Post } from '../../types/models/Post'
 import postService from '../../services/PostService'
 import PostPreview from './PostPreview'
+import { createStackNavigator, HeaderBackButton, StackNavigationOptions, TransitionPresets } from '@react-navigation/stack'
+import SearchByFilters from './SearchByFilters'
+import SearchResults from './SearchResults'
+import PostContext from '../../contexts/PostContext'
+import Icon from '../../components/icon/index'
 
 export default function Map() {
+  const { setPost } = useContext(PostContext)
+
   const colorMode = Appearance.getColorScheme()
 
   const [errorMessage, setErrorMessage] = useState('')
@@ -28,12 +35,16 @@ export default function Map() {
   const colors = useTheme()
 
   const navigation = useNavigation()
-  /* 
-  const [location, setLocation] = useState<Location.LocationObject>() */
+
+  const [goTo, setGoTo] = useState('SearchByFilters')
 
   const { mapRef, selectedMarker, handleNavigateToPoint, handelResetInitialPosition } = useMap()
 
   const sheetModalef = useRef<DefaultBottomSheetModal>(null)
+
+  const sheetModalef2 = useRef<DefaultBottomSheetModal>(null)
+
+  const Stack = createStackNavigator()
 
   useEffect(() => {
     const getPosts = async () => {
@@ -47,20 +58,39 @@ export default function Map() {
     getPosts()
   }, [])
 
+  const navigationRef = useRef<any>(null)
+
   const [marker, setMarker] = useState()
 
-  const snapPoints = useMemo(() => [330, '90%'], [])
+  const snapPoints = useMemo(() => [45, 330, '90%'], [])
 
   const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.latitude, myLocation?.longitude)
 
+  const handleMarketPress = (post: Post, index: number, lat: number, long: number) => {
+    navigationRef.current?.navigate('PostPreview')
+    setPost(post)
+    handleNavigateToPoint(index, lat, long)
+
+    /* sheetModalef.current?.present() */
+    sheetModalef.current?.snapTo(1)
+  }
+
+  const handleFilters = () => {
+    sheetModalef.current?.snapTo(0)
+    /*  handleSnapPress2(1) */
+    /*  navigation.navigate(goTo) */
+  }
+
   const handleMapPress = () => {
-    console.log('press smap')
     Keyboard.dismiss()
-    sheetModalef.current?.dismiss()
+    sheetModalef.current?.snapTo(0)
   }
 
   useEffect(() => {
     const permission = async () => {
+      {
+        sheetModalef.current?.present()
+      }
       const { status } = await requestForegroundPermissionsAsync()
       if (status !== 'granted') {
         setErrorMessage('Permission to access location was denied')
@@ -75,14 +105,16 @@ export default function Map() {
   return (
     <TouchableWithoutFeedback /* onPress={() => sheetModalef.current?.close()} */>
       <BottomSheetModalProvider>
+        {sheetModalef.current?.present()}
+        {/*  {sheetModalef.current?.snapTo(0)} */}
         <View style={StyleSheet.absoluteFillObject}>
           <MapView
             ref={mapRef}
-            /*     onRegionChange={(region) => console.log(region)} */
+            /*onRegionChange={(region) => console.log(region)} */
             onUserLocationChange={(event) => setMyLocation(event.nativeEvent.coordinate)}
-            showsMyLocationButton={true}
+            /*     showsMyLocationButton={true} */
             showsUserLocation={true}
-            showsPointsOfInterest={false}
+            /*  showsPointsOfInterest={false} */
             customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
             provider={PROVIDER_GOOGLE}
             style={StyleSheet.absoluteFillObject}
@@ -93,15 +125,10 @@ export default function Map() {
               longitudeDelta: 1.003
             }}
             onPress={handleMapPress}
-            /*mapType="standard" */
           >
             {posts.map((post, index) => (
               <Marker
-                onPress={() => {
-                  setSelectedPost(post)
-                  handleNavigateToPoint(index, post.location.lat, post.location.long)
-                  sheetModalef.current?.present()
-                }}
+                onPress={() => handleMarketPress(post, index, post.location.lat, post.location.long)}
                 stopPropagation={true}
                 key={post.Id}
                 onDeselect={() => console.log('deselected')}
@@ -116,27 +143,144 @@ export default function Map() {
           <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={handleMyLocation}>
             <Text> Mi Ubicacion </Text>
           </TouchableOpacity>
+          <TouchableOpacity style={{ position: 'absolute', top: 300 }} onPress={handleFilters}>
+            <Text> Filtros </Text>
+          </TouchableOpacity>
           <View style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
             <GooglePlacesAutocomplete handleNavigateToPoint={handleNavigateToPoint} />
           </View>
           <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
             {/*    <Button onPress={handlePresentModalPress} title="Present Modal" color="black" /> */}
             <DefaultBottomSheetModal
+              index={0}
               ref={sheetModalef}
-              enableContentPanningGesture
-              enableFlashScrollableIndicatorOnExpand
+              dismissOnPanDown={false}
               backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
               style={{ backgroundColor: colors.navigation, borderRadius: 22 }}
               snapPoints={snapPoints}
             >
-              <PostPreview post={selectedPost} />
+              {/*  <PostPreview post={selectedPost} /> */}
+              <NavigationContainer ref={navigationRef} independent={true}>
+                <Stack.Navigator
+                  screenOptions={{
+                    headerTintColor: colors.text,
+                    headerStyle: {
+                      backgroundColor: colors.navigation
+                    },
+                    headerBackTitleStyle: {
+                      fontFamily: 'LoveMeLikeASister'
+                    },
+                    headerTitleStyle: {
+                      fontFamily: 'LoveMeLikeASister'
+                    },
+                    headerStatusBarHeight: 0,
+                    headerBackTitleVisible: false,
+                    cardStyle: {
+                      backgroundColor: colors.background
+                    },
+                    headerBackImage: () => (
+                      <View style={{ paddingHorizontal: 16 }}>
+                        <Icon style={{ color: colors.text, fontSize: 18 }} name="arrow-pointing-to-left-hand-drawn-outline" />
+                      </View>
+                    )
+                    /*    header: (props) => (
+                      <View style={{ padding: 16 }}>
+                      
+                        <TouchableOpacity onPress={() => navigationRef.current?.goBack()}>
+                          <Icon
+                            onPress={() => navigationRef.current?.goBack()}
+                            style={{ color: colors.text, fontSize: 18 }}
+                            name="arrow-pointing-to-left-hand-drawn-outline"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    ) */
+                  }}
+                  initialRouteName="SearchResults"
+                >
+                  <Stack.Screen name="SearchByFilters" options={{ title: 'Mascotas perdidas', headerShown: true }} component={SearchByFilters} />
+                  <Stack.Screen name="PostPreview" options={{ title: 'Publicacion', headerShown: true }} component={PostPreview} />
+                  <Stack.Screen name="SearchResults" options={{ title: 'Mascotas perdidas' }} component={SearchResults} />
+                </Stack.Navigator>
+              </NavigationContainer>
             </DefaultBottomSheetModal>
+            {/*     <DefaultBottomSheetModal
+              ref={sheetModalef2}
+
+              backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
+              style={{ backgroundColor: colors.navigation, borderRadius: 22 }}
+              snapPoints={snapPoints}
+            >
+              <Navigator2 />
+            </DefaultBottomSheetModal> */}
           </View>
         </View>
       </BottomSheetModalProvider>
     </TouchableWithoutFeedback>
   )
 }
+
+/* const Navigator = () => { */
+/*   const screenOptions = useMemo<StackNavigationOptions>(
+    () => ({
+      ...TransitionPresets.SlideFromRightIOS,
+      headerShown: true,
+      safeAreaInsets: { top: 0 },
+      headerLeft: ({ onPress, ...props }) => (
+        <TouchableOpacity onPress={onPress}>
+          <HeaderBackButton {...props} />
+        </TouchableOpacity>
+      ),
+      cardStyle: {
+        backgroundColor: 'white',
+        overflow: 'visible'
+      }
+    }),
+    []
+  ) */
+
+/*   const screenAOptions = useMemo(() => ({ headerLeft: () => null }), [])
+  return (
+    <Stack.Navigator initialRouteName="SearchResults">
+      <Stack.Screen name="SearchByFilters" component={SearchByFilters} />
+      <Stack.Screen name="PostPreview" component={PostPreview} />
+      <Stack.Screen name="SearchResults" component={SearchResults} />
+    </Stack.Navigator>
+  )
+} */
+
+/* const Navigator2 = () => {
+  const screenOptions = useMemo<StackNavigationOptions>(
+    () => ({
+      ...TransitionPresets.SlideFromRightIOS,
+      headerShown: true,
+      safeAreaInsets: { top: 0 },
+      headerLeft: ({ onPress, ...props }) => (
+        <TouchableOpacity onPress={onPress}>
+          <HeaderBackButton {...props} />
+        </TouchableOpacity>
+      ),
+      cardStyle: {
+        backgroundColor: 'white',
+        overflow: 'visible'
+      }
+    }),
+    []
+  )
+
+  const screenAOptions = useMemo(() => ({ headerLeft: () => null }), [])
+  return (
+    <NavigationContainer independent={true}>
+      <NavigationContainer independent={true}>
+        <Stack.Navigator>
+          <Stack.Screen name="SearchByFilters" component={SearchByFilters} />
+          <Stack.Screen name="SearchResults" component={SearchResults} />
+          <Stack.Screen name="PostPreview" component={PostPreview} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </NavigationContainer>
+  )
+} */
 
 const styles = StyleSheet.create({
   root: {

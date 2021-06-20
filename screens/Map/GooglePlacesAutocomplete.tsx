@@ -13,7 +13,7 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({ han
 
   return (
     <DefaultGooglePlacesAutocomplete
-      placeholder="Buscar"
+      placeholder="Buscar una zona aqui"
       /*  currentLocation={true} */
       textInputProps={{ placeholderTextColor: colors.text }}
       fetchDetails={true}
@@ -28,7 +28,7 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({ han
         },
         textInput: {
           padding: 12,
-          fontFamily: 'LoveMeLikeASister',
+          /*   fontFamily: 'LoveMeLikeASister', */
           paddingLeft: 18,
           color: colors.text
         },
@@ -38,11 +38,15 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({ han
         listView: {
           borderRadius: 16,
           marginTop: 8,
-          backgroundColor: colors.navigation,
+          backgroundColor: colors.navigation
           /*   padding: 16, */
 
-          overflow: 'scroll'
+          /*   overflow: 'hidden' */
         },
+        row: {
+          overflow: 'hidden'
+        },
+
         description: {
           fontSize: 12,
           padding: 16,

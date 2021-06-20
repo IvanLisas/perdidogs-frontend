@@ -7,6 +7,7 @@ import useColorScheme from './hooks/useColorScheme'
 import Navigation from './navigation/IndexNavigator'
 import { UserContextProvider } from './contexts/UserContext'
 import { ThemeContextProvider } from './contexts/ThemeContext'
+import { PostContextProvider } from './contexts/PostContext'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()
@@ -18,10 +19,12 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <UserContextProvider>
-          <ThemeContextProvider>
-            <Navigation />
-            <StatusBar />
-          </ThemeContextProvider>
+          <PostContextProvider>
+            <ThemeContextProvider>
+              <Navigation />
+              <StatusBar />
+            </ThemeContextProvider>
+          </PostContextProvider>
         </UserContextProvider>
       </SafeAreaProvider>
     )

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { View, StyleSheet, Image, ImageBackground, FlatList, TouchableHighlight, TouchableWithoutFeedback } from 'react-native'
 import { Post } from '../../types/models/Post'
 import useTheme from '../../hooks/useTheme'
@@ -10,11 +10,14 @@ import { ScrollView } from 'react-native-gesture-handler'
 import Icon from '../../components/icon/index'
 import UserAvatar from '../../components/UserAvatar'
 import { Dimensions } from 'react-native'
-interface PostPageProps {
+import PostContext from '../../contexts/PostContext'
+/* interface PostPageProps {
   post: Post | undefined
 }
+ */
+const PostPreview: React.FC = () => {
+  const { post } = useContext(PostContext)
 
-const PostPreview: React.FC<PostPageProps> = ({ post }) => {
   const theme = useTheme()
 
   return (
@@ -106,7 +109,7 @@ const styles = (theme: MyTheme) =>
   StyleSheet.create({
     root: {
       backgroundColor: theme.navigation,
-      paddingHorizontal: 16
+      padding: 16
     },
     tittle: {
       fontSize: 20,
