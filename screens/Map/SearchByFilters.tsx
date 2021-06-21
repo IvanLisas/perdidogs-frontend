@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { StyleSheet, View, Button } from 'react-native'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { StyleSheet, View, Button, ImageBackground, TouchableOpacity, Dimensions } from 'react-native'
 import { Post } from '../../types/models/Post'
 import useTheme from '../../hooks/useTheme'
 import { MyTheme } from '../../styles/Theme'
@@ -10,6 +10,8 @@ import { ScrollView } from 'react-native-gesture-handler'
 import Icon from '../../components/icon/index'
 import UserAvatar from '../../components/UserAvatar'
 import { useNavigation } from '@react-navigation/native'
+import PostContext from '../../contexts/PostContext'
+
 /* interface PostPageProps {
   post: Post | undefined
 } */
@@ -17,13 +19,45 @@ import { useNavigation } from '@react-navigation/native'
 const SearchByFilters: React.FC = ({}) => {
   const theme = useTheme()
 
+  const { setPost, posts, setPosts } = useContext(PostContext)
+
   const navigation = useNavigation()
+
+  const handleGoTopost = (post: Post) => {
+    setPost(post)
+    navigation.navigate('PostPreview')
+  }
 
   return (
     <BottomSheetScrollView>
       <ScrollView style={styles(theme).root}>
-        <Text>Pantalla de busqueda por filtros</Text>
-        <Button title="Buscar" onPress={() => navigation.navigate('PostPreview')} />
+        {/*   <Text>Pantalla de busqueda por filtros</Text> */}
+        {posts.map((post, index) => {
+          ;<TouchableOpacity onPress={() => handleGoTopost(post)}>
+            <ImageBackground
+              key={post.pictures[0].url + 'photo'}
+              imageStyle={{ borderRadius: 12, width: '100%' }}
+              style={{
+                width: Dimensions.get('window').width / 2,
+                height: 220,
+                borderRadius: 20,
+                marginRight: 8
+              }}
+              source={{ uri: post.pictures[0].url }}
+            />
+            <LinearGradient
+              colors={['rgba(0,0,0,0.5)', 'transparent']}
+              style={{
+                position: 'absolute',
+                height: 220,
+                width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
+                borderRadius: 12
+              }}
+              start={{ x: 0, y: 1.0 }}
+              end={{ x: 0, y: 0 }}
+            />
+          </TouchableOpacity>
+        })}
       </ScrollView>
     </BottomSheetScrollView>
   )

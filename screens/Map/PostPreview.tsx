@@ -20,89 +20,123 @@ const PostPreview: React.FC = () => {
 
   const theme = useTheme()
 
-  return (
-    <BottomSheetScrollView>
-      <View>
-        <ScrollView style={styles(theme).root}>
-          <View style={{ minHeight: 250 }}>
-            <View style={{ paddingBottom: 4 }}>
-              <UserAvatar user={post?.owner} />
-            </View>
-            <View style={{ paddingLeft: 48 }}>
-              <Text numberOfLines={1} style={styles(theme).description2}>
-                {post?.description}
-              </Text>
+  if (!post) return null
+  else
+    return (
+      <BottomSheetScrollView>
+        <View>
+          <ScrollView style={styles(theme).root}>
+            <View>
+              <View style={{ paddingBottom: 4 }}>
+                <UserAvatar user={post?.owner} />
+              </View>
+              <View style={{ paddingLeft: 48 }}>
+                <Text numberOfLines={1} style={styles(theme).description2}>
+                  {post?.description}
+                </Text>
 
-              {/*      <Text numberOfLines={1} style={styles(theme).tittle}>
+                {/*      <Text numberOfLines={1} style={styles(theme).tittle}>
             {post?.description}
           </Text> */}
 
-              <ScrollView showsHorizontalScrollIndicator={false} style={styles(theme).carousel} horizontal>
-                {post?.pictures.map((picture, index) => (
-                  <View key={picture.url + 'container'}>
+                {post.pictures.length > 0 ? (
+                  <ScrollView showsHorizontalScrollIndicator={false} style={styles(theme).carousel} horizontal>
+                    {post?.pictures.map((picture, index) => (
+                      <View key={picture.url + 'container'}>
+                        <ImageBackground
+                          key={picture.url + 'photo'}
+                          imageStyle={{ borderRadius: 12, width: '100%' }}
+                          style={{
+                            width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
+                            height: 130,
+                            borderRadius: 20,
+                            marginRight: 8
+                          }}
+                          onError={() => console.log('error al cargar')}
+                          source={{ uri: picture.url }}
+                        />
+                        <LinearGradient
+                          colors={['rgba(0,0,0,0.5)', 'transparent']}
+                          style={{
+                            position: 'absolute',
+                            height: 150,
+                            width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
+                            borderRadius: 12
+                          }}
+                        />
+                      </View>
+                    ))}
+                  </ScrollView>
+                ) : (
+                  <View style={{ paddingVertical: 8 }}>
                     <ImageBackground
-                      key={picture.url + 'photo'}
+                      key={'photo'}
                       imageStyle={{ borderRadius: 12, width: '100%' }}
                       style={{
-                        width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
-                        height: 220,
+                        width: Dimensions.get('window').width - 90,
+                        height: 150,
                         borderRadius: 20,
                         marginRight: 8
                       }}
-                      source={{ uri: picture.url }}
+                      source={{ uri: 'https://somoswe1.com/Files/white-image.png' }}
                     />
-                    {/*       <LinearGradient
+                    <LinearGradient
                       colors={['rgba(0,0,0,0.5)', 'transparent']}
-                      style={{ position: 'absolute', height: 120, width: 130, borderRadius: 12 }}
+                      style={{
+                        position: 'absolute',
+                        height: 160,
+                        width: Dimensions.get('window').width - 90,
+                        borderRadius: 12
+                      }}
                       start={{ x: 0, y: 1.0 }}
                       end={{ x: 0, y: 0 }}
-                    /> */}
+                    />
                   </View>
-                ))}
-              </ScrollView>
-              <View style={styles(theme).descriptionsContainer}>
-                <View style={styles(theme).tinyDescriptionContainer}>
-                  <Icon style={styles(theme).icon} name="compass-hand-drawn-circular-tool-outline" />
-                  <Text style={styles(theme).tinyDescription}>A 5 kilometros - </Text>
-                </View>
-                <View style={styles(theme).tinyDescriptionContainer}>
-                  <Icon style={styles(theme).icon} name="time-hand-drawn-interface-symbol" />
-                  <Text style={styles(theme).tinyDescription}>Hace 2 horas</Text>
+                )}
+
+                <View style={styles(theme).descriptionsContainer}>
+                  <View style={styles(theme).tinyDescriptionContainer}>
+                    <Icon style={styles(theme).icon} name="compass-hand-drawn-circular-tool-outline" />
+                    <Text style={styles(theme).tinyDescription}>A 5 kilometros - </Text>
+                  </View>
+                  <View style={styles(theme).tinyDescriptionContainer}>
+                    <Icon style={styles(theme).icon} name="time-hand-drawn-interface-symbol" />
+                    <Text style={styles(theme).tinyDescription}>Hace 2 horas</Text>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-          {/*        <View style={{ paddingBottom: 4 }}>
+            {/*        <View style={{ paddingBottom: 4 }}>
             <UserAvatar user={post?.owner} />
           </View>
           <Text style={styles(theme).description2}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
             <Text style={{ fontSize: 22, paddingBottom: 16 }}>Comentarios</Text>
             */}
-          <View style={{ paddingBottom: 4 }}>
-            <UserAvatar user={post?.owner} />
-          </View>
+            <View style={{ paddingBottom: 4 }}>
+              <UserAvatar user={post?.owner} />
+            </View>
 
-          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-          <View style={{ paddingBottom: 4 }}>
-            <UserAvatar user={post?.owner} />
-          </View>
-          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-          <View style={{ paddingBottom: 4 }}>
-            <UserAvatar user={post?.owner} />
-          </View>
-          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-          <View style={{ paddingBottom: 4 }}>
-            <UserAvatar user={post?.owner} />
-          </View>
-          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-          <View style={{ paddingBottom: 4 }}>
-            <UserAvatar user={post?.owner} />
-          </View>
-          <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-        </ScrollView>
-      </View>
-    </BottomSheetScrollView>
-  )
+            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+            <View style={{ paddingBottom: 4 }}>
+              <UserAvatar user={post?.owner} />
+            </View>
+            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+            <View style={{ paddingBottom: 4 }}>
+              <UserAvatar user={post?.owner} />
+            </View>
+            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+            <View style={{ paddingBottom: 4 }}>
+              <UserAvatar user={post?.owner} />
+            </View>
+            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+            <View style={{ paddingBottom: 4 }}>
+              <UserAvatar user={post?.owner} />
+            </View>
+            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
+          </ScrollView>
+        </View>
+      </BottomSheetScrollView>
+    )
 }
 
 const styles = (theme: MyTheme) =>
@@ -133,8 +167,8 @@ const styles = (theme: MyTheme) =>
       marginRight: 8
     },
     container: {
-      flex: 1,
-      paddingTop: 200
+      flex: 1
+      /* paddingTop: 200 */
     },
     contentContainer: {
       backgroundColor: 'white'

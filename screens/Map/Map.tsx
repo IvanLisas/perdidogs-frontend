@@ -20,7 +20,7 @@ import PostContext from '../../contexts/PostContext'
 import Icon from '../../components/icon/index'
 
 export default function Map() {
-  const { setPost } = useContext(PostContext)
+  const { setPost, posts, setPosts, post } = useContext(PostContext)
 
   const colorMode = Appearance.getColorScheme()
 
@@ -30,7 +30,7 @@ export default function Map() {
 
   const [myLocation, setMyLocation] = useState<LatLng>()
 
-  const [posts, setPosts] = useState<Post[]>([])
+  /*   const [posts, setPosts] = useState<Post[]>([]) */
 
   const colors = useTheme()
 
@@ -46,6 +46,12 @@ export default function Map() {
 
   const Stack = createStackNavigator()
 
+  const navigationRef = useRef<any>(null)
+
+  const [marker, setMarker] = useState()
+
+  const snapPoints = useMemo(() => [35, 280, '90%'], [])
+
   useEffect(() => {
     getPosts()
   }, [])
@@ -58,12 +64,6 @@ export default function Map() {
       setErrorMessage('Error al conectar con el servidor: ' + error.message)
     }
   }
-
-  const navigationRef = useRef<any>(null)
-
-  const [marker, setMarker] = useState()
-
-  const snapPoints = useMemo(() => [45, 330, '90%'], [])
 
   const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.latitude, myLocation?.longitude)
 
@@ -83,7 +83,7 @@ export default function Map() {
   const handleMapPress = () => {
     Keyboard.dismiss()
     sheetModalef.current?.snapTo(0)
-    navigationRef.current?.navigate('SearchResults')
+    /*  navigationRef.current?.navigate('SearchResults') */
   }
 
   useEffect(() => {
@@ -155,6 +155,7 @@ export default function Map() {
               index={0}
               ref={sheetModalef}
               dismissOnPanDown={false}
+              onDismiss={() => navigationRef.current?.navigate('SearchResults')}
               backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
               style={{ backgroundColor: colors.navigation, borderRadius: 22 }}
               snapPoints={snapPoints}
@@ -165,13 +166,14 @@ export default function Map() {
                   screenOptions={{
                     headerTintColor: colors.text,
                     headerStyle: {
-                      backgroundColor: colors.navigation
+                      backgroundColor: colors.navigation,
+                      height: 40
                     },
-                    headerBackTitleStyle: {
+                    /*         headerBackTitleStyle: {
                       fontFamily: 'LoveMeLikeASister'
-                    },
+                    }, */
                     headerTitleStyle: {
-                      fontFamily: 'LoveMeLikeASister'
+                      /*  fontFamily: 'LoveMeLikeASister' */
                     },
                     headerStatusBarHeight: 0,
                     headerBackTitleVisible: false,
@@ -199,7 +201,7 @@ export default function Map() {
                   initialRouteName="SearchResults"
                 >
                   <Stack.Screen name="SearchByFilters" options={{ title: 'Mascotas perdidas', headerShown: true }} component={SearchByFilters} />
-                  <Stack.Screen name="PostPreview" options={{ title: 'Publicacion', headerShown: true }} component={PostPreview} />
+                  <Stack.Screen name="PostPreview" options={{ title: post?.pet.breed.description, headerShown: true }} component={PostPreview} />
                   <Stack.Screen name="SearchResults" options={{ title: 'Mascotas perdidas' }} component={SearchResults} />
                 </Stack.Navigator>
               </NavigationContainer>
