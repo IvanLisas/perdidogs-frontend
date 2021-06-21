@@ -8,6 +8,7 @@ import Navigation from './navigation/IndexNavigator'
 import { UserContextProvider } from './contexts/UserContext'
 import { ThemeContextProvider } from './contexts/ThemeContext'
 import { PostContextProvider } from './contexts/PostContext'
+import { MapContextProvider } from './contexts/MapContext'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()
@@ -19,12 +20,14 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <UserContextProvider>
-          <PostContextProvider>
-            <ThemeContextProvider>
-              <Navigation />
-              <StatusBar />
-            </ThemeContextProvider>
-          </PostContextProvider>
+          <MapContextProvider>
+            <PostContextProvider>
+              <ThemeContextProvider>
+                <Navigation />
+                <StatusBar />
+              </ThemeContextProvider>
+            </PostContextProvider>
+          </MapContextProvider>
         </UserContextProvider>
       </SafeAreaProvider>
     )

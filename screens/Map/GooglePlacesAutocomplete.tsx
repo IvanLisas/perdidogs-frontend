@@ -1,15 +1,18 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { ScrollView, TextInput, StyleSheet } from 'react-native'
 
 import { GooglePlacesAutocomplete as DefaultGooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import MapContext from '../../contexts/MapContext'
 import useTheme from '../../hooks/useTheme'
 
 interface GooglePlacesAutocompleteProps {
   handleNavigateToPoint: (id: any, lat: any, long: any) => void
 }
 
-const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({ handleNavigateToPoint }) => {
+const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = () => {
   const colors = useTheme()
+
+  const { mapRef, handleNavigateToPoint } = useContext(MapContext)
 
   return (
     <DefaultGooglePlacesAutocomplete
@@ -65,7 +68,7 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({ han
       /*   styles={{ position: 'absolute', top: 300 }} */
       onPress={(data, details, index = null) => {
         /*    console.log(data, details) */
-        handleNavigateToPoint('g' + index, details?.geometry.location.lat, details?.geometry.location.lng)
+        handleNavigateToPoint(details?.geometry.location.lat, details?.geometry.location.lng)
       }}
       query={{
         key: 'AIzaSyCahzx0wpr4G7jiI_LfsAUf0JWJ3-FZVDs',

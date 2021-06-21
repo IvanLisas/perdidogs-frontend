@@ -12,6 +12,7 @@ import UserAvatar from '../../components/UserAvatar'
 import { useNavigation } from '@react-navigation/native'
 import PostContext from '../../contexts/PostContext'
 import { useMap } from '../../hooks/useMap'
+import MapContext from '../../contexts/MapContext'
 /* interface PostPageProps {
   post: Post | undefined
 } */
@@ -21,14 +22,14 @@ const SearchResults: React.FC = ({}) => {
 
   const { setPost, posts, setPosts } = useContext(PostContext)
 
-  const { mapRef, selectedMarker, handleNavigateToPoint, handelResetInitialPosition } = useMap()
+  const { mapRef, handleNavigateToPoint } = useContext(MapContext)
 
   const navigation = useNavigation()
 
   const handleGoTopost = (post: Post) => {
     setPost(post)
     console.log(post.location)
-    handleNavigateToPoint(post.Id, post.location.lat, post.location.long)
+    handleNavigateToPoint(post.location.lat, post.location.long)
     navigation.navigate('PostPreview')
   }
 

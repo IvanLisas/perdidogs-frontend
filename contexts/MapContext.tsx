@@ -1,25 +1,43 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useCallback, useRef, useState } from 'react'
 import { User } from '../types/models/User'
 import useLocalStorage from '../hooks/useLocalStorage'
+import MapView from 'react-native-maps'
 
 interface ContextProps {
-  readonly user: User | undefined
-  readonly setUser: (user: User | undefined) => void
-  readonly logout: () => void
+  readonly mapRef: React.RefObject<MapView> | null
+  /*  readonly setMapRef: (mapRef: MapView | null) => void */
+  readonly handleNavigateToPoint: (lat: number | undefined, long: number | undefined) => void
 }
 
-const MapContexto = createContext<ContextProps>({
-  user: undefined,
-  setUser: () => null,
-  logout: () => null
+const DEVIATION = 0.0002
+const MapContext = createContext<ContextProps>({
+  mapRef: null,
+  /*  setMapRef: () => null, */
+  handleNavigateToPoint: () => null
 })
 
 export const MapContextProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<User | undefined>()
+  const mapRef = useRef<MapView>(null)
 
-  const logout = () => setUser(undefined)
+  const handleNavigateToPoint = useCallback(
+    (lat, long) => {
+      if (mapRef) {
+        mapRef.current?.animateCamera(
+          {
+            center: {
+              latitude: lat - DEVIATION,
+              longitude: long
+            }
+            /*  zoom: 14.5 */
+          },
+          { duration: 500 }
+        )
+      }
+    },
+    [mapRef]
+  )
 
-  return <UserContext.Provider value={{ user, setUser, logout }}>{children}</UserContext.Provider>
+  return <MapContext.Provider value={{ mapRef, handleNavigateToPoint }}>{children}</MapContext.Provider>
 }
 
-export default UserContext
+export default MapContext
