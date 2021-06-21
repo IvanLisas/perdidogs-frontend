@@ -47,16 +47,17 @@ export default function Map() {
   const Stack = createStackNavigator()
 
   useEffect(() => {
-    const getPosts = async () => {
-      try {
-        setPosts(await postService.getAll())
-      } catch (error) {
-        console.log(error.response)
-        setErrorMessage('Error al conectar con el servidor: ' + error.message)
-      }
-    }
     getPosts()
   }, [])
+
+  const getPosts = async () => {
+    try {
+      setPosts(await postService.getAll())
+    } catch (error) {
+      console.log(error.response)
+      setErrorMessage('Error al conectar con el servidor: ' + error.message)
+    }
+  }
 
   const navigationRef = useRef<any>(null)
 
@@ -75,10 +76,8 @@ export default function Map() {
     sheetModalef.current?.snapTo(1)
   }
 
-  const handleFilters = () => {
-    sheetModalef.current?.snapTo(0)
-    /*  handleSnapPress2(1) */
-    /*  navigation.navigate(goTo) */
+  const handleFilters = async () => {
+    await getPosts()
   }
 
   const handleMapPress = () => {
@@ -144,7 +143,7 @@ export default function Map() {
             <Text> Mi Ubicacion </Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ position: 'absolute', top: 300 }} onPress={handleFilters}>
-            <Text> Filtros </Text>
+            <Text> Actualizar </Text>
           </TouchableOpacity>
           <View style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
             <GooglePlacesAutocomplete handleNavigateToPoint={handleNavigateToPoint} />
