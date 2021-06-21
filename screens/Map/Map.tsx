@@ -83,6 +83,7 @@ export default function Map() {
   const handleMapPress = () => {
     Keyboard.dismiss()
     sheetModalef.current?.snapTo(0)
+    navigationRef.current?.navigate('SearchResults')
   }
 
   useEffect(() => {
