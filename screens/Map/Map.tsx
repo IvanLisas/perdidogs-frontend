@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, TouchableOpacity, TouchableOpacityBase } from 'react-native'
 import { NavigationContainer, NavigationContainerProps, useNavigation } from '@react-navigation/native'
-import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { LatLng, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps'
 import { mapStyleDay } from '../../styles/MapDay'
 import { useMap } from '../../hooks/useMap'
 import { Appearance } from 'react-native-appearance'
@@ -26,9 +26,13 @@ export default function Map() {
 
   const [errorMessage, setErrorMessage] = useState('')
 
+  const [region, setRegion] = useState<Region>()
+
   const [selectedPost, setSelectedPost] = useState<Post>()
 
   const [myLocation, setMyLocation] = useState<LatLng>()
+
+  const [myPin, setMyPin] = useState<any>()
 
   /*   const [posts, setPosts] = useState<Post[]>([]) */
 
@@ -80,7 +84,8 @@ export default function Map() {
     await getPosts()
   }
 
-  const handleMapPress = () => {
+  const handleMapPress = (event: any) => {
+    console.log(event.nativeEvent.locationXn)
     Keyboard.dismiss()
     sheetModalef.current?.snapTo(0)
     /*  navigationRef.current?.navigate('SearchResults') */
@@ -102,6 +107,15 @@ export default function Map() {
     }
   }, [])
 
+  const createMarker = (e: any) => {
+    setMyPin(e.nativeEvent.coordinate)
+  }
+
+  const createPost = () => {
+    console.log('hola')
+    navigation.navigate('CreatePost')
+  }
+
   return (
     <TouchableWithoutFeedback /* onPress={() => sheetModalef.current?.close()} */>
       <BottomSheetModalProvider>
@@ -117,7 +131,9 @@ export default function Map() {
             /*  showsPointsOfInterest={false} */
             customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
             provider={PROVIDER_GOOGLE}
+            region={region}
             style={StyleSheet.absoluteFillObject}
+            onLongPress={(e) => createMarker(e)}
             initialRegion={{
               latitude: -34.535532,
               longitude: -58.541518,
@@ -126,18 +142,21 @@ export default function Map() {
             }}
             onPress={handleMapPress}
           >
-            {posts.map((post, index) => (
-              <Marker
-                onPress={() => handleMarketPress(post, index, post.location.lat, post.location.long)}
-                stopPropagation={true}
-                key={post.Id}
-                onDeselect={() => console.log('deselected')}
-                onSelect={() => console.log('selected')}
-                coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
-                zIndex={19999}
-                /*  title={post.description} */
-              />
-            ))}
+            <View>
+              {myPin && <Marker onPress={createPost} coordinate={myPin}></Marker>}
+              {posts.map((post, index) => (
+                <Marker
+                  onPress={() => handleMarketPress(post, index, post.location.lat, post.location.long)}
+                  stopPropagation={true}
+                  key={post.Id}
+                  onDeselect={() => console.log('deselected')}
+                  onSelect={() => console.log('selected')}
+                  coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
+                  zIndex={19999}
+                  /*  title={post.description} */
+                />
+              ))}
+            </View>
           </MapView>
           {/*   <View style={{ position: 'absolute', top: 100 }} /> */}
           <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={handleMyLocation}>

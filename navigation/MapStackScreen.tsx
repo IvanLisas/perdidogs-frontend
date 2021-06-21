@@ -8,6 +8,7 @@ import Svg, { Path, SvgProps } from 'react-native-svg'
 import { View, Image, StyleSheet } from 'react-native'
 import Icon from '../components/icon/index'
 import Map from '../screens/Map/Map'
+import CreatePost from '../screens/Map/CreatePost'
 const MapStack = createStackNavigator()
 
 function MapStackScreen() {
@@ -39,6 +40,7 @@ function MapStackScreen() {
       }}
     >
       <MapStack.Screen name="Main" options={{ headerShown: false }} component={Map} />
+      <MapStack.Screen name="CreatePost" component={CreatePost} />
       {/*  <MapStack.Screen name="Edit" component={EditProfile} /> */}
       {/*  <HomeStack.Screen name="Details" component={TabOneScreen} /> */}
     </MapStack.Navigator>

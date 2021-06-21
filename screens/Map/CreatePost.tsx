@@ -11,70 +11,35 @@ import Icon from '../../components/icon/index'
 import UserAvatar from '../../components/UserAvatar'
 import { useNavigation } from '@react-navigation/native'
 import PostContext from '../../contexts/PostContext'
-import { useMap } from '../../hooks/useMap'
+
 /* interface PostPageProps {
   post: Post | undefined
 } */
 
-const SearchResults: React.FC = ({}) => {
+const CreatePost: React.FC = ({}) => {
   const theme = useTheme()
 
-  const { setPost, posts, setPosts } = useContext(PostContext)
-
-  const { mapRef, selectedMarker, handleNavigateToPoint, handelResetInitialPosition } = useMap()
-
+  /*   const { setPost, posts, setPosts } = useContext(PostContext)
+   */
   const navigation = useNavigation()
 
-  const handleGoTopost = (post: Post) => {
+  /*   const handleGoTopost = (post: Post) => {
     setPost(post)
-    console.log(post.location)
-    handleNavigateToPoint(post.Id, post.location.lat, post.location.long)
     navigation.navigate('PostPreview')
   }
+ */
 
-  const Card = (post: Post) => (
-    <TouchableOpacity style={{ paddingVertical: 4, paddingHorizontal: 16 }} key={post.Id + 'e'} onPress={() => handleGoTopost(post)}>
-      <ImageBackground
-        key={post.Id + 'photo'}
-        imageStyle={{ borderRadius: 12, width: '100%' }}
-        style={{
-          /*    width: Dimensions.get('window').width / 2, */
-          height: 220,
-          borderRadius: 20
-        }}
-        onError={() => console.log('error al cargar')}
-        source={{
-          uri: post.pictures[0]
-            ? post.pictures[0].url
-            : 'https://as01.epimg.net/mexico/imagenes/2019/01/19/tikitakas/1547933521_851367_1547933683_noticia_normal_recorte1.jpg'
-        }}
-      />
-
-      <LinearGradient
-        key={post.Id + 'gradient'}
-        colors={['rgba(0,0,0,0.5)', 'transparent']}
-        style={{
-          position: 'absolute',
-          height: 220,
-
-          /* width: Dimensions.get('window').width / 2, */
-          borderRadius: 12
-        }}
-        start={{ x: 0, y: 1.0 }}
-        end={{ x: 0, y: 0 }}
-      />
-    </TouchableOpacity>
-  )
+  const createPost = () => {
+    navigation.navigate('Main')
+  }
 
   return (
-    <BottomSheetFlatList
-      data={posts}
-      showsHorizontalScrollIndicator
-      persistentScrollbar
-      keyExtractor={(item, index) => item.description}
-      renderItem={({ item }) => Card(item)}
-      style={{ flex: 1 }}
-    />
+    <ScrollView style={styles(theme).root}>
+      <Text>Creacion de post</Text>
+      <TouchableOpacity onPress={createPost}>
+        <Text>Crear</Text>
+      </TouchableOpacity>
+    </ScrollView>
   )
 }
 
@@ -160,4 +125,4 @@ const styles = (theme: MyTheme) =>
     }
   })
 
-export default SearchResults
+export default CreatePost

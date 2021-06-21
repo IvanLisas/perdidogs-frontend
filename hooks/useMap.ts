@@ -5,6 +5,7 @@ const DEVIATION = 0.0002
 
 export function useMap() {
   const mapRef = useRef<MapView>(null)
+
   const [selectedMarker, setSelectedMarker] = useState(null)
 
   const handleNavigateToPoint = useCallback(
