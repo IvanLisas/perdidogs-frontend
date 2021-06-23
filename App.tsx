@@ -9,6 +9,7 @@ import { UserContextProvider } from './contexts/UserContext'
 import { ThemeContextProvider } from './contexts/ThemeContext'
 import { PostContextProvider } from './contexts/PostContext'
 import { MapContextProvider } from './contexts/MapContext'
+import { NativeBaseProvider } from 'native-base'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()
@@ -23,8 +24,10 @@ export default function App() {
           <MapContextProvider>
             <PostContextProvider>
               <ThemeContextProvider>
-                <Navigation />
-                <StatusBar />
+                <NativeBaseProvider>
+                  <Navigation />
+                  <StatusBar />
+                </NativeBaseProvider>
               </ThemeContextProvider>
             </PostContextProvider>
           </MapContextProvider>

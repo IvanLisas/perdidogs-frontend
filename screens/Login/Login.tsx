@@ -41,11 +41,11 @@ export default function Login() {
       /*    if (email === '1' && password === '1') setUser({ firstName: 'pepe' } as User) */
       setUser(await userService.login(email, password))
     } catch (error) {
-      ;(inputEmail.current as any).shake()
+      /*       ;(inputEmail.current as any).shake()
       ;(inputPassword.current as any).shake()
       setErrorMessage('Email o contraseña no validos')
-
-      console.log(error.request.response)
+      console.log('asd') */
+      console.log(error.message)
     }
   }
 

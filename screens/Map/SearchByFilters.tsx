@@ -38,15 +38,15 @@ const SearchByFilters: React.FC = ({}) => {
               key={post.pictures[0].url + 'photo'}
               imageStyle={{ borderRadius: 12, width: '100%' }}
               style={{
-                width: Dimensions.get('window').width / 2,
-                height: 220,
+                /*  width: Dimensions.get('window').width / 2, */
+                /*  height: 220, */
                 borderRadius: 20,
                 marginRight: 8
               }}
               source={{ uri: post.pictures[0].url }}
             />
             <LinearGradient
-              colors={['rgba(0,0,0,0.5)', 'transparent']}
+              colors={['rgba(0,0,0,0.9)', 'transparent']}
               style={{
                 position: 'absolute',
                 height: 220,

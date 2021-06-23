@@ -35,35 +35,50 @@ const SearchResults: React.FC = ({}) => {
 
   const Card = (post: Post) => (
     <TouchableOpacity style={{ paddingVertical: 4, paddingHorizontal: 16 }} key={post.Id + 'e'} onPress={() => handleGoTopost(post)}>
-      <ImageBackground
-        key={post.Id + 'photo'}
-        imageStyle={{ borderRadius: 12, width: '100%' }}
-        style={{
-          /*    width: Dimensions.get('window').width / 2, */
-          height: 220,
-          borderRadius: 20
-        }}
-        onError={() => console.log('error al cargar')}
-        source={{
-          uri: post.pictures[0]
-            ? post.pictures[0].url
-            : 'https://as01.epimg.net/mexico/imagenes/2019/01/19/tikitakas/1547933521_851367_1547933683_noticia_normal_recorte1.jpg'
-        }}
-      />
+      <View>
+        <ImageBackground
+          key={post.Id + 'photo'}
+          imageStyle={{ borderRadius: 25, width: '100%' }}
+          style={{
+            width: Dimensions.get('window').width - 32,
+            height: 220
+            /*     position:'absolute', */
+          }}
+          onError={() => console.log('error al cargar')}
+          source={{
+            uri: post.pictures[0]
+              ? post.pictures[0].url
+              : 'https://as01.epimg.net/mexico/imagenes/2019/01/19/tikitakas/1547933521_851367_1547933683_noticia_normal_recorte1.jpg'
+          }}
+        />
 
-      <LinearGradient
-        key={post.Id + 'gradient'}
-        colors={['rgba(0,0,0,0.5)', 'transparent']}
+        <LinearGradient
+          key={post.Id + 'gradient'}
+          colors={['rgba(0,0,0,0.8)', 'transparent']}
+          style={{
+            position: 'absolute',
+            height: 220,
+
+            width: Dimensions.get('window').width - 32,
+            borderRadius: 25
+          }}
+          start={{ x: 0, y: 1.0 }}
+          end={{ x: 0, y: 0 }}
+        />
+      </View>
+      <Text
+        numberOfLines={2}
         style={{
           position: 'absolute',
-          height: 220,
-
-          /* width: Dimensions.get('window').width / 2, */
-          borderRadius: 12
+          bottom: 16,
+          fontSize: 18,
+          width: Dimensions.get('window').width - 60,
+          left: 25
+          /*  fontFamily: 'LoveMeLikeASister' */
         }}
-        start={{ x: 0, y: 1.0 }}
-        end={{ x: 0, y: 0 }}
-      />
+      >
+        {post.pet.breed.description}
+      </Text>
     </TouchableOpacity>
   )
 

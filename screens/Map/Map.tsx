@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Image, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, TouchableOpacity, TouchableOpacityBase } from 'react-native'
 import { NavigationContainer, NavigationContainerProps, useNavigation } from '@react-navigation/native'
-import MapView, { LatLng, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps'
+import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { mapStyleDay } from '../../styles/MapDay'
 import { useMap } from '../../hooks/useMap'
 import { Appearance } from 'react-native-appearance'
@@ -18,54 +18,42 @@ import SearchByFilters from './SearchByFilters'
 import SearchResults from './SearchResults'
 import PostContext from '../../contexts/PostContext'
 import Icon from '../../components/icon/index'
-import MapContext from '../../contexts/MapContext'
 
 export default function Map() {
-  const { setPost, posts, setPosts, post } = useContext(PostContext)
-
-  const { mapRef, handleNavigateToPoint } = useContext(MapContext)
+  /*   const { setPost } = useContext(PostContext) */
 
   const colorMode = Appearance.getColorScheme()
 
   const [errorMessage, setErrorMessage] = useState('')
 
-  const [region, setRegion] = useState<Region>()
-
-  /*   const [post, setPost] = useState<Post>() */
+  const [selectedPost, setSelectedPost] = useState<Post>()
 
   const [myLocation, setMyLocation] = useState<LatLng>()
 
-  const [myPin, setMyPin] = useState<any>()
+  const { setPost, posts, setPosts, post } = useContext(PostContext)
 
-  /*   const [posts, setPosts] = useState<Post[]>([])
-   */
+  /* const [posts, setPosts] = useState<Post[]>([]) */
+
   const colors = useTheme()
 
   const navigation = useNavigation()
 
   const [goTo, setGoTo] = useState('SearchByFilters')
 
-  /* const { mapRef, selectedMarker, handleNavigateToPoint, handelResetInitialPosition } = useMap()
-   */
+  const { mapRef, selectedMarker, handleNavigateToPoint, handelResetInitialPosition } = useMap()
+
   const sheetModalef = useRef<DefaultBottomSheetModal>(null)
 
   const sheetModalef2 = useRef<DefaultBottomSheetModal>(null)
 
   const Stack = createStackNavigator()
 
-  const navigationRef = useRef<any>(null)
-
-  const [marker, setMarker] = useState()
-
-  const snapPoints = useMemo(() => [35, 280, '80%'], [])
-
-  const pin = require('../../assets/images/pin2.png')
-
-  const imagePin = () => <Image source={pin} style={{ width: 20, height: 20 }} />
+  useEffect(() => {
+    getPosts()
+  }, [])
 
   const getPosts = async () => {
     try {
-      console.log('hola')
       setPosts(await postService.getAll())
     } catch (error) {
       console.log(error.response)
@@ -73,12 +61,18 @@ export default function Map() {
     }
   }
 
-  const handleMyLocation = () => handleNavigateToPoint(myLocation?.latitude, myLocation?.longitude)
+  const navigationRef = useRef<any>(null)
+
+  const [marker, setMarker] = useState()
+
+  const snapPoints = useMemo(() => [45, 330, '90%'], [])
+
+  const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.latitude, myLocation?.longitude)
 
   const handleMarketPress = (post: Post, index: number, lat: number, long: number) => {
     navigationRef.current?.navigate('PostPreview')
     setPost(post)
-    handleNavigateToPoint(lat, long)
+    handleNavigateToPoint(index, lat, long)
 
     /* sheetModalef.current?.present() */
     sheetModalef.current?.snapTo(1)
@@ -88,22 +82,15 @@ export default function Map() {
     await getPosts()
   }
 
-  const HandlePinColor = (id: number) => {
-    if (id == post?.Id) return '#40FF33'
-    else return 'yellow'
-  }
-
-  const handleMapPress = (event: any) => {
+  const handleMapPress = () => {
     Keyboard.dismiss()
     sheetModalef.current?.snapTo(0)
-    /*  navigationRef.current?.navigate('SearchResults') */
   }
 
   useEffect(() => {
     const permission = async () => {
-      console.log('hola1')
       await getPosts()
-      console.log('hola2')
+
       sheetModalef.current?.present()
 
       const { status } = await requestForegroundPermissionsAsync()
@@ -117,15 +104,19 @@ export default function Map() {
     permission()
   }, [])
 
-  const createMarker = (e: any) => {
-    setMyPin(e.nativeEvent.coordinate)
-  }
+  const pin = require('../../assets/images/pin2.png')
+
+  const imagePin = () => <Image source={pin} style={{ width: 20, height: 20 }} />
+
+  const [myPin, setMyPin] = useState<any>()
 
   const createPost = () => {
     navigation.navigate('CreatePost')
   }
 
-  const [mapReady, setMapReady] = useState(false)
+  const createMarker = (e: any) => {
+    setMyPin(e.nativeEvent.coordinate)
+  }
 
   return (
     <TouchableWithoutFeedback /* onPress={() => sheetModalef.current?.close()} */>
@@ -139,13 +130,11 @@ export default function Map() {
             onUserLocationChange={(event) => setMyLocation(event.nativeEvent.coordinate)}
             /*     showsMyLocationButton={true} */
             showsUserLocation={true}
+            onLongPress={(e) => createMarker(e)}
             /*  showsPointsOfInterest={false} */
             customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
             provider={PROVIDER_GOOGLE}
-            region={region}
-            onMapReady={() => setTimeout(() => setMapReady(true), 100)}
             style={StyleSheet.absoluteFillObject}
-            onLongPress={(e) => createMarker(e)}
             initialRegion={{
               latitude: -34.535532,
               longitude: -58.541518,
@@ -154,24 +143,25 @@ export default function Map() {
             }}
             onPress={handleMapPress}
           >
-            <View>
-              {/*   {console.log(post?.Id)} */}
-              {myPin && <Marker onPress={createPost} coordinate={myPin}></Marker>}
-              {posts.map((marketPost, index) => (
-                <Marker
-                  onPress={() => handleMarketPress(marketPost, index, marketPost.location.lat, marketPost.location.long)}
-                  stopPropagation={true}
-                  key={marketPost.Id + Math.floor(Math.random() * 16777215)}
-                  pinColor={HandlePinColor(marketPost.Id)}
-                  coordinate={{ latitude: marketPost.location.lat, longitude: marketPost.location.long }}
-                  shouldRasterizeIOS
-                  /*   style={{ width: 20, height: 20 }} */
-                  icon={pin}
-                  /*  image={pin} */
-                  /*  title={post.descripti on} */
-                />
-              ))}
-            </View>
+            {/*   {console.log(post?.Id)} */}
+            {myPin && <Marker onPress={createPost} coordinate={myPin}></Marker>}
+            {posts.map((marketPost, index) => (
+              <Marker
+                /* tracksViewChanges={false} */
+                zIndex={index}
+                onPress={() => handleMarketPress(marketPost, index, marketPost.location.lat, marketPost.location.long)}
+                stopPropagation={true}
+                key={marketPost.Id + Math.floor(Math.random() * 16777215)}
+                /*     pinColor={HandlePinColor(marketPost.Id)} */
+                coordinate={{ latitude: marketPost.location.lat, longitude: marketPost.location.long }}
+                shouldRasterizeIOS
+                /*   style={{ width: 20, height: 20 }} */
+                /*  icon={pin} */
+                image={pin}
+                /*  image={pin} */
+                /*  title={post.descripti on} */
+              />
+            ))}
           </MapView>
           {/*   <View style={{ position: 'absolute', top: 100 }} /> */}
           <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={handleMyLocation}>
@@ -189,7 +179,6 @@ export default function Map() {
               index={0}
               ref={sheetModalef}
               dismissOnPanDown={false}
-              onDismiss={() => navigationRef.current?.navigate('SearchResults')}
               backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
               style={{ backgroundColor: colors.navigation, borderRadius: 22 }}
               snapPoints={snapPoints}
@@ -200,12 +189,11 @@ export default function Map() {
                   screenOptions={{
                     headerTintColor: colors.text,
                     headerStyle: {
-                      backgroundColor: colors.navigation,
-                      height: 40
+                      backgroundColor: colors.navigation
                     },
-                    /*         headerBackTitleStyle: {
-                      fontFamily: 'LoveMeLikeASister'
-                    }, */
+                    headerBackTitleStyle: {
+                      /*  fontFamily: 'LoveMeLikeASister' */
+                    },
                     headerTitleStyle: {
                       /*  fontFamily: 'LoveMeLikeASister' */
                     },
@@ -235,7 +223,7 @@ export default function Map() {
                   initialRouteName="SearchResults"
                 >
                   <Stack.Screen name="SearchByFilters" options={{ title: 'Mascotas perdidas', headerShown: true }} component={SearchByFilters} />
-                  <Stack.Screen name="PostPreview" options={{ title: post?.pet.breed.description, headerShown: true }} component={PostPreview} />
+                  <Stack.Screen name="PostPreview" options={{ title: 'Publicacion', headerShown: true }} component={PostPreview} />
                   <Stack.Screen name="SearchResults" options={{ title: 'Mascotas perdidas' }} component={SearchResults} />
                 </Stack.Navigator>
               </NavigationContainer>
