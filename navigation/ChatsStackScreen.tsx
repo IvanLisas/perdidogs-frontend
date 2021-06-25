@@ -7,13 +7,16 @@ import useTheme from '../hooks/useTheme'
 import Svg, { Path, SvgProps } from 'react-native-svg'
 import { View, Image, StyleSheet } from 'react-native'
 import Icon from '../components/icon/index'
-const HomeStack = createStackNavigator<ProfileStackParamList>()
+import Chats from '../screens/Chats/Chats'
+import Chat from '../screens/Chats/Conversation'
+import Conversation from '../screens/Chats/Conversation'
+const ChatsStack = createStackNavigator()
 
 function ProfileStackScreen() {
   const colors = useTheme()
 
   return (
-    <HomeStack.Navigator
+    <ChatsStack.Navigator
       screenOptions={{
         headerTintColor: colors.text,
         cardStyle: {
@@ -23,7 +26,7 @@ function ProfileStackScreen() {
           backgroundColor: colors.navigation
         },
         headerTitleStyle: {
-          fontFamily: 'LoveMeLikeASister'
+          /*      fontFamily: 'LoveMeLikeASister' */
         },
         headerBackTitleStyle: {
           fontFamily: 'LoveMeLikeASister'
@@ -37,10 +40,9 @@ function ProfileStackScreen() {
         headerBackTitleVisible: false
       }}
     >
-      <HomeStack.Screen name="Main" options={{ title: 'Perfil' }} component={Profile} />
-      <HomeStack.Screen name="Edit" options={{ title: 'Editar Perfil' }} component={EditProfile} />
-      {/*  <HomeStack.Screen name="Details" component={TabOneScreen} /> */}
-    </HomeStack.Navigator>
+      <ChatsStack.Screen name="Main" options={{ title: 'Chats' }} component={Chats} />
+      <ChatsStack.Screen name="Chat" options={{ title: 'Chat' }} component={Conversation} />
+    </ChatsStack.Navigator>
   )
 }
 

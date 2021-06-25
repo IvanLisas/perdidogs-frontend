@@ -1,5 +1,7 @@
+import axios from 'axios'
+
 class ImageService {
-  async savePhoto(capturedImage: any): Promise<any> {
+  async savePhoto(capturedImage: any) {
     const source = capturedImage?.base64
     console.log('save', source)
     if (source) {
@@ -9,24 +11,7 @@ class ImageService {
         file: base64Img,
         upload_preset: 'MyUploadPresent'
       }
-
-      fetch(apiUrl, {
-        body: JSON.stringify(data),
-        headers: {
-          'content-type': 'application/json'
-        },
-        method: 'POST'
-      })
-        .then(async (response) => {
-          let data = await response.json()
-          if (data.secure_url) {
-            console.log(data.secure_url)
-            return data.secure_url
-          }
-        })
-        .catch((err) => {
-          alert('Cannot upload')
-        })
+      return (await axios.post<any>(`https://api.cloudinary.com/v1_1/ivanlisas/image/upload`, data)).data.secure_url
     }
   }
 }

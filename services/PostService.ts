@@ -14,6 +14,10 @@ class PostService {
     return (await axios.get<Post[]>(`${SERVER_URL}/post/getAll`)).data
   }
 
+  async getPostsByUserId(userId: number): Promise<Post[]> {
+    return (await axios.get<Post[]>(`${SERVER_URL}/post/getAll`)).data
+  }
+
   async geyByLocation(geometry: Geometry | undefined): Promise<Post[]> {
     return (await axios.put<Post[]>(`${SERVER_URL}/post/by-location`, geometry)).data
   }
@@ -34,7 +38,13 @@ class PostService {
     return (await axios.delete<Post>(`${SERVER_URL}/post/${id}`)).data
   }
 
-  async getPostByFilters(pet: Pet | undefined, myLocation: Point, delta: Point): Promise<Post[]> {
+  async post(post: Post): Promise<Post> {
+    console.log(post)
+    return (await axios.post<Post>(`${SERVER_URL}/post`, post)).data
+  }
+
+  async getPostByFilters(pet: Pet | undefined, myLocation: Point | undefined, delta: Point | undefined): Promise<Post[]> {
+    console.log({ pet, myLocation, delta })
     return (await axios.put<Post[]>(`${SERVER_URL}/post/by-filter`, { pet, myLocation, delta })).data
   }
 }

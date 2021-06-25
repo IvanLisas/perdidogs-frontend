@@ -23,6 +23,9 @@ import { Bounderies } from '../../types/models/Bounderies'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import FiltersContext from '../../contexts/FiltersContext'
 import { borderColor } from 'styled-system'
+import { Chat } from '../../types/models/Chat'
+import Chats from '../Chats/Chats'
+import Conversation from '../Chats/Conversation'
 
 export default function Map() {
   /*   const { setPost } = useContext(PostContext) */
@@ -39,7 +42,8 @@ export default function Map() {
 
   const { setPost, posts, setPosts, post } = useContext(PostContext)
 
-  const { setSearchLocation, setMyLocation, myLocation, searchLocation, pet } = useContext(FiltersContext)
+  const { setSearchLocation, setMyLocation, myLocation, searchLocation, pet, searchLocationDelta, setSearchLocationDelta } =
+    useContext(FiltersContext)
 
   /* const [posts, setPosts] = useState<Post[]>([]) */
 
@@ -70,7 +74,7 @@ export default function Map() {
 
   const [marker, setMarker] = useState()
 
-  const snapPoints = useMemo(() => [45, 330, '90%'], [])
+  const snapPoints = useMemo(() => [1, 350, '90%'], [])
 
   const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.lat, myLocation?.lng)
 
@@ -130,7 +134,7 @@ export default function Map() {
   const [myPin, setMyPin] = useState<any>()
 
   const createPost = () => {
-    navigation.navigate('CreatePost')
+    navigation.navigate('CreatePost', myPin)
   }
 
   const createMarker = (e: any) => {
@@ -139,6 +143,7 @@ export default function Map() {
 
   const handleRegionChange = async (region: Region) => {
     setSearchLocation({ lat: region.latitude, lng: region.longitude })
+    setSearchLocationDelta({ lat: region.latitudeDelta, lng: region.longitudeDelta })
     setPosts(
       await postService.getPostByFilters(
         pet,
@@ -146,7 +151,6 @@ export default function Map() {
         { lat: region.latitudeDelta, lng: region.longitudeDelta }
       )
     )
-    console.log(posts)
   }
 
   return (
@@ -225,14 +229,14 @@ export default function Map() {
                    */
                   headerStyle: {
                     backgroundColor: colors.navigation,
-                    height: 40
+                    height: 30
                   },
                   headerBackTitleStyle: {
                     fontFamily: 'LoveMeLikeASister'
                   },
                   headerTitleStyle: {
-                    fontFamily: 'LoveMeLikeASister',
-                    color: '#3F414E'
+                    /*   fontFamily: 'LoveMeLikeASister', */
+                    /* color: '#3F414E' */
                   },
                   headerStatusBarHeight: 0,
                   headerBackTitleVisible: false,
@@ -259,6 +263,7 @@ export default function Map() {
                 <Stack.Screen name="PostPreview" options={{ title: post?.pet.breed.description, headerShown: true }} component={PostPreview} />
                 <Stack.Screen name="SearchResults" options={{ title: 'Mascotas perdidas' }} component={SearchResults} />
                 <Stack.Screen name="Filters" options={{ title: 'Aplicar filtros' }} component={SearchByFilters} />
+                <Stack.Screen name="Chat" options={{ title: 'Chat' }} component={Conversation} />
               </Stack.Navigator>
             </NavigationContainer>
           </DefaultBottomSheetModal>

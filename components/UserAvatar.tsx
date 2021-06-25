@@ -6,6 +6,7 @@ import { User } from '../types/models/User'
 import Text from './MyThemedComponents/Text'
 import { format } from 'date-fns'
 import moment from 'moment'
+import useTheme from '../hooks/useTheme'
 
 interface UserAvatarProps {
   user: User | undefined
@@ -13,6 +14,8 @@ interface UserAvatarProps {
 
 const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
   /*   const { user } = useContext(UserContext) */
+
+  const theme = useTheme()
 
   if (!user) return null
   else
@@ -31,7 +34,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
         </View>
         <View style={{ paddingVertical: 2 }}>
           <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName} </Text>
-          <Text style={{ fontSize: 12 }}>Creando el {user.creationDate} </Text>
+          <Text style={{ color: theme.textLabel, fontSize: 14 }}>En linea </Text>
         </View>
       </View>
     )

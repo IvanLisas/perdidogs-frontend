@@ -9,7 +9,7 @@ import BottomSheet, { BottomSheetFlatList, BottomSheetScrollView } from '@gorhom
 import { ScrollView } from 'react-native-gesture-handler'
 import Icon from '../../components/icon/index'
 import UserAvatar from '../../components/UserAvatar'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import PostContext from '../../contexts/PostContext'
 /* import Input from '../../components/MyThemedComponents/Input' */
 import { Center, CheckIcon, Input, Select, Stack, TextArea, useColorModeValue } from 'native-base'
@@ -23,17 +23,21 @@ import Selecter from '../../components/MyThemedComponents/Selecter'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import ImageChooser from './ImageChooser'
 import imageService from '../../services/ImageService'
+import postService from '../../services/PostService'
+import { Pet } from '../../types/models/Pet'
+import UserContext from '../../contexts/UserContext'
 /* interface PostPageProps {
   post: Post | undefined
 } */
 
 const CreatePost: React.FC = ({}) => {
   const theme = useTheme()
+  const { user } = useContext(UserContext)
   const { setPost, posts, setPosts } = useContext(PostContext)
-  const [color, setColor] = useState('')
-  const [breed, setBreed] = useState('')
-  const [lenght, setLenght] = useState('')
-  const [size, setSize] = useState('')
+  const [color, setColor] = useState<Color>()
+  const [breed, setBreed] = useState<Breed>()
+  const [lenght, setLenght] = useState<Length>()
+  const [size, setSize] = useState<Size>()
   const [colors, setColors] = useState<Color[]>()
   const [breeds, setBreeds] = useState<Breed[]>()
   const [lenghts, setLenghts] = useState<Length[]>()
@@ -42,16 +46,29 @@ const CreatePost: React.FC = ({}) => {
   const [image2, setImage2] = useState()
   const [image3, setImage3] = useState()
   const [image4, setImage4] = useState()
+  const [description, setDescription] = useState('')
 
   const navigation = useNavigation()
+  const route = useRoute()
+  const myLocation = route.params as any
 
   const createPost = async () => {
-    console.log(image1)
-    await imageService.savePhoto(image1)
-    await imageService.savePhoto(image2)
-    await imageService.savePhoto(image3)
-    await imageService.savePhoto(image4)
-    navigation.navigate('Main')
+    if (color && lenght && size && breed) {
+      const pet: Pet = { fur: { color: color, length: lenght }, breed: breed, size: size }
+      const im1 = await imageService.savePhoto(image1)
+      const im2 = await imageService.savePhoto(image2)
+      const im3 = await imageService.savePhoto(image3)
+      const im4 = await imageService.savePhoto(image4)
+      await postService.post({
+        pet: pet,
+        description: description,
+        pictures: [im1 && { url: im1 }, im2 && { url: im2 }, im3 && { url: im3 }, im4 && { url: im4 }],
+        owner: { Id: user?.Id },
+        location: { lat: myLocation.latitude, long: myLocation.longitude }
+      } as Post)
+
+      navigation.navigate('Main')
+    }
   }
 
   useEffect(() => {
@@ -91,9 +108,11 @@ const CreatePost: React.FC = ({}) => {
           marginBottom={4}
           w="100%"
           /*   bg={theme.} */
+          value={description}
           borderRadius={12}
           borderWidth={1}
           borderColor={theme.primary}
+          onChangeText={setDescription}
           textAlignVertical="top"
           h={20}
           placeholder="Contanos como lo encontraste"

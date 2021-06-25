@@ -1,4 +1,4 @@
 export type Color = {
-  Id: string
+  Id: number
   description: string
 }

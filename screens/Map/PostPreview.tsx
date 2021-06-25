@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { View, StyleSheet, Image, ImageBackground, FlatList, TouchableHighlight, TouchableWithoutFeedback } from 'react-native'
+import { View, StyleSheet, Image, ImageBackground, FlatList, TouchableHighlight, TouchableWithoutFeedback, TouchableOpacity } from 'react-native'
 import { Post } from '../../types/models/Post'
 import useTheme from '../../hooks/useTheme'
 import { MyTheme } from '../../styles/Theme'
@@ -11,127 +11,149 @@ import Icon from '../../components/icon/index'
 import UserAvatar from '../../components/UserAvatar'
 import { Dimensions } from 'react-native'
 import PostContext from '../../contexts/PostContext'
+import SendBar from '../../components/SendBar'
+import commentService from '../../services/CommentSerive'
+import userContext from '../../contexts/UserContext'
+import { useNavigation } from '@react-navigation/native'
+import { Chat } from '../../types/models/Chat'
+import { MessageDTO } from '../../services/ChatService'
+import MyModal from '../../components/Moda'
+import { Message } from '../../types/models/Message'
 /* interface PostPageProps {
   post: Post | undefined
 }
  */
 const PostPreview: React.FC = () => {
-  const { post } = useContext(PostContext)
-
+  const { post, setPost } = useContext(PostContext)
+  const [modalVisible, setModalVisible] = useState(false)
+  const { user, Tab } = useContext(userContext)
+  const navigation = useNavigation()
   const theme = useTheme()
+
+  const [text, setText] = useState('')
+
+  const sendChatMenssage = () => {
+    const messanges: Message[] = []
+    navigation.navigate('Chat', { Id: 0, owner: { Id: user?.Id }, owner2: { Id: post?.owner.Id }, messageList: messanges } as Chat)
+    /*  setModalVisible(false) */
+  }
+
+  const sendMessage = async () => {
+    if (user && post)
+      setPost(await commentService.save({ owner: { Id: user.Id, firstName: 'asd', lastName: 'asd' }, text: text, post: { Id: post.Id } }))
+    setText('')
+  }
 
   if (!post) return null
   else
     return (
-      <BottomSheetScrollView>
-        <View>
-          <ScrollView style={styles(theme).root}>
+      <BottomSheetScrollView style={{ height: '100%' }}>
+        {/*    <MyModal text={text} setText={setText} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+         */}
+        <ScrollView style={styles(theme).root}>
+          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
             <View>
-              <View style={{ paddingBottom: 4 }}>
-                <UserAvatar user={post?.owner} />
-              </View>
-              <View style={{ paddingLeft: 48 }}>
-                <Text style={styles(theme).description2}>{post?.description}</Text>
+              <View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 8, paddingRight: 8 }}>
+                  <UserAvatar user={post?.owner} />
+                  <TouchableOpacity onPress={sendChatMenssage}>
+                    <Icon style={{ color: theme.primary, fontSize: 28 }} name="mail-envelope-back-hand-drawn-outline" />
+                  </TouchableOpacity>
+                </View>
+                <View style={{ paddingLeft: 48 }}>
+                  <Text style={styles(theme).description2}>{post?.description}</Text>
 
-                {/*      <Text numberOfLines={1} style={styles(theme).tittle}>
+                  {/*      <Text numberOfLines={1} style={styles(theme).tittle}>
             {post?.description}
           </Text> */}
 
-                {post.pictures.length > 0 ? (
-                  <ScrollView showsHorizontalScrollIndicator={false} style={styles(theme).carousel} horizontal>
-                    {post?.pictures.map((picture, index) => (
-                      <View key={picture.url + 'container'}>
-                        <ImageBackground
-                          key={picture.url + 'photo'}
-                          imageStyle={{ borderRadius: 12, width: '100%' }}
-                          style={{
-                            width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
-                            height: 200,
-                            borderRadius: 20,
-                            marginRight: 8
-                          }}
-                          onError={() => console.log('error al cargar')}
-                          source={{ uri: picture.url }}
-                        />
-                        <LinearGradient
-                          colors={['rgba(0,0,0,0.5)', 'transparent']}
-                          style={{
-                            position: 'absolute',
-                            height: 150,
-                            width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
-                            borderRadius: 12
-                          }}
-                        />
-                      </View>
-                    ))}
-                  </ScrollView>
-                ) : (
-                  <View style={{ paddingVertical: 8 }}>
-                    <ImageBackground
-                      key={'photo'}
-                      imageStyle={{ borderRadius: 12, width: '100%' }}
-                      style={{
-                        width: Dimensions.get('window').width - 90,
-                        height: 150,
-                        borderRadius: 20,
-                        marginRight: 8
-                      }}
-                      source={{ uri: 'https://somoswe1.com/Files/white-image.png' }}
-                    />
-                    <LinearGradient
-                      colors={['rgba(0,0,0,0.5)', 'transparent']}
-                      style={{
-                        position: 'absolute',
-                        height: 160,
-                        width: Dimensions.get('window').width - 90,
-                        borderRadius: 12
-                      }}
-                      start={{ x: 0, y: 1.0 }}
-                      end={{ x: 0, y: 0 }}
-                    />
-                  </View>
-                )}
+                  {post.pictures.length > 0 ? (
+                    <ScrollView showsHorizontalScrollIndicator={false} style={styles(theme).carousel} horizontal>
+                      {post?.pictures.map((picture, index) => (
+                        <View key={picture.url + 'container'}>
+                          <ImageBackground
+                            key={picture.url + 'photo'}
+                            imageStyle={{ borderRadius: 12, width: '100%' }}
+                            style={{
+                              width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
+                              height: 200,
+                              borderRadius: 20,
+                              marginRight: 8
+                            }}
+                            onError={() => console.log('error al cargar')}
+                            source={{ uri: picture.url }}
+                          />
+                          <LinearGradient
+                            colors={['rgba(0,0,0,0.5)', 'transparent']}
+                            style={{
+                              position: 'absolute',
+                              height: 150,
+                              width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
+                              borderRadius: 12
+                            }}
+                          />
+                        </View>
+                      ))}
+                    </ScrollView>
+                  ) : (
+                    <View style={{ paddingVertical: 8 }}>
+                      <ImageBackground
+                        key={'photo'}
+                        imageStyle={{ borderRadius: 12, width: '100%' }}
+                        style={{
+                          width: Dimensions.get('window').width - 90,
+                          height: 150,
+                          borderRadius: 20,
+                          marginRight: 8
+                        }}
+                        source={{ uri: 'https://somoswe1.com/Files/white-image.png' }}
+                      />
+                      <LinearGradient
+                        colors={['rgba(0,0,0,0.5)', 'transparent']}
+                        style={{
+                          position: 'absolute',
+                          height: 160,
+                          width: Dimensions.get('window').width - 90,
+                          borderRadius: 12
+                        }}
+                        start={{ x: 0, y: 1.0 }}
+                        end={{ x: 0, y: 0 }}
+                      />
+                    </View>
+                  )}
 
-                <View style={styles(theme).descriptionsContainer}>
-                  <View style={styles(theme).tinyDescriptionContainer}>
-                    <Icon style={styles(theme).icon} name="compass-hand-drawn-circular-tool-outline" />
-                    <Text style={styles(theme).tinyDescription}>A 5 kilometros - </Text>
-                  </View>
-                  <View style={styles(theme).tinyDescriptionContainer}>
-                    <Icon style={styles(theme).icon} name="time-hand-drawn-interface-symbol" />
-                    <Text style={styles(theme).tinyDescription}>Hace 2 horas</Text>
+                  <View style={styles(theme).descriptionsContainer}>
+                    <View style={styles(theme).tinyDescriptionContainer}>
+                      <Icon style={styles(theme).icon} name="compass-hand-drawn-circular-tool-outline" />
+                      <Text style={styles(theme).tinyDescription}>A 5 kilometros - </Text>
+                    </View>
+                    <View style={styles(theme).tinyDescriptionContainer}>
+                      <Icon style={styles(theme).icon} name="time-hand-drawn-interface-symbol" />
+                      <Text style={styles(theme).tinyDescription}>Hace 2 horas</Text>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
-            {/*        <View style={{ paddingBottom: 4 }}>
+              {/*        <View style={{ paddingBottom: 4 }}>
             <UserAvatar user={post?.owner} />
           </View>
           <Text style={styles(theme).description2}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
             <Text style={{ fontSize: 22, paddingBottom: 16 }}>Comentarios</Text>
             */}
-            <View style={{ paddingBottom: 4 }}>
-              <UserAvatar user={post?.owner} />
+              {console.log(post?.comments)}
+              {post?.comments?.map((comment, index) => (
+                <View style={{ marginBottom: 16 }} key={index + 'coments'}>
+                  <View style={{ paddingBottom: 4 }}>
+                    <UserAvatar user={comment.owner} />
+                  </View>
+                  <Text style={styles(theme).description}>{comment.text}</Text>
+                </View>
+              ))}
             </View>
-
-            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-            <View style={{ paddingBottom: 4 }}>
-              <UserAvatar user={post?.owner} />
-            </View>
-            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-            <View style={{ paddingBottom: 4 }}>
-              <UserAvatar user={post?.owner} />
-            </View>
-            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-            <View style={{ paddingBottom: 4 }}>
-              <UserAvatar user={post?.owner} />
-            </View>
-            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-            <View style={{ paddingBottom: 4 }}>
-              <UserAvatar user={post?.owner} />
-            </View>
-            <Text style={styles(theme).description}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
-          </ScrollView>
+          </TouchableWithoutFeedback>
+        </ScrollView>
+        <View>
+          <SendBar text={text} setText={setText} onPress={sendMessage}></SendBar>
         </View>
       </BottomSheetScrollView>
     )

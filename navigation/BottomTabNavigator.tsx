@@ -1,4 +1,4 @@
-import React, { ComponentProps } from 'react'
+import React, { ComponentProps, useRef } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomTabParamList from '../types/BottomTabParamList'
@@ -6,6 +6,7 @@ import ProfileStackScreen from './ProfileStackScreen'
 import useTheme from '../hooks/useTheme'
 import Icon from '../components/icon/index'
 import MapStackScreen from './MapStackScreen'
+import ChatsStackScreen from './ChatsStackScreen'
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
 
@@ -20,7 +21,7 @@ export default function BottomTabNavigator() {
     <Tab.Navigator
       tabBarOptions={{
         inactiveTintColor: 'grey',
-        activeTintColor: 'white',
+        activeTintColor: colors.primary,
         showLabel: false,
 
         tabStyle: { backgroundColor: colors.navigation, borderTopWidth: 0.6 },
@@ -31,6 +32,13 @@ export default function BottomTabNavigator() {
       }}
       initialRouteName="Map"
     >
+      <Tab.Screen
+        name="Chats"
+        component={ChatsStackScreen}
+        options={{
+          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="chat-bubbles-couple-hand-drawn-outlines" />
+        }}
+      />
       {/*       <Tab.Screen
         name="Camara"
         component={ProfileStackScreen}

@@ -1,5 +1,9 @@
-export type Comment = {
-  text: string
+import { Post } from './Post'
+import { User } from './User'
 
-  creation: Date
+export type Comment = {
+  text?: string
+  owner?: User
+  creation?: Date
+  post?: any
 }

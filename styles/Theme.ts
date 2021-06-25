@@ -6,6 +6,7 @@ export type MyTheme = {
   primary: string
   background: string
   card: string
+  textLabel: string
   text: string
   border: string
   notification: string
@@ -15,8 +16,9 @@ export type MyTheme = {
 }
 export const MyDefaultTheme: MyTheme = {
   ...DefaultTheme.colors,
-  navigation: '#B5B4FB',
-  primary: '#E3BCFB',
+  textLabel: 'grey',
+  navigation: 'white',
+  primary: '#B5B4FB',
   card: '#B5B4FB',
   text: '#3F414E',
   border: '#F7A59E',
@@ -28,8 +30,10 @@ export const MyDefaultTheme: MyTheme = {
 
 export const MyDarkTheme: MyTheme = {
   ...MyDefaultTheme,
-  text: '#FFFF',
+  text: 'white',
+  primary: '#E3BCFB',
+  textLabel: '#7f91a4',
   navigation: '#19191B',
-  background: '#101420',
+  background: '#17202b',
   dark: true
 }

@@ -1,4 +1,4 @@
 export type Breed = {
-  Id: string
+  Id: number
   description: string
 }

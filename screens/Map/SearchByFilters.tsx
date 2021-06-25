@@ -26,6 +26,7 @@ import { Pet } from '../../types/models/Pet'
 import postService from '../../services/PostService'
 import { getCurrentPositionAsync } from 'expo-location'
 import { Location } from '../../types/models/Location'
+import FiltersContext from '../../contexts/FiltersContext'
 
 export type Sex = {
   Id: string
@@ -42,6 +43,8 @@ export type HasCollar = {
 const SearchByFilters: React.FC = ({}) => {
   const theme = useTheme()
   const { setPost, posts, setPosts } = useContext(PostContext)
+  const { setSearchLocation, setMyLocation, myLocation, searchLocation, pet, setPet, searchLocationDelta, setSearchLocationDelta } =
+    useContext(FiltersContext)
   const [color, setColor] = useState<Color>()
   const [breed, setBreed] = useState<Breed>()
   const [lenght, setLenght] = useState<Length>()
@@ -50,7 +53,6 @@ const SearchByFilters: React.FC = ({}) => {
   const [breeds, setBreeds] = useState<Breed[]>()
   const [lenghts, setLenghts] = useState<Length[]>()
   const [sizes, setSizes] = useState<Size[]>()
-
   const [hasCollar, setHasCollar] = useState<HasCollar>()
   const [sex, setSex] = useState<Sex>()
   const [image1, setImage1] = useState('')
@@ -60,20 +62,33 @@ const SearchByFilters: React.FC = ({}) => {
 
   const navigation = useNavigation()
 
-  const createPost = async () => {
-    /* navigation.navigate('Main') */
-    const pet = { breed: breed, fur: { color: color, length: lenght }, sex: 'Macho', hasCollar: true, size: size } as Pet
-    const myLocation = (await getCurrentPositionAsync()).coords
+  const search = async () => {
+    const newFilter = { breed: breed, fur: { color: color, length: lenght }, size: size } as Pet
+    setPet(newFilter)
+
     try {
-      console.log((await getCurrentPositionAsync()).coords)
-      /*   setPosts(await postService.getPostByFilters(pet, myLocation)) */
+      setPosts(await postService.getPostByFilters(newFilter, searchLocation, searchLocationDelta))
+      navigation.goBack()
     } catch (error) {
       console.log(error.message)
     }
   }
 
+  const cleanFilters = () => {
+    setPet(undefined)
+    setLenght(undefined)
+    setSize(undefined)
+    setBreed(undefined)
+    setColor(undefined)
+  }
+
   useEffect(() => {
     const getParams = async () => {
+      setLenght(pet?.fur.length)
+      setSize(pet?.size)
+      setBreed(pet?.breed)
+      setColor(pet?.fur.color)
+
       setColors(await dropDownService.getAllColors())
       setLenghts(await dropDownService.getAllLengths())
       setBreeds(await dropDownService.getAllBreeds())
@@ -108,8 +123,11 @@ const SearchByFilters: React.FC = ({}) => {
 
       <Selecter value={sex} values={['Macho', 'Hembra']} setValue={setSize} label={'Sexo'} />
 
-      <TouchableOpacity onPress={createPost}>
+      <TouchableOpacity onPress={search}>
         <Text>Buscar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={cleanFilters}>
+        <Text>Limpiar filtros</Text>
       </TouchableOpacity>
     </ScrollView>
   )

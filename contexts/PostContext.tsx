@@ -1,4 +1,5 @@
 import React, { createContext, useState } from 'react'
+import { Chat } from '../types/models/Chat'
 import { Post } from '../types/models/Post'
 
 interface ContextProps {
@@ -18,6 +19,7 @@ const PostContext = createContext<ContextProps>({
 export const PostContextProvider: React.FC = ({ children }) => {
   const [post, setPost] = useState<Post | undefined>()
   const [posts, setPosts] = useState<Post[]>([])
+  const [navigation, setNavigation] = useState<any>()
 
   return <PostContext.Provider value={{ post, setPost, posts, setPosts }}>{children}</PostContext.Provider>
 }
