@@ -23,7 +23,8 @@ function ProfileStackScreen() {
           backgroundColor: colors.navigation
         },
         headerTitleStyle: {
-          fontFamily: 'LoveMeLikeASister'
+          /*  fontFamily: 'LoveMeLikeASister' */
+          fontSize: 22
         },
         headerBackTitleStyle: {
           fontFamily: 'LoveMeLikeASister'

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { StyleSheet, View, Button, ImageBackground, TouchableOpacity, Dimensions } from 'react-native'
+import { StyleSheet, View, ImageBackground, TouchableOpacity, Dimensions } from 'react-native'
 import { Post } from '../../types/models/Post'
 import useTheme from '../../hooks/useTheme'
 import { MyTheme } from '../../styles/Theme'
@@ -27,6 +27,7 @@ import postService from '../../services/PostService'
 import { getCurrentPositionAsync } from 'expo-location'
 import { Location } from '../../types/models/Location'
 import FiltersContext from '../../contexts/FiltersContext'
+import { Button, Box, NativeBaseProvider } from 'native-base'
 
 export type Sex = {
   Id: string
@@ -99,7 +100,13 @@ const SearchByFilters: React.FC = ({}) => {
 
   return (
     <ScrollView style={styles.root}>
-      <Text style={styles.title}>Filtros</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={styles.title}>Filtros</Text>
+        <TouchableOpacity onPress={cleanFilters}>
+          <Icon style={{ color: theme.primary, fontSize: 28 }} name="cancel-circular-button-with-a-cross-inside-hand-drawn-outlines" />
+        </TouchableOpacity>
+      </View>
+
       {/*    <Input
         bg={theme.primary}
         borderRadius={12}
@@ -118,17 +125,17 @@ const SearchByFilters: React.FC = ({}) => {
       {lenghts && <Selecter value={lenght} values={lenghts} setValue={setLenght} label={'Largo del pelo'} />}
 
       {sizes && <Selecter value={size} values={sizes} setValue={setSize} label={'Tamaño'} />}
-
+      {/* 
       <Selecter value={hasCollar} values={['Si', 'No']} setValue={setSize} label={'Tiene collar'} />
 
       <Selecter value={sex} values={['Macho', 'Hembra']} setValue={setSize} label={'Sexo'} />
-
-      <TouchableOpacity onPress={search}>
+ */}
+      {/*       <TouchableOpacity onPress={search}>
         <Text>Buscar</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={cleanFilters}>
-        <Text>Limpiar filtros</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+      <Button onPress={search} style={{ backgroundColor: theme.primary }}>
+        Buscar
+      </Button>
     </ScrollView>
   )
 }

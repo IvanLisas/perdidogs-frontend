@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { StyleSheet, View, Button, ImageBackground, TouchableOpacity, Dimensions } from 'react-native'
+import { StyleSheet, View, ImageBackground, TouchableOpacity, Dimensions } from 'react-native'
 import { Post } from '../../types/models/Post'
 import useTheme from '../../hooks/useTheme'
 import { MyTheme } from '../../styles/Theme'
@@ -26,6 +26,8 @@ import imageService from '../../services/ImageService'
 import postService from '../../services/PostService'
 import { Pet } from '../../types/models/Pet'
 import UserContext from '../../contexts/UserContext'
+
+import { Button, Box, NativeBaseProvider } from 'native-base'
 /* interface PostPageProps {
   post: Post | undefined
 } */
@@ -47,6 +49,7 @@ const CreatePost: React.FC = ({}) => {
   const [image3, setImage3] = useState()
   const [image4, setImage4] = useState()
   const [description, setDescription] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const navigation = useNavigation()
   const route = useRoute()
@@ -54,6 +57,7 @@ const CreatePost: React.FC = ({}) => {
 
   const createPost = async () => {
     if (color && lenght && size && breed) {
+      setIsLoading(true)
       const pet: Pet = { fur: { color: color, length: lenght }, breed: breed, size: size }
       const im1 = await imageService.savePhoto(image1)
       const im2 = await imageService.savePhoto(image2)
@@ -126,9 +130,9 @@ const CreatePost: React.FC = ({}) => {
         <ImageChooser pickedImagePath={image3} setPickedImagePath={setImage3} />
         <ImageChooser pickedImagePath={image4} setPickedImagePath={setImage4} />
       </View>
-      <TouchableOpacity style={{ marginTop: 48 }} onPress={createPost}>
-        <Text style={{ marginTop: 48, color: 'black' }}>Crear</Text>
-      </TouchableOpacity>
+      <Button isLoading={isLoading} onPress={createPost} style={{ marginVertical: 16, backgroundColor: theme.primary }}>
+        Crear
+      </Button>
     </ScrollView>
   )
 }
@@ -137,7 +141,8 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
 
-    padding: 16
+    padding: 16,
+    marginBottom: 16
   },
   title: {
     fontSize: 24,

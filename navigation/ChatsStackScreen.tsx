@@ -27,6 +27,7 @@ function ProfileStackScreen() {
         },
         headerTitleStyle: {
           /*      fontFamily: 'LoveMeLikeASister' */
+          fontSize: 22
         },
         headerBackTitleStyle: {
           fontFamily: 'LoveMeLikeASister'

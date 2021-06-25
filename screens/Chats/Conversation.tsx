@@ -32,9 +32,10 @@ const Conversation: React.FC = (props) => {
 
   const fetchChat = async () => {
     try {
-      console.log('Fetching chats', 'Chat:' + chat.Id, 'Sender:' + chat.messageList[0].sender.Id, 'Adrees:' + chat.messageList[0].adressee.Id)
+      const chatId = await chatService.getId({ user1Id: chat.owner.Id, user2Id: chat.owner2.Id })
+
       const chats = await chatService.getAll(user?.Id)
-      const myChat = chats.find((_chat, index) => chat.Id == _chat.Id)
+      const myChat = chats.find((_chat, index) => _chat.Id == chatId)
       if (myChat) setChat(myChat)
       setFetchFlag(false)
     } catch (errorMessage) {
@@ -54,6 +55,7 @@ const Conversation: React.FC = (props) => {
   const scrollViewRef = useRef<any>()
   return (
     <View style={styles.root}>
+      {(console.disableYellowBox = true)}
       <ScrollView
         ref={scrollViewRef}
         showsVerticalScrollIndicator={false}

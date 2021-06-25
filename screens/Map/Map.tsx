@@ -199,14 +199,76 @@ export default function Map() {
         </MapView>
 
         {/*   <View style={{ position: 'absolute', top: 100 }} /> */}
-        <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={handleMyLocation}>
-          <Text> Mi Ubicacion </Text>
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            top: 200,
+            marginRight: 16,
+            right: 0,
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 3
+            },
+            shadowOpacity: 0.29,
+            shadowRadius: 4.65,
+            borderRadius: 25
+          }}
+          onPress={handleFilters}
+        >
+          <View
+            style={{
+              backgroundColor: theme.primary,
+              borderRadius: 25,
+              padding: 8,
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 3
+              },
+              shadowOpacity: 0.29,
+              shadowRadius: 4.65
+            }}
+          >
+            <Icon style={{ color: 'black', fontSize: 28 }} name="settings-hand-drawn-symbol" />
+          </View>
         </TouchableOpacity>
         {/*         <TouchableOpacity style={{ position: 'absolute', top: 300 }} onPress={handleFilters}>
           <Text> Actualizar </Text>
         </TouchableOpacity> */}
-        <TouchableOpacity style={{ position: 'absolute', top: 100 }} onPress={handleFilters}>
-          <Text> Filtros </Text>
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            top: 300,
+            marginRight: 16,
+            right: 0,
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 3
+            },
+            shadowOpacity: 0.29,
+            shadowRadius: 4.65,
+            borderRadius: 25
+          }}
+          onPress={handleMyLocation}
+        >
+          <View
+            style={{
+              backgroundColor: theme.primary,
+              borderRadius: 25,
+              padding: 8,
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 3
+              },
+              shadowOpacity: 0.29,
+              shadowRadius: 4.65
+            }}
+          >
+            <Icon style={{ color: 'black', fontSize: 28 }} name="target-hand-drawn-circle" />
+          </View>
         </TouchableOpacity>
         <View style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
           <GooglePlacesAutocomplete handleSearch={handleSearch} />
