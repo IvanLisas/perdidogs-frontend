@@ -11,5 +11,6 @@ export type Post = {
   /*status:PostStatus */
   pictures: Picture[]
   location: Location
+  comments: Comment[]
   pet: Pet
 }

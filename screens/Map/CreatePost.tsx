@@ -11,14 +11,18 @@ import Icon from '../../components/icon/index'
 import UserAvatar from '../../components/UserAvatar'
 import { useNavigation } from '@react-navigation/native'
 import PostContext from '../../contexts/PostContext'
-import Input from '../../components/MyThemedComponents/Input'
-import { CheckIcon, Select } from 'native-base'
-import { background } from 'styled-system'
+/* import Input from '../../components/MyThemedComponents/Input' */
+import { Center, CheckIcon, Input, Select, Stack, TextArea, useColorModeValue } from 'native-base'
+import { background, backgroundColor } from 'styled-system'
 import dropDownService from '../../services/DropDownService'
 import { Color } from '../../types/models/Color'
 import { Breed } from '../../types/models/Breed'
 import { Length } from '../../types/models/Lenght'
 import { Size } from '../../types/models/Size'
+import Selecter from '../../components/MyThemedComponents/Selecter'
+import { Colors } from 'react-native/Libraries/NewAppScreen'
+import ImageChooser from './ImageChooser'
+import imageService from '../../services/ImageService'
 /* interface PostPageProps {
   post: Post | undefined
 } */
@@ -34,20 +38,28 @@ const CreatePost: React.FC = ({}) => {
   const [breeds, setBreeds] = useState<Breed[]>()
   const [lenghts, setLenghts] = useState<Length[]>()
   const [sizes, setSizes] = useState<Size[]>()
+  const [image1, setImage1] = useState()
+  const [image2, setImage2] = useState()
+  const [image3, setImage3] = useState()
+  const [image4, setImage4] = useState()
 
   const navigation = useNavigation()
 
-  const createPost = () => {
+  const createPost = async () => {
+    console.log(image1)
+    await imageService.savePhoto(image1)
+    await imageService.savePhoto(image2)
+    await imageService.savePhoto(image3)
+    await imageService.savePhoto(image4)
     navigation.navigate('Main')
   }
 
   useEffect(() => {
     const getParams = async () => {
-      /*       setColors(await dropDownService.getAllColors())
-      console.log(await dropDownService.getAllColors()) */
+      setColors(await dropDownService.getAllColors())
+      setLenghts(await dropDownService.getAllLengths())
       setBreeds(await dropDownService.getAllBreeds())
-      //setLenghts(await dropDownService.getAllLengths())
-      //setSizes(await dropDownService.getAllSizes()) */
+      setSizes(await dropDownService.getAllSizes())
     }
     getParams()
   }, [])
@@ -55,42 +67,48 @@ const CreatePost: React.FC = ({}) => {
   return (
     <ScrollView style={styles.root}>
       <Text style={styles.title}>Datos obligatorios</Text>
-      <Input
-        /*   ref={inputLastName} */
-        inputContainerStyle={{ borderBottomWidth: 0, width: '100%' }}
-        placeholder="Describi como lo encontraste"
-        /* onChangeText={setLastName} */
-        /* value={lastName} */
-        containerStyle={{ paddingHorizontal: 0 }}
+      {/*    <Input
+        bg={theme.primary}
+        borderRadius={12}
         style={styles.input}
-        errorStyle={{ color: 'red' }}
-        /*   errorMessage={lastNameError} */
-      />
+        marginBottom={4}
+        w="100%"
+        placeholder="Describi como lo encontraste"
 
-      {breeds && (
-        <Select
-          selectedValue={breed}
-          style={{ backgroundColor: 'white' }}
-          placeholder="Raza"
-          _item={{
-            backgroundColor: 'white',
-            color: 'white'
-          }}
-          /*  _actionSheetContent={{ backgroundColor: 'transparent' }} */
-          onValueChange={(itemValue) => setBreed(itemValue)}
-          _selectedItem={{
-            bg: 'cyan.600',
+        placeholderTextColor="grey"
+      /> */}
 
-            endIcon: <CheckIcon size={4} />
-          }}
-        >
-          {breeds?.map((breed, index) => (
-            <Select.Item key={index + 'selected'} label={breed.description} value={breed.description} />
-          ))}
-        </Select>
-      )}
-      <TouchableOpacity onPress={createPost}>
-        <Text>Crear</Text>
+      {breeds && <Selecter value={breed} values={breeds} setValue={setBreed} label={'Raza'} />}
+
+      {colors && <Selecter value={color} values={colors} setValue={setColor} label={'Color'} />}
+
+      {lenghts && <Selecter value={lenght} values={lenghts} setValue={setLenght} label={'Largo del pelo'} />}
+
+      {sizes && <Selecter value={size} values={sizes} setValue={setSize} label={'Tamaño'} />}
+      <Stack w="100%">
+        <TextArea
+          placeholderTextColor="grey"
+          marginBottom={4}
+          w="100%"
+          /*   bg={theme.} */
+          borderRadius={12}
+          borderWidth={1}
+          borderColor={theme.primary}
+          textAlignVertical="top"
+          h={20}
+          placeholder="Contanos como lo encontraste"
+        />
+      </Stack>
+      <View style={{ marginBottom: 16, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <ImageChooser pickedImagePath={image1} setPickedImagePath={setImage1} />
+        <ImageChooser pickedImagePath={image2} setPickedImagePath={setImage2} />
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <ImageChooser pickedImagePath={image3} setPickedImagePath={setImage3} />
+        <ImageChooser pickedImagePath={image4} setPickedImagePath={setImage4} />
+      </View>
+      <TouchableOpacity style={{ marginTop: 48 }} onPress={createPost}>
+        <Text style={{ marginTop: 48, color: 'black' }}>Crear</Text>
       </TouchableOpacity>
     </ScrollView>
   )
@@ -100,19 +118,15 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
 
-    paddingTop: 32
+    padding: 16
   },
   title: {
-    fontSize: 20,
-    fontFamily: 'LoveMeLikeASister'
+    fontSize: 24,
+    /*  fontFamily: 'LoveMeLikeASister', */
+    paddingBottom: 16
   },
   input: {
-    marginVertical: 2,
-    borderRadius: 15,
-    padding: 16,
-    backgroundColor: 'white',
-    /*   alignSelf: 'center', */
-    width: 234
+    padding: 16
   }
 })
 

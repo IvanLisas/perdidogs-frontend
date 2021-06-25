@@ -15,12 +15,12 @@ export type MyTheme = {
 }
 export const MyDefaultTheme: MyTheme = {
   ...DefaultTheme.colors,
-  navigation: 'white',
+  navigation: '#B5B4FB',
   primary: '#E3BCFB',
   card: '#B5B4FB',
   text: '#3F414E',
   border: '#F7A59E',
-  background: '#B4C4FB',
+  background: '#E8F7FB',
   input: '#F6F6F6',
   loginBackground: '#B4C4FB',
   dark: false

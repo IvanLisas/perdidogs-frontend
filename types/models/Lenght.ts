@@ -1,4 +1,4 @@
 export type Length = {
-  Id: number
+  Id: string
   description: string
 }

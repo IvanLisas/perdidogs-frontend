@@ -14,8 +14,8 @@ function Button(props: ButtonProps) {
 
   const styles = StyleSheet.create({
     button: {
-      borderWidth: 0.5,
-      borderColor: '#B80000',
+      borderWidth: 1,
+      borderColor: 'black',
       borderRadius: 15,
       padding: 12,
       backgroundColor: 'transparent'
@@ -52,7 +52,7 @@ function Button(props: ButtonProps) {
         title={title}
         onPress={onPress}
         titleProps={{}}
-        titleStyle={{ marginHorizontal: 5, color: 'black', fontFamily: 'LoveMeLikeASister', fontSize: 16 }}
+        titleStyle={{ marginHorizontal: 5, color: 'black', fontFamily: 'LoveMeLikeASister', fontSize: 14 }}
       />
     </View>
   )

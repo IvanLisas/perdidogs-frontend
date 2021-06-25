@@ -31,9 +31,7 @@ const PostPreview: React.FC = () => {
                 <UserAvatar user={post?.owner} />
               </View>
               <View style={{ paddingLeft: 48 }}>
-                <Text numberOfLines={1} style={styles(theme).description2}>
-                  {post?.description}
-                </Text>
+                <Text style={styles(theme).description2}>{post?.description}</Text>
 
                 {/*      <Text numberOfLines={1} style={styles(theme).tittle}>
             {post?.description}
@@ -48,7 +46,7 @@ const PostPreview: React.FC = () => {
                           imageStyle={{ borderRadius: 12, width: '100%' }}
                           style={{
                             width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 90,
-                            height: 130,
+                            height: 200,
                             borderRadius: 20,
                             marginRight: 8
                           }}
@@ -142,7 +140,7 @@ const PostPreview: React.FC = () => {
 const styles = (theme: MyTheme) =>
   StyleSheet.create({
     root: {
-      backgroundColor: theme.navigation,
+      /* backgroundColor: theme.navigation, */
       padding: 16
     },
     tittle: {

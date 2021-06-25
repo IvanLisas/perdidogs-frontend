@@ -86,7 +86,8 @@ const SearchResults: React.FC = ({}) => {
     <BottomSheetFlatList
       data={posts}
       showsHorizontalScrollIndicator
-      persistentScrollbar
+      /* persistentScrollbar */
+      disableVirtualization={false}
       keyExtractor={(item, index) => item.description}
       renderItem={({ item }) => Card(item)}
       style={{ flex: 1 }}

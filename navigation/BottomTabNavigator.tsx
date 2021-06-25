@@ -20,10 +20,13 @@ export default function BottomTabNavigator() {
     <Tab.Navigator
       tabBarOptions={{
         inactiveTintColor: 'grey',
-        activeTintColor: '#F7A59E',
+        activeTintColor: 'white',
         showLabel: false,
+
+        tabStyle: { backgroundColor: colors.navigation, borderTopWidth: 0.6 },
         style: {
-          backgroundColor: colors.navigation
+          backgroundColor: colors.navigation,
+          borderRadius: 16
         }
       }}
       initialRouteName="Map"
@@ -39,7 +42,7 @@ export default function BottomTabNavigator() {
         name="Map"
         component={MapStackScreen}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-map" color={color} />
+          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="compass-hand-drawn-circular-tool-outline" />
         }}
       />
 
@@ -54,7 +57,7 @@ export default function BottomTabNavigator() {
         name="Perfil"
         component={ProfileStackScreen}
         options={{
-          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="arrow-pointing-to-left-hand-drawn-outline" />
+          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="user-list-hand-drawn-interface-symbol-outline" />
         }}
       />
       {/*       <BottomTab.Screen

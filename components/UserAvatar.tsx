@@ -4,6 +4,8 @@ import { Avatar } from 'react-native-elements'
 import UserContext from '../contexts/UserContext'
 import { User } from '../types/models/User'
 import Text from './MyThemedComponents/Text'
+import { format } from 'date-fns'
+import moment from 'moment'
 
 interface UserAvatarProps {
   user: User | undefined
@@ -29,7 +31,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
         </View>
         <View style={{ paddingVertical: 2 }}>
           <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName} </Text>
-          <Text style={{ fontSize: 12 }}>Activo hace 2 horas </Text>
+          <Text style={{ fontSize: 12 }}>Creando el {user.creationDate} </Text>
         </View>
       </View>
     )

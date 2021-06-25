@@ -18,8 +18,8 @@ class DropDownService {
     return (await axios.get<Size[]>(`${SERVER_URL}/dropdown/sizes`)).data
   }
 
-  async getAllLengths(): Promise<Length> {
-    return (await axios.get<Length>(`${SERVER_URL}/post/lengths`)).data
+  async getAllLengths(): Promise<Length[]> {
+    return (await axios.get<Length[]>(`${SERVER_URL}/dropdown/lengths`)).data
   }
 }
 

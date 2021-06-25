@@ -159,7 +159,9 @@ const styles = StyleSheet.create({
   },
   button: {
     alignSelf: 'stretch',
-    marginTop: 8
+    marginTop: 8,
+    backgroundColor: '#E3BCFB',
+    borderRadius: 15
   },
   titleContainer: {
     display: 'flex',

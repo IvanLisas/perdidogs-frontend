@@ -35,12 +35,12 @@ function MapStackScreen() {
             <Icon style={{ color: colors.text, fontSize: 18 }} name="arrow-pointing-to-left-hand-drawn-outline" />
           </View>
         ),
-
         headerBackTitleVisible: false
       }}
     >
       <MapStack.Screen name="Main" options={{ headerShown: false }} component={Map} />
-      <MapStack.Screen name="CreatePost" component={CreatePost} />
+      <MapStack.Screen name="CreatePost" options={{ title: 'Nueva publicacion' }} component={CreatePost} />
+
       {/*  <MapStack.Screen name="Edit" component={EditProfile} /> */}
       {/*  <HomeStack.Screen name="Details" component={TabOneScreen} /> */}
     </MapStack.Navigator>

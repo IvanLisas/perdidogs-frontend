@@ -10,6 +10,7 @@ import { ThemeContextProvider } from './contexts/ThemeContext'
 import { PostContextProvider } from './contexts/PostContext'
 import { MapContextProvider } from './contexts/MapContext'
 import { NativeBaseProvider } from 'native-base'
+import { FilterContextProvider } from './contexts/FiltersContext'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()
@@ -21,16 +22,18 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <UserContextProvider>
-          <MapContextProvider>
+          <FilterContextProvider>
             <PostContextProvider>
-              <ThemeContextProvider>
-                <NativeBaseProvider>
-                  <Navigation />
-                  <StatusBar />
-                </NativeBaseProvider>
-              </ThemeContextProvider>
+              <MapContextProvider>
+                <ThemeContextProvider>
+                  <NativeBaseProvider>
+                    <Navigation />
+                    <StatusBar />
+                  </NativeBaseProvider>
+                </ThemeContextProvider>
+              </MapContextProvider>
             </PostContextProvider>
-          </MapContextProvider>
+          </FilterContextProvider>
         </UserContextProvider>
       </SafeAreaProvider>
     )

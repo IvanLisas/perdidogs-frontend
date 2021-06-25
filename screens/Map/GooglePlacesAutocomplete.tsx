@@ -1,47 +1,84 @@
-import React, { useContext } from 'react'
-import { ScrollView, TextInput, StyleSheet } from 'react-native'
-
-import { GooglePlacesAutocomplete as DefaultGooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import React, { useContext, useRef } from 'react'
+import { ScrollView, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
+import Icon from '../../components/icon/index'
+import {
+  GooglePlaceDetail,
+  GooglePlacesAutocomplete as DefaultGooglePlacesAutocomplete,
+  GooglePlacesAutocompleteProps
+} from 'react-native-google-places-autocomplete'
 import MapContext from '../../contexts/MapContext'
 import useTheme from '../../hooks/useTheme'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
-interface GooglePlacesAutocompleteProps {
-  handleNavigateToPoint: (id: any, lat: any, long: any) => void
+interface GooglePlacesAutocompletesProps {
+  handleSearch: (details: GooglePlaceDetail | null) => Promise<void>
 }
 
-const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = () => {
+interface ClearButtonProps {
+  onPress: () => void
+}
+
+const ClearButton: React.FC<ClearButtonProps> = (prop) => (
+  <TouchableOpacity style={{ alignSelf: 'center', paddingRight: 16 }} onPress={prop.onPress}>
+    <Icon style={{ color: 'grey', fontSize: 22 }} name="cancel-circular-button-with-a-cross-inside-hand-drawn-outlines" />
+  </TouchableOpacity>
+)
+
+const LeftButton: React.FC = () => (
+  <Icon style={{ paddingLeft: 8, alignSelf: 'center', color: 'grey', fontSize: 18 }} name="compass-hand-drawn-circular-tool-outline" />
+)
+
+const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompletesProps> = (props) => {
   const colors = useTheme()
 
-  const { mapRef, handleNavigateToPoint } = useContext(MapContext)
+  const ref = React.createRef<any>()
+
+  const { handleSearch } = props
+
+  const crearText = () => ref.current?.setAddressText('')
 
   return (
     <DefaultGooglePlacesAutocomplete
+      ref={ref}
       placeholder="Buscar una zona aqui"
-      /*  currentLocation={true} */
-      textInputProps={{ placeholderTextColor: colors.text }}
+      textInputProps={{ placeholderTextColor: 'grey', fontSize: 16 }}
       fetchDetails={true}
       suppressDefaultStyles={true}
       enablePoweredByContainer={false}
+      renderRightButton={() => <ClearButton onPress={crearText} />}
+      renderLeftButton={() => <LeftButton />}
       /* onNotFound={() => <Text>No se encontaron resultados</Text>} */
       /*   currentLocation={true} */
       styles={{
         textInputContainer: {
           backgroundColor: colors.navigation,
-          borderRadius: 16
+          borderRadius: 8,
+          flexDirection: 'row',
+          borderWidth: 1,
+          borderColor: 'grey',
+          fontSize: 16
+        },
+        container: {
+          flex: 1
         },
         textInput: {
-          padding: 12,
+          padding: 8,
           /*   fontFamily: 'LoveMeLikeASister', */
-          paddingLeft: 18,
-          color: colors.text
+          paddingLeft: 8,
+          color: colors.text,
+          justifyContent: 'space-between',
+          flex: 1
         },
         predefinedPlacesDescription: {
           color: '#1faadb'
         },
+
         listView: {
-          borderRadius: 16,
+          borderRadius: 12,
           marginTop: 8,
-          backgroundColor: colors.navigation
+          backgroundColor: colors.navigation,
+          borderWidth: 1,
+          borderColor: 'grey'
           /*   padding: 16, */
 
           /*   overflow: 'hidden' */
@@ -49,16 +86,21 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = () => 
         row: {
           overflow: 'hidden'
         },
-
+        loader: {
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          height: 20
+        },
         description: {
           fontSize: 12,
           padding: 16,
           color: colors.text
         },
         separator: {
-          height: 0.5,
-          backgroundColor: '#c8c7cc'
+          height: 0,
+          backgroundColor: 'grey'
         },
+
         poweredContainer: {
           alignItems: 'flex-end',
           padding: 16,
@@ -67,8 +109,9 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = () => 
       }}
       /*   styles={{ position: 'absolute', top: 300 }} */
       onPress={(data, details, index = null) => {
-        /*    console.log(data, details) */
-        handleNavigateToPoint(details?.geometry.location.lat, details?.geometry.location.lng)
+        /*  console.log(details) */
+
+        handleSearch(details)
       }}
       query={{
         key: 'AIzaSyCahzx0wpr4G7jiI_LfsAUf0JWJ3-FZVDs',

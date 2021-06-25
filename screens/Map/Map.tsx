@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { Image, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, TouchableOpacity, TouchableOpacityBase } from 'react-native'
+import { Image, Keyboard, StyleSheet, TouchableWithoutFeedback, View, Text, TouchableOpacity, TouchableOpacityBase, Dimensions } from 'react-native'
 import { NavigationContainer, NavigationContainerProps, useNavigation } from '@react-navigation/native'
-import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { LatLng, Marker, MarkerAnimated, PROVIDER_GOOGLE, Region } from 'react-native-maps'
 import { mapStyleDay } from '../../styles/MapDay'
 import { useMap } from '../../hooks/useMap'
 import { Appearance } from 'react-native-appearance'
 import { mapStyleNight } from '../../styles/MapNight'
-import { requestForegroundPermissionsAsync } from 'expo-location'
+import { getCurrentPositionAsync, requestForegroundPermissionsAsync } from 'expo-location'
 import GooglePlacesAutocomplete from './GooglePlacesAutocomplete'
 import useTheme from '../../hooks/useTheme'
 import { BottomSheetModal as DefaultBottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
@@ -18,19 +18,28 @@ import SearchByFilters from './SearchByFilters'
 import SearchResults from './SearchResults'
 import PostContext from '../../contexts/PostContext'
 import Icon from '../../components/icon/index'
+import { GooglePlaceDetail } from 'react-native-google-places-autocomplete'
+import { Bounderies } from '../../types/models/Bounderies'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import FiltersContext from '../../contexts/FiltersContext'
+import { borderColor } from 'styled-system'
 
 export default function Map() {
   /*   const { setPost } = useContext(PostContext) */
 
   const colorMode = Appearance.getColorScheme()
 
+  const theme = useTheme()
+
   const [errorMessage, setErrorMessage] = useState('')
 
   const [selectedPost, setSelectedPost] = useState<Post>()
-
-  const [myLocation, setMyLocation] = useState<LatLng>()
+  /* 
+  const [myLocation, setMyLocation] = useState<LatLng>() */
 
   const { setPost, posts, setPosts, post } = useContext(PostContext)
+
+  const { setSearchLocation, setMyLocation, myLocation, searchLocation, pet } = useContext(FiltersContext)
 
   /* const [posts, setPosts] = useState<Post[]>([]) */
 
@@ -48,10 +57,6 @@ export default function Map() {
 
   const Stack = createStackNavigator()
 
-  useEffect(() => {
-    getPosts()
-  }, [])
-
   const getPosts = async () => {
     try {
       setPosts(await postService.getAll())
@@ -67,19 +72,23 @@ export default function Map() {
 
   const snapPoints = useMemo(() => [45, 330, '90%'], [])
 
-  const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.latitude, myLocation?.longitude)
+  const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.lat, myLocation?.lng)
 
   const handleMarketPress = (post: Post, index: number, lat: number, long: number) => {
     navigationRef.current?.navigate('PostPreview')
     setPost(post)
     handleNavigateToPoint(index, lat, long)
-
-    /* sheetModalef.current?.present() */
+    /*sheetModalef.current?.present() */
     sheetModalef.current?.snapTo(1)
   }
 
-  const handleFilters = async () => {
+  const handleGetPots = async () => {
     await getPosts()
+  }
+
+  const handleFilters = async () => {
+    sheetModalef.current?.snapTo(1)
+    navigationRef.current?.navigate('Filters')
   }
 
   const handleMapPress = () => {
@@ -87,24 +96,34 @@ export default function Map() {
     sheetModalef.current?.snapTo(0)
   }
 
+  const handleSearch = async (details: GooglePlaceDetail | null) => {
+    handleNavigateToPoint(1, details?.geometry.location.lat, details?.geometry.location.lng)
+
+    try {
+      setPosts(await postService.geyByLocation(details?.geometry))
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
   useEffect(() => {
     const permission = async () => {
       await getPosts()
-
-      sheetModalef.current?.present()
+      /*   sheetModalef.current?.present() */
 
       const { status } = await requestForegroundPermissionsAsync()
       if (status !== 'granted') {
         setErrorMessage('Permission to access location was denied')
         return
       }
-      /*let location = await Location.getCurrentPositionAsync({});
-        setLocation(location); */
+      const location = (await getCurrentPositionAsync()).coords
+      setMyLocation({ lat: location.latitude, lng: location.longitude })
     }
+
     permission()
   }, [])
 
-  const pin = require('../../assets/images/pin2.png')
+  const pin = require('../../assets/images/dogPin2.png')
 
   const imagePin = () => <Image source={pin} style={{ width: 20, height: 20 }} />
 
@@ -118,96 +137,110 @@ export default function Map() {
     setMyPin(e.nativeEvent.coordinate)
   }
 
+  const handleRegionChange = async (region: Region) => {
+    setSearchLocation({ lat: region.latitude, lng: region.longitude })
+    setPosts(
+      await postService.getPostByFilters(
+        pet,
+        { lat: region.latitude, lng: region.longitude },
+        { lat: region.latitudeDelta, lng: region.longitudeDelta }
+      )
+    )
+    console.log(posts)
+  }
+
   return (
-    <TouchableWithoutFeedback /* onPress={() => sheetModalef.current?.close()} */>
-      <BottomSheetModalProvider>
-        {sheetModalef.current?.present()}
-        {/*  {sheetModalef.current?.snapTo(0)} */}
-        <View style={StyleSheet.absoluteFillObject}>
-          <MapView
-            ref={mapRef}
-            /*onRegionChange={(region) => console.log(region)} */
-            onUserLocationChange={(event) => setMyLocation(event.nativeEvent.coordinate)}
-            /*     showsMyLocationButton={true} */
-            showsUserLocation={true}
-            onLongPress={(e) => createMarker(e)}
-            /*  showsPointsOfInterest={false} */
-            customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
-            provider={PROVIDER_GOOGLE}
-            style={StyleSheet.absoluteFillObject}
-            initialRegion={{
-              latitude: -34.535532,
-              longitude: -58.541518,
-              latitudeDelta: 1.003,
-              longitudeDelta: 1.003
-            }}
-            onPress={handleMapPress}
+    <BottomSheetModalProvider>
+      {sheetModalef.current?.present()}
+      {/*      {sheetModalef.current?.snapTo(0)} */}
+      <View style={StyleSheet.absoluteFillObject}>
+        <MapView
+          ref={mapRef}
+          onRegionChangeComplete={(e) => handleRegionChange(e)}
+          // onUserLocationChange={(event) => setMyLocation({ lat: event.nativeEvent.coordinate.latitude, lng: event.nativeEvent.coordinate.longitude })}
+          /*     showsMyLocationButton={true} */
+          showsUserLocation={true}
+          onLongPress={(e) => createMarker(e)}
+          /*  showsPointsOfInterest={false} */
+          customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
+          provider={PROVIDER_GOOGLE}
+          style={StyleSheet.absoluteFillObject}
+          initialRegion={{
+            latitude: -34.535532,
+            longitude: -58.541518,
+            latitudeDelta: 1.003,
+            longitudeDelta: 1.003
+          }}
+          onPress={handleMapPress}
+        >
+          {myPin && <Marker onPress={createPost} coordinate={myPin}></Marker>}
+          {posts?.map((marketPost, index) => (
+            <MarkerAnimated
+              /* tracksViewChanges={false} */
+              zIndex={index}
+              onPress={() => handleMarketPress(marketPost, index, marketPost.location.lat, marketPost.location.long)}
+              stopPropagation={true}
+              key={marketPost.Id + Math.floor(Math.random() * 16777215)}
+              pinColor={theme.primary}
+              coordinate={{ latitude: marketPost.location.lat, longitude: marketPost.location.long }}
+              shouldRasterizeIOS
+              /*   style={{ width: 20, height: 20 }} */
+              /*  icon={pin} */
+
+              image={pin}
+              /*  image={pin} */
+              /*  title={post.descripti on} */
+            />
+          ))}
+        </MapView>
+
+        {/*   <View style={{ position: 'absolute', top: 100 }} /> */}
+        <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={handleMyLocation}>
+          <Text> Mi Ubicacion </Text>
+        </TouchableOpacity>
+        {/*         <TouchableOpacity style={{ position: 'absolute', top: 300 }} onPress={handleFilters}>
+          <Text> Actualizar </Text>
+        </TouchableOpacity> */}
+        <TouchableOpacity style={{ position: 'absolute', top: 100 }} onPress={handleFilters}>
+          <Text> Filtros </Text>
+        </TouchableOpacity>
+        <View style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
+          <GooglePlacesAutocomplete handleSearch={handleSearch} />
+        </View>
+        <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
+          {/*    <Button onPress={handlePresentModalPress} title="Present Modal" color="black" /> */}
+          <DefaultBottomSheetModal
+            index={0}
+            ref={sheetModalef}
+            dismissOnPanDown={false}
+            backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
+            style={{ backgroundColor: colors.navigation, borderRadius: 22 }}
+            snapPoints={snapPoints}
           >
-            {/*   {console.log(post?.Id)} */}
-            {myPin && <Marker onPress={createPost} coordinate={myPin}></Marker>}
-            {posts.map((marketPost, index) => (
-              <Marker
-                /* tracksViewChanges={false} */
-                zIndex={index}
-                onPress={() => handleMarketPress(marketPost, index, marketPost.location.lat, marketPost.location.long)}
-                stopPropagation={true}
-                key={marketPost.Id + Math.floor(Math.random() * 16777215)}
-                /*     pinColor={HandlePinColor(marketPost.Id)} */
-                coordinate={{ latitude: marketPost.location.lat, longitude: marketPost.location.long }}
-                shouldRasterizeIOS
-                /*   style={{ width: 20, height: 20 }} */
-                /*  icon={pin} */
-                image={pin}
-                /*  image={pin} */
-                /*  title={post.descripti on} */
-              />
-            ))}
-          </MapView>
-          {/*   <View style={{ position: 'absolute', top: 100 }} /> */}
-          <TouchableOpacity style={{ position: 'absolute', top: 200 }} onPress={handleMyLocation}>
-            <Text> Mi Ubicacion </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ position: 'absolute', top: 300 }} onPress={handleFilters}>
-            <Text> Actualizar </Text>
-          </TouchableOpacity>
-          <View style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
-            <GooglePlacesAutocomplete handleNavigateToPoint={handleNavigateToPoint} />
-          </View>
-          <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
-            {/*    <Button onPress={handlePresentModalPress} title="Present Modal" color="black" /> */}
-            <DefaultBottomSheetModal
-              index={0}
-              ref={sheetModalef}
-              dismissOnPanDown={false}
-              backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
-              style={{ backgroundColor: colors.navigation, borderRadius: 22 }}
-              snapPoints={snapPoints}
-            >
-              {/*  <PostPreview post={selectedPost} /> */}
-              <NavigationContainer ref={navigationRef} independent={true}>
-                <Stack.Navigator
-                  screenOptions={{
-                    headerTintColor: colors.text,
-                    headerStyle: {
-                      backgroundColor: colors.navigation
-                    },
-                    headerBackTitleStyle: {
-                      /*  fontFamily: 'LoveMeLikeASister' */
-                    },
-                    headerTitleStyle: {
-                      /*  fontFamily: 'LoveMeLikeASister' */
-                    },
-                    headerStatusBarHeight: 0,
-                    headerBackTitleVisible: false,
-                    cardStyle: {
-                      backgroundColor: colors.background
-                    },
-                    headerBackImage: () => (
-                      <View style={{ paddingHorizontal: 16 }}>
-                        <Icon style={{ color: colors.text, fontSize: 18 }} name="arrow-pointing-to-left-hand-drawn-outline" />
-                      </View>
-                    )
-                    /*    header: (props) => (
+            {/*  <PostPreview post={selectedPost} /> */}
+            <NavigationContainer ref={navigationRef} independent={true}>
+              <Stack.Navigator
+                screenOptions={{
+                  /*       headerTintColor: colors.text,
+                   */
+                  headerStyle: {
+                    backgroundColor: colors.navigation,
+                    height: 40
+                  },
+                  headerBackTitleStyle: {
+                    fontFamily: 'LoveMeLikeASister'
+                  },
+                  headerTitleStyle: {
+                    fontFamily: 'LoveMeLikeASister',
+                    color: '#3F414E'
+                  },
+                  headerStatusBarHeight: 0,
+                  headerBackTitleVisible: false,
+                  cardStyle: {
+                    backgroundColor: colors.background
+                  },
+                  headerBackImage: () => <Icon style={{ color: colors.text, fontSize: 22 }} name="left-arrow-hand-drawn-outline" />
+                  /*    header: (props) => (
                       <View style={{ padding: 16 }}>
                       
                         <TouchableOpacity onPress={() => navigationRef.current?.goBack()}>
@@ -219,16 +252,17 @@ export default function Map() {
                         </TouchableOpacity>
                       </View>
                     ) */
-                  }}
-                  initialRouteName="SearchResults"
-                >
-                  <Stack.Screen name="SearchByFilters" options={{ title: 'Mascotas perdidas', headerShown: true }} component={SearchByFilters} />
-                  <Stack.Screen name="PostPreview" options={{ title: 'Publicacion', headerShown: true }} component={PostPreview} />
-                  <Stack.Screen name="SearchResults" options={{ title: 'Mascotas perdidas' }} component={SearchResults} />
-                </Stack.Navigator>
-              </NavigationContainer>
-            </DefaultBottomSheetModal>
-            {/*     <DefaultBottomSheetModal
+                }}
+                initialRouteName="SearchResults"
+              >
+                <Stack.Screen name="SearchByFilters" options={{ title: 'Mascotas perdidas', headerShown: true }} component={SearchByFilters} />
+                <Stack.Screen name="PostPreview" options={{ title: post?.pet.breed.description, headerShown: true }} component={PostPreview} />
+                <Stack.Screen name="SearchResults" options={{ title: 'Mascotas perdidas' }} component={SearchResults} />
+                <Stack.Screen name="Filters" options={{ title: 'Aplicar filtros' }} component={SearchByFilters} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </DefaultBottomSheetModal>
+          {/*     <DefaultBottomSheetModal
               ref={sheetModalef2}
 
               backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
@@ -237,10 +271,9 @@ export default function Map() {
             >
               <Navigator2 />
             </DefaultBottomSheetModal> */}
-          </View>
         </View>
-      </BottomSheetModalProvider>
-    </TouchableWithoutFeedback>
+      </View>
+    </BottomSheetModalProvider>
   )
 }
 

@@ -1,6 +1,8 @@
 import axios from 'axios'
+import { Geometry, Point } from 'react-native-google-places-autocomplete'
 import { SERVER_URL } from '../constants/Rest'
 import { Bounderies } from '../types/models/Bounderies'
+import { Pet } from '../types/models/Pet'
 import { Post } from '../types/models/Post'
 
 class PostService {
@@ -10,6 +12,10 @@ class PostService {
 
   async getAll(): Promise<Post[]> {
     return (await axios.get<Post[]>(`${SERVER_URL}/post/getAll`)).data
+  }
+
+  async geyByLocation(geometry: Geometry | undefined): Promise<Post[]> {
+    return (await axios.put<Post[]>(`${SERVER_URL}/post/by-location`, geometry)).data
   }
 
   async location(bounderies: Bounderies): Promise<Post[]> {
@@ -26,6 +32,10 @@ class PostService {
 
   async delete(id: number): Promise<Post> {
     return (await axios.delete<Post>(`${SERVER_URL}/post/${id}`)).data
+  }
+
+  async getPostByFilters(pet: Pet | undefined, myLocation: Point, delta: Point): Promise<Post[]> {
+    return (await axios.put<Post[]>(`${SERVER_URL}/post/by-filter`, { pet, myLocation, delta })).data
   }
 }
 
