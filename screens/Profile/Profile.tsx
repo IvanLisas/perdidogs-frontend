@@ -9,11 +9,11 @@ import { Post } from '../../types/models/Post'
 import useTheme from '../../hooks/useTheme'
 import { LinearGradient } from 'expo-linear-gradient'
 import Icon from '../../components/icon/index'
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
+import { BottomSheetFlatList, TouchableWithoutFeedback } from '@gorhom/bottom-sheet'
 import { FlatList } from 'react-native-gesture-handler'
 
 const Profile: React.FC = () => {
-  const { user } = useContext(UserContext)
+  const { user, setUser } = useContext(UserContext)
 
   if (!user) return null
 
@@ -102,22 +102,27 @@ const Profile: React.FC = () => {
   return (
     <View style={styles.root}>
       <View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-          <View style={{ paddingRight: 8 }}>
-            <Avatar
-              size="medium"
-              titleStyle={{ color: 'white' }}
-              source={{ uri: user.avatar }}
-              overlayContainerStyle={{ backgroundColor: 'grey' }}
-              rounded
-              title={user.firstName[0] + user.lastName[0]}
-            />
-          </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <View style={{ paddingRight: 8 }}>
+              <Avatar
+                size="medium"
+                titleStyle={{ color: 'white' }}
+                source={{ uri: user.avatar }}
+                overlayContainerStyle={{ backgroundColor: 'grey' }}
+                rounded
+                title={user.firstName[0] + user.lastName[0]}
+              />
+            </View>
 
-          <View style={{ paddingVertical: 2 }}>
-            <Text style={{ fontSize: 28, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName} </Text>
-            <Text style={{ fontSize: 11, color: 'grey' }}>Creando el {user.creationDate} </Text>
+            <View style={{ paddingVertical: 2 }}>
+              <Text style={{ fontSize: 28, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName} </Text>
+              <Text style={{ fontSize: 11, color: 'grey' }}>En linea </Text>
+            </View>
           </View>
+          <TouchableOpacity onPress={() => setUser(undefined)}>
+            <Icon style={{ color: theme.primary, fontSize: 28 }} name="exit-hand-drawn-interface-symbol-variant" />
+          </TouchableOpacity>
         </View>
         <Text style={{ fontSize: 28, fontWeight: 'bold' }}>Mis publicaciones </Text>
       </View>

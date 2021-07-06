@@ -1,8 +1,6 @@
 import * as React from 'react'
-import { StyleSheet, View, Text, Image, ImageBackground, TouchableWithoutFeedback, Keyboard, TextInput as DefaultTextInput } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
+import { StyleSheet, View, Text, Image, TextInput, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native'
 import { useTheme } from '@react-navigation/native'
-import { Input } from 'react-native-elements'
 import { StackNavigationProp } from '@react-navigation/stack'
 import LoginStackParamList from '../../types/LoginStackParamList'
 import { useContext, useState } from 'react'
@@ -11,6 +9,8 @@ import Button from '../../components/MyThemedComponents/Button'
 import userService from '../../services/UserService'
 import { User } from '../../types/models/User'
 import UserContext from '../../contexts/UserContext'
+import MyInput from '../../components/MyThemedComponents/MyInput'
+import showError from '../../utils/Erros'
 
 type ProfileScreenNavigationProp = StackNavigationProp<LoginStackParamList, 'Registration'>
 
@@ -25,25 +25,19 @@ export default function Registration({ navigation }: Props) {
 
   const labrador = require('../../assets/images/golden.png')
 
-  const [email, setEmail] = useState('')
-
-  const [firstName, setFirstName] = useState('')
-
-  const [lastName, setLastName] = useState('')
-
-  const [password, setPassword] = useState('')
+  const [userToRegister, setUserToRegister] = useState<User>({ firstName: '', lastName: '', email: '', password: '' })
 
   const [repetedPassword, setRepetedPassword] = useState('')
 
-  const inputEmail = React.createRef<DefaultTextInput>()
+  const inputEmail = React.createRef<TextInput>()
 
-  const inputPassword = React.createRef<DefaultTextInput>()
+  const inputPassword = React.createRef<TextInput>()
 
-  const inputFirstName = React.createRef<DefaultTextInput>()
+  const inputFirstName = React.createRef<TextInput>()
 
-  const inputLastName = React.createRef<DefaultTextInput>()
+  const inputLastName = React.createRef<TextInput>()
 
-  const inputRepetedPassword = React.createRef<DefaultTextInput>()
+  const inputRepetedPassword = React.createRef<TextInput>()
 
   const [firstNameError, setFirstNameError] = useState('')
 
@@ -64,137 +58,115 @@ export default function Registration({ navigation }: Props) {
     setEmailError('')
     setLastNameError('')
     setFirstNameError('')
-    if (firstName.length < 1) {
+    if (userToRegister.firstName.length < 1) {
       ;(inputFirstName.current as any).shake()
       setFirstNameError('Ingrese un nombre')
       hasErrors = true
     }
-    if (lastName.length < 1) {
+    if (userToRegister.lastName.length < 1) {
       ;(inputLastName.current as any).shake()
       setLastNameError('Ingrese un apellido')
       hasErrors = true
     }
-    if (password.length < 8) {
+    if (userToRegister.password && userToRegister.password.length < 8) {
       setPasswordError('Debe tener mas de 8 caracteres')
       ;(inputPassword.current as any).shake()
       hasErrors = true
     }
-    if (email.indexOf('.') == -1 && email.indexOf('@') == -1) {
+    if (!userToRegister.password) {
+      ;(inputPassword.current as any).shake()
+      hasErrors = true
+    }
+    if (userToRegister.email.indexOf('.') == -1 && userToRegister.email.indexOf('@') == -1) {
       setEmailError('El formato no es valido')
       ;(inputEmail.current as any).shake()
       hasErrors = true
     }
-    if (password !== repetedPassword) {
+    if (userToRegister.password !== repetedPassword) {
       setRepetedPasswordError('Las contraseñas no coinciden')
       ;(inputRepetedPassword.current as any).shake()
       hasErrors = true
     }
     if (!hasErrors) {
       try {
-        setUser(await userService.register({ firstName: firstName, lastName: lastName, email: email, password: password } as User))
+        setUser(
+          await userService.register({
+            firstName: userToRegister.firstName,
+            lastName: userToRegister.lastName,
+            email: userToRegister.email,
+            password: userToRegister.password
+          } as User)
+        )
       } catch (error) {
-        console.log(error.response)
-        setError('Error al conectar con el servidor: ' + error.message)
+        setError(showError(error))
       }
     }
   }
 
+  const handleInputChange = (text: string, key: keyof User) => {
+    return setUserToRegister((prevState) => ({ ...prevState, [key]: text }))
+  }
+
   return (
-    <View>
-      {/* TODO: cortar imagen  */}
-      <ImageBackground
-        source={labrador}
-        style={styles.labrador}
-        imageStyle={{
-          resizeMode: 'contain'
-        }}
-      />
-      {/*   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}> */}
-      {/*  <LinearGradient colors={['#FFE5B2', '#EFB865']} style={styles.background}> */}
-      <KeyboardAwareScrollView style={{}} showsVerticalScrollIndicator={false}>
-        {/*   <LinearGradient colors={['#FFE5B2', '#EFB865']} style={styles.background}> */}
-        <View style={styles.root}>
-          {/*  <ScrollView style={{}} contentContainerStyle={styles.content}> */}
+    <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+      <Image source={labrador} style={styles.labrador} />
+      <View style={styles.root}>
+        {/*  <ScrollView style={{}} contentContainerStyle={styles.content}> */}
+        <MyInput
+          _ref={inputFirstName}
+          textContentType="name"
+          placeholder="Nombre"
+          autoCompleteType="name"
+          onChangeText={(text: string) => handleInputChange(text, 'firstName')}
+          value={userToRegister.firstName}
+          errorMessage={firstNameError}
+        />
+        <MyInput
+          _ref={inputLastName}
+          textContentType="familyName"
+          placeholder="Apellido"
+          onChangeText={(text: string) => handleInputChange(text, 'lastName')}
+          value={userToRegister.lastName}
+          errorMessage={lastNameError}
+        />
+        <MyInput
+          _ref={inputEmail}
+          textContentType="emailAddress"
+          placeholder="Email"
+          autoCompleteType="email"
+          onChangeText={(text: string) => handleInputChange(text, 'email')}
+          value={userToRegister.email}
+          errorMessage={emailError}
+        />
+        <MyInput
+          _ref={inputPassword}
+          textContentType="newPassword"
+          placeholder="Contraseña"
+          autoCompleteType="password"
+          onChangeText={(text: string) => handleInputChange(text, 'password')}
+          secureTextEntry={true}
+          value={userToRegister.password}
+          style={styles.input}
+          errorMessage={passwordError}
+        />
 
-          <Input
-            ref={inputFirstName}
-            inputContainerStyle={{ borderBottomWidth: 0, width: '100%' }}
-            textContentType="name"
-            placeholder="Nombre"
-            autoCompleteType="name"
-            onChangeText={setFirstName}
-            value={firstName}
-            containerStyle={{ paddingHorizontal: 0 }}
-            style={styles.input}
-            errorStyle={{ color: 'red' }}
-            errorMessage={firstNameError}
-          />
-          <Input
-            ref={inputLastName}
-            inputContainerStyle={{ borderBottomWidth: 0, width: '100%' }}
-            textContentType="familyName"
-            placeholder="Apellido"
-            onChangeText={setLastName}
-            value={lastName}
-            containerStyle={{ paddingHorizontal: 0 }}
-            style={styles.input}
-            errorStyle={{ color: 'red' }}
-            errorMessage={lastNameError}
-          />
-          <Input
-            ref={inputEmail}
-            inputContainerStyle={{ borderBottomWidth: 0, width: '100%' }}
-            textContentType="emailAddress"
-            placeholder="Email"
-            autoCompleteType="email"
-            onChangeText={setEmail}
-            value={email}
-            containerStyle={{ paddingHorizontal: 0 }}
-            style={styles.input}
-            errorStyle={{ color: 'red' }}
-            errorMessage={emailError}
-          />
-          <Input
-            ref={inputPassword}
-            inputContainerStyle={{ borderBottomWidth: 0, width: '100%' }}
-            textContentType="newPassword"
-            placeholder="Contraseña"
-            autoCompleteType="password"
-            onChangeText={setPassword}
-            secureTextEntry={true}
-            value={password}
-            containerStyle={{ paddingHorizontal: 0 }}
-            style={styles.input}
-            errorStyle={{ color: 'red' }}
-            errorMessage={passwordError}
-          />
-
-          <Input
-            ref={inputRepetedPassword}
-            inputContainerStyle={{ borderBottomWidth: 0, width: '100%' }}
-            textContentType="password"
-            placeholder="Repetir contraseña"
-            onChangeText={setRepetedPassword}
-            value={repetedPassword}
-            containerStyle={{ paddingHorizontal: 0 }}
-            style={styles.input}
-            secureTextEntry={true}
-            errorStyle={{ color: 'red' }}
-            errorMessage={repetedPasswordError}
-          />
-          <Text style={{ color: 'red', fontSize: 12 }}>{error}</Text>
-          <View style={styles.button}>
-            <Button title="Ingresar" onPress={registration} />
-          </View>
+        <MyInput
+          _ref={inputRepetedPassword}
+          textContentType="password"
+          placeholder="Repetir contraseña"
+          onChangeText={setRepetedPassword}
+          value={repetedPassword}
+          secureTextEntry={true}
+          errorMessage={repetedPasswordError}
+        />
+        <Text style={{ color: 'red', fontSize: 14, marginBottom: 16 }}>{error}</Text>
+        <View style={styles.button}>
+          <Button title="Registrarse" onPress={registration} />
         </View>
-
-        {/*    </ScrollView> */}
-
-        {/*   </LinearGradient> */}
-      </KeyboardAwareScrollView>
+      </View>
+      {/*    </ScrollView> */}
       {/*   </LinearGradient> */}
-      {/* </TouchableWithoutFeedback> */}
-    </View>
+    </KeyboardAwareScrollView>
   )
 }
 
@@ -212,9 +184,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     alignSelf: 'center' */
-    /*  paddingTop: 32 */
-    padding: 20,
-    paddingTop: 120
+    paddingTop: 150,
+    padding: 20
+    /*     paddingTop: 120  */
   },
   content: {
     flex: 1,
@@ -262,10 +234,10 @@ const styles = StyleSheet.create({
     color: 'black'
   },
   labrador: {
-    width: 300,
-    height: 200,
+    /*    width: 200,
+    height: 100, */
     position: 'absolute',
-    top: -80,
+    top: -100,
     /*     left: 50, */
     transform: [{ rotate: '-180deg' }],
     alignSelf: 'center'

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { StyleSheet, View, Image, ImageBackground, TouchableWithoutFeedback, Keyboard, TextInput as DefaultTextInput } from 'react-native'
+import { StyleSheet, View, Image } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Text from '../../components/MyThemedComponents/Text'
 import LoginStackParamList from '../../types/LoginStackParamList'
@@ -9,10 +9,9 @@ import UserContext from '../../contexts/UserContext'
 import Button from '../../components/MyThemedComponents/Button'
 import userService from '../../services/UserService'
 import { LinearGradient } from 'expo-linear-gradient'
-import { User } from '../../types/models/User'
-import { Input } from 'react-native-elements'
-import useUser from '../../hooks/useUser'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import showError from '../../utils/Erros'
+import Input from '../../components/MyThemedComponents/MyInput'
 
 type authScreenProp = StackNavigationProp<LoginStackParamList>
 
@@ -23,13 +22,15 @@ export default function Login() {
 
   const [password, setPassword] = useState('12345678')
 
+  const [loading, setLoading] = useState(false)
+
   const navigation = useNavigation<authScreenProp>()
 
   const [errorMessage, setErrorMessage] = useState('')
 
-  const inputEmail = React.createRef<DefaultTextInput>()
+  /*   const inputEmail = React.createRef<DefaultTextInput>()
 
-  const inputPassword = React.createRef<DefaultTextInput>()
+  const inputPassword = React.createRef<DefaultTextInput>() */
 
   const logo = require('../../assets/images/login-logo.png')
 
@@ -37,83 +38,71 @@ export default function Login() {
 
   const login = async () => {
     try {
-      /*    setUser({ firstName: 'pepe' } as User) */
-      /*    if (email === '1' && password === '1') setUser({ firstName: 'pepe' } as User) */
+      setLoading(true)
+      setErrorMessage('')
       setUser(await userService.login(email, password))
     } catch (error) {
-      ;(inputEmail.current as any).shake()
-      ;(inputPassword.current as any).shake()
-      setErrorMessage('Email o contraseña no validos')
-      console.log('asd')
-      console.log(error.message)
+      setErrorMessage(showError(error))
     }
+    setLoading(false)
   }
 
   return (
     /*  <TouchableWithoutFeedback  onPress={() => Keyboard.dismiss() }> */
     <LinearGradient colors={['#FFE5B2', '#EFB865']} style={styles.background}>
-      <KeyboardAwareScrollView contentContainerStyle={styles.root} scrollEnabled={false} showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}
+        scrollEnabled={false}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.root}>
-          <ImageBackground
+          {/*           <ImageBackground
             source={labrador}
             style={styles.labrador}
             imageStyle={{
               resizeMode: 'contain',
               alignSelf: 'flex-start'
             }}
-          ></ImageBackground>
+          ></ImageBackground> */}
           <View style={styles.content}>
-            <View style={styles.titleContainer}>
-              <View style={styles.logoContainer}>
-                <Image style={styles.logo} source={logo} />
+            <View style={styles.content2}>
+              <View style={styles.titleContainer}>
+                <View style={styles.logoContainer}>
+                  <Image style={styles.logo} source={logo} />
+                </View>
+                <Text style={styles.tittleLabel}>Perdidogs</Text>
               </View>
-              <Text style={styles.tittleLabel}>Perdidogs</Text>
-            </View>
 
-            <Input
-              ref={inputEmail}
-              inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
-              textContentType="emailAddress"
-              placeholder="Email"
-              autoCompleteType="email"
-              onChangeText={setEmail}
-              value={email}
-              containerStyle={{ paddingHorizontal: 0 }}
-              style={styles.input}
-              /*               errorStyle={{ color: 'red' }}
-              errorMessage="Email no valido" */
-            />
+              {/* <MyInput placeholder="Email"  textContentType="emailAddress" onChangeText={setEmail}></MyInput> */}
+              <Input textContentType="emailAddress" placeholder="Email" autoCompleteType="email" onChangeText={setEmail} value={email} />
 
-            <Input
-              ref={inputPassword}
-              textContentType="newPassword"
-              placeholder="Contraseña"
-              inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
-              onChangeText={setPassword}
-              autoCompleteType="password"
-              value={password}
-              secureTextEntry={true}
-              /*    inputStyle={styles.input} */
-              style={styles.input}
-              errorStyle={{ color: 'red' }}
-              errorMessage={errorMessage}
-              containerStyle={{ paddingHorizontal: 0 }}
-            />
-            <View style={styles.forgotPasswordContainer}>
-              <Text style={styles.link}>Olvidaste tu contraseña?</Text>
+              <Input
+                textContentType="newPassword"
+                placeholder="Contraseña"
+                onChangeText={setPassword}
+                autoCompleteType="password"
+                value={password}
+                secureTextEntry={true}
+                errorMessage={errorMessage}
+              />
+
+              <View style={styles.button}>
+                <Button title="Ingresar" loading={loading} onPress={login} />
+              </View>
+
+              <View style={styles.registerContainer}>
+                <Text style={styles.link}>Sin cuenta? </Text>
+                <Text onPress={() => navigation.navigate('Registration')} style={styles.register}>
+                  Registrate!
+                </Text>
+              </View>
+              <View style={styles.forgotPasswordContainer}>
+                <Text style={styles.link}>Olvidaste tu contraseña?</Text>
+              </View>
+              {/*  <View style={styles.logoContainer}> */}
+              {/*   <Image style={styles.labrador} source={labrador} /> */}
+              {/*   </View> */}
             </View>
-            <View style={styles.button}>
-              <Button title="Ingresar" onPress={login} />
-            </View>
-            <View style={styles.registerContainer}>
-              <Text style={styles.link}>Sin cuenta? </Text>
-              <Text onPress={() => navigation.navigate('Registration')} style={styles.register}>
-                Registrate!
-              </Text>
-            </View>
-            {/*  <View style={styles.logoContainer}> */}
-            {/*   <Image style={styles.labrador} source={labrador} /> */}
-            {/*   </View> */}
           </View>
         </View>
       </KeyboardAwareScrollView>
@@ -134,40 +123,37 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     alignItems: 'center',
-    /*   justifyContent: 'space-between', */
-
+    flexDirection: 'column',
+    /*     top: -100, */
+    justifyContent: 'center'
     /*   width: 248, */
-    alignSelf: 'center',
-    paddingTop: 32
+    /*     alignSelf: 'center' */
   },
   content: {
     flex: 1,
     width: 310,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16
-
+    padding: 16,
+    height: '100%'
     /*     alignSelf: 'center' */
   },
-  input: {
-    marginVertical: 2,
-    borderRadius: 15,
-    padding: 16,
-    backgroundColor: 'white',
-    /*   alignSelf: 'center', */
-    width: 234
+  content2: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%'
   },
+
   button: {
     alignSelf: 'stretch',
-    marginTop: 8,
-    backgroundColor: '#E3BCFB',
-    borderRadius: 15
+    marginTop: 8
   },
   titleContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16
+    paddingVertical: 32
   },
   logoContainer: {
     paddingRight: 8
@@ -186,23 +172,23 @@ const styles = StyleSheet.create({
     width: 300,
     height: 200,
     position: 'absolute',
-    top: -70,
+    top: -100,
     transform: [{ rotate: '180deg' }]
     /*    alignSelf: 'stretch' */
   },
   link: {
     fontWeight: '500',
     color: 'black',
-    fontFamily: 'LoveMeLikeASister',
-    fontSize: 11
+    /*     fontFamily: 'LoveMeLikeASister', */
+    fontSize: 14
   },
   registerContainer: {
     flexDirection: 'row',
-    paddingTop: 24
+    paddingTop: 16
   },
   register: {
-    fontFamily: 'LoveMeLikeASister',
-    fontSize: 11,
+    /*     fontFamily: 'LoveMeLikeASister', */
+    fontSize: 14,
     color: 'blue'
   },
   forgotPasswordContainer: {

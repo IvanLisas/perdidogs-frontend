@@ -4,7 +4,7 @@ import { User } from '../types/models/User'
 
 class UserService {
   async login(email: string, password: string): Promise<User> {
-    return (await axios.put<User>(`${SERVER_URL}/user/login`, { email, password })).data
+    return (await axios.put<User>(`${SERVER_URL}/user/login`, { email, password }, { timeout: 3000 })).data
   }
 
   async getUser(id: number): Promise<User> {
@@ -12,7 +12,7 @@ class UserService {
   }
 
   async register(user: User): Promise<User> {
-    return (await axios.post<User>(`${SERVER_URL}/user/`, user)).data
+    return (await axios.post<User>(`${SERVER_URL}/user/registration`, user)).data
   }
 
   async update(user: User): Promise<User> {

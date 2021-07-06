@@ -23,10 +23,10 @@ function ProfileStackScreen() {
           backgroundColor: '#F0C591'
         },
         headerTitleStyle: {
-          fontFamily: 'LoveMeLikeASister'
+          /*    fontFamily: 'LoveMeLikeASister' */
         },
         headerBackTitleStyle: {
-          fontFamily: 'LoveMeLikeASister'
+          /*   fontFamily: 'LoveMeLikeASister' */
         },
         cardStyle: {
           backgroundColor: '#F9D394',
@@ -34,7 +34,7 @@ function ProfileStackScreen() {
         },
         headerBackImage: () => (
           <View style={{ paddingHorizontal: 16 }}>
-            <Icon style={{ color: '#3F414E', fontSize: 18 }} name="arrow-pointing-to-left-hand-drawn-outline" />
+            <Icon style={{ color: '#3F414E', fontSize: 22 }} name="left-arrow-hand-drawn-outline" />
           </View>
         ),
 
