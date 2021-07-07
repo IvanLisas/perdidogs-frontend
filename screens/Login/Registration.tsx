@@ -1,11 +1,10 @@
 import * as React from 'react'
-import { StyleSheet, View, Text, Image, TextInput, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native'
-import { useTheme } from '@react-navigation/native'
+import { StyleSheet, View, Text, Image, TextInput } from 'react-native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import LoginStackParamList from '../../types/LoginStackParamList'
 import { useContext, useState } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import Button from '../../components/MyThemedComponents/Button'
+import MyButton from '../../components/MyThemedComponents/Button'
 import userService from '../../services/UserService'
 import { User } from '../../types/models/User'
 import UserContext from '../../contexts/UserContext'
@@ -50,15 +49,13 @@ const validateEmail = (email: string) => {
 }
 
 export default function Registration({ navigation }: Props) {
-  const { colors } = useTheme()
-
   const { setUser } = useContext(UserContext)
 
   const labrador = require('../../assets/images/golden.png')
 
   const [form, setForm] = useState<form>({ data: initialState, error: initialState })
 
-  /*   const [repetedPassword, setRepetedPassword] = useState('') */
+  const [loading, setLoading] = useState(false)
 
   const inputEmail = React.createRef<TextInput>()
 
@@ -98,6 +95,7 @@ export default function Registration({ navigation }: Props) {
     }
     if (!hasErrors) {
       try {
+        setLoading(true)
         setUser(
           await userService.register({
             firstName: form.data.firstName,
@@ -108,6 +106,7 @@ export default function Registration({ navigation }: Props) {
         )
       } catch (error) {
         setError(showError(error))
+        setLoading(false)
       }
     }
   }
@@ -178,7 +177,7 @@ export default function Registration({ navigation }: Props) {
         />
         <Text style={{ color: 'red', fontSize: 14, marginBottom: 16 }}>{error}</Text>
         <View style={styles.button}>
-          <Button title="Registrarse" onPress={registration} />
+          <MyButton loading={loading} title="Registrarse" onPress={registration} />
         </View>
       </View>
       {/*    </ScrollView> */}
