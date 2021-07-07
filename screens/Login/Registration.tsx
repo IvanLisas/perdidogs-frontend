@@ -18,6 +18,37 @@ type Props = {
   navigation: ProfileScreenNavigationProp
 }
 
+type form = {
+  data: {
+    firstName: string
+    lastName: string
+    email: string
+    password: string
+    repetedPassword: string
+  }
+  error: {
+    firstName: string
+    lastName: string
+    email: string
+    password: string
+    repetedPassword: string
+  }
+}
+
+const initialState = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  repetedPassword: ''
+}
+
+const validateEmail = (email: string) => {
+  var re =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return re.test(email)
+}
+
 export default function Registration({ navigation }: Props) {
   const { colors } = useTheme()
 
@@ -25,9 +56,9 @@ export default function Registration({ navigation }: Props) {
 
   const labrador = require('../../assets/images/golden.png')
 
-  const [userToRegister, setUserToRegister] = useState<User>({ firstName: '', lastName: '', email: '', password: '' })
+  const [form, setForm] = useState<form>({ data: initialState, error: initialState })
 
-  const [repetedPassword, setRepetedPassword] = useState('')
+  /*   const [repetedPassword, setRepetedPassword] = useState('') */
 
   const inputEmail = React.createRef<TextInput>()
 
@@ -39,62 +70,40 @@ export default function Registration({ navigation }: Props) {
 
   const inputRepetedPassword = React.createRef<TextInput>()
 
-  const [firstNameError, setFirstNameError] = useState('')
-
-  const [lastNameError, setLastNameError] = useState('')
-
-  const [passwordError, setPasswordError] = useState('')
-
-  const [repetedPasswordError, setRepetedPasswordError] = useState('')
-
-  const [emailError, setEmailError] = useState('')
+  let hasErrors = false
 
   const [error, setError] = useState('')
 
   const registration = async () => {
-    let hasErrors = false
-    setRepetedPasswordError('')
-    setPasswordError('')
-    setEmailError('')
-    setLastNameError('')
-    setFirstNameError('')
-    if (userToRegister.firstName.length < 1) {
-      ;(inputFirstName.current as any).shake()
-      setFirstNameError('Ingrese un nombre')
-      hasErrors = true
+    hasErrors = false
+    setForm((prevState) => ({ ...prevState, error: initialState }))
+    setError('')
+
+    if (!validateEmail(form.data.email)) {
+      handleError('El formato del email no es valido', 'email', inputEmail)
     }
-    if (userToRegister.lastName.length < 1) {
-      ;(inputLastName.current as any).shake()
-      setLastNameError('Ingrese un apellido')
-      hasErrors = true
+
+    if (form.data.firstName.length < 4) {
+      handleError('Debe tener mas de 4 caracteres', 'firstName', inputFirstName)
     }
-    if (userToRegister.password && userToRegister.password.length < 8) {
-      setPasswordError('Debe tener mas de 8 caracteres')
-      ;(inputPassword.current as any).shake()
-      hasErrors = true
+    if (form.data.lastName.length < 4) {
+      handleError('Debe tener mas de 4 caracteres', 'lastName', inputLastName)
     }
-    if (!userToRegister.password) {
-      ;(inputPassword.current as any).shake()
-      hasErrors = true
+    if (form.data.password.length < 8) {
+      handleError('Debe tener mas de 8 caracteres', 'password', inputPassword)
     }
-    if (userToRegister.email.indexOf('.') == -1 && userToRegister.email.indexOf('@') == -1) {
-      setEmailError('El formato no es valido')
-      ;(inputEmail.current as any).shake()
-      hasErrors = true
-    }
-    if (userToRegister.password !== repetedPassword) {
-      setRepetedPasswordError('Las contraseñas no coinciden')
-      ;(inputRepetedPassword.current as any).shake()
-      hasErrors = true
+
+    if (form.data.password !== form.data.repetedPassword) {
+      handleError('Las contraseñas no coinciden', 'repetedPassword', inputRepetedPassword)
     }
     if (!hasErrors) {
       try {
         setUser(
           await userService.register({
-            firstName: userToRegister.firstName,
-            lastName: userToRegister.lastName,
-            email: userToRegister.email,
-            password: userToRegister.password
+            firstName: form.data.firstName,
+            lastName: form.data.lastName,
+            email: form.data.email,
+            password: form.data.password
           } as User)
         )
       } catch (error) {
@@ -103,9 +112,17 @@ export default function Registration({ navigation }: Props) {
     }
   }
 
-  const handleInputChange = (text: string, key: keyof User) => {
-    return setUserToRegister((prevState) => ({ ...prevState, [key]: text }))
+  const handleInputChange = (text: string, key: keyof typeof initialState) => {
+    setForm((prevState) => ({ ...prevState, data: { ...prevState.data, [key]: text } }))
   }
+
+  const handleError = (text: string, key: keyof typeof initialState, input: React.RefObject<TextInput>) => {
+    ;(input.current as any).shake()
+    setForm((prevState) => ({ ...prevState, error: { ...prevState.error, [key]: text } }))
+    hasErrors = true
+  }
+
+  /*  const hasErrors2 = Object.values(form.error).some((value) => value !== '') */
 
   return (
     <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
@@ -118,16 +135,16 @@ export default function Registration({ navigation }: Props) {
           placeholder="Nombre"
           autoCompleteType="name"
           onChangeText={(text: string) => handleInputChange(text, 'firstName')}
-          value={userToRegister.firstName}
-          errorMessage={firstNameError}
+          value={form.data.firstName}
+          errorMessage={form.error.firstName}
         />
         <MyInput
           _ref={inputLastName}
           textContentType="familyName"
           placeholder="Apellido"
           onChangeText={(text: string) => handleInputChange(text, 'lastName')}
-          value={userToRegister.lastName}
-          errorMessage={lastNameError}
+          value={form.data.lastName}
+          errorMessage={form.error.lastName}
         />
         <MyInput
           _ref={inputEmail}
@@ -135,8 +152,8 @@ export default function Registration({ navigation }: Props) {
           placeholder="Email"
           autoCompleteType="email"
           onChangeText={(text: string) => handleInputChange(text, 'email')}
-          value={userToRegister.email}
-          errorMessage={emailError}
+          value={form.data.email}
+          errorMessage={form.error.email}
         />
         <MyInput
           _ref={inputPassword}
@@ -145,19 +162,19 @@ export default function Registration({ navigation }: Props) {
           autoCompleteType="password"
           onChangeText={(text: string) => handleInputChange(text, 'password')}
           secureTextEntry={true}
-          value={userToRegister.password}
+          value={form.data.password}
           style={styles.input}
-          errorMessage={passwordError}
+          errorMessage={form.error.password}
         />
 
         <MyInput
           _ref={inputRepetedPassword}
           textContentType="password"
           placeholder="Repetir contraseña"
-          onChangeText={setRepetedPassword}
-          value={repetedPassword}
+          onChangeText={(text: string) => handleInputChange(text, 'repetedPassword')}
+          value={form.data.repetedPassword}
           secureTextEntry={true}
-          errorMessage={repetedPasswordError}
+          errorMessage={form.error.repetedPassword}
         />
         <Text style={{ color: 'red', fontSize: 14, marginBottom: 16 }}>{error}</Text>
         <View style={styles.button}>
