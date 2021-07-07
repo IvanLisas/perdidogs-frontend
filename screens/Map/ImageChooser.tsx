@@ -33,9 +33,6 @@ const ImageChooser: React.FC<ImageChooserProps> = (props) => {
     const options = { quality: 0.7, base64: true }
     const result = await ImagePicker.launchImageLibraryAsync(options)
 
-    // Explore the result
-    console.log(result)
-
     if (!result.cancelled) {
       setPickedImagePath(result)
     }
@@ -54,11 +51,9 @@ const ImageChooser: React.FC<ImageChooserProps> = (props) => {
     const result = await ImagePicker.launchCameraAsync(options)
 
     // Explore the result
-    console.log(result)
 
     if (!result.cancelled) {
       setPickedImagePath(result)
-      console.log(result.uri)
     }
   }
 

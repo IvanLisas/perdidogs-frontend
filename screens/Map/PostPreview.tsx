@@ -142,7 +142,6 @@ const PostPreview: React.FC = () => {
           <Text style={styles(theme).description2}>Lo encontre cerca de la estacion de villa ballester. Estaba con collar</Text>
             <Text style={{ fontSize: 22, paddingBottom: 16 }}>Comentarios</Text>
             */}
-              {console.log(post?.comments)}
               {post?.comments?.map((comment, index) => (
                 <View style={{ marginBottom: 16 }} key={index + 'coments'}>
                   <View style={{ paddingBottom: 4 }}>

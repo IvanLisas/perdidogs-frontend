@@ -48,7 +48,6 @@ const Chats: React.FC = () => {
       <ScrollView>
         {chats.map((chat, index) => (
           <TouchableOpacity onPress={() => goToChat(chat)} key={'chat' + index}>
-            {(console.disableYellowBox = true)}
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
               <Avatar
                 key={'chat2' + index}

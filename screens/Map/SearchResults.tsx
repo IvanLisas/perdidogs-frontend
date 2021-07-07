@@ -28,7 +28,6 @@ const SearchResults: React.FC = ({}) => {
 
   const handleGoTopost = (post: Post) => {
     setPost(post)
-    console.log(post.location)
     handleNavigateToPoint(post.location.lat, post.location.long)
     navigation.navigate('PostPreview')
   }

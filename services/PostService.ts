@@ -39,12 +39,10 @@ class PostService {
   }
 
   async post(post: Post): Promise<Post> {
-    console.log(post)
     return (await axios.post<Post>(`${SERVER_URL}/post`, post)).data
   }
 
   async getPostByFilters(pet: Pet | undefined, myLocation: Point | undefined, delta: Point | undefined): Promise<Post[]> {
-    console.log({ pet, myLocation, delta })
     return (await axios.put<Post[]>(`${SERVER_URL}/post/by-filter`, { pet, myLocation, delta })).data
   }
 }

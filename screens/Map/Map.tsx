@@ -18,7 +18,7 @@ import SearchByFilters from './SearchByFilters'
 import SearchResults from './SearchResults'
 import PostContext from '../../contexts/PostContext'
 import Icon from '../../components/icon/index'
-import { GooglePlaceDetail } from 'react-native-google-places-autocomplete'
+import { GooglePlaceData, GooglePlaceDetail } from 'react-native-google-places-autocomplete'
 import { Bounderies } from '../../types/models/Bounderies'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import FiltersContext from '../../contexts/FiltersContext'
@@ -28,32 +28,20 @@ import Chats from '../Chats/Chats'
 import Conversation from '../Chats/Conversation'
 
 export default function Map() {
-  /*   const { setPost } = useContext(PostContext) */
-
   const colorMode = Appearance.getColorScheme()
 
   const theme = useTheme()
 
   const [errorMessage, setErrorMessage] = useState('')
 
-  const [selectedPost, setSelectedPost] = useState<Post>()
-  /* 
-  const [myLocation, setMyLocation] = useState<LatLng>() */
-
   const { setPost, posts, setPosts, post } = useContext(PostContext)
 
   const { setSearchLocation, setMyLocation, myLocation, searchLocation, pet, searchLocationDelta, setSearchLocationDelta } =
     useContext(FiltersContext)
 
-  /* const [posts, setPosts] = useState<Post[]>([]) */
-
-  const colors = useTheme()
-
   const navigation = useNavigation()
 
-  const [goTo, setGoTo] = useState('SearchByFilters')
-
-  const { mapRef, selectedMarker, handleNavigateToPoint, handelResetInitialPosition } = useMap()
+  const { mapRef, selectedMarker, handleNavigateToPoint, handelResetInitialPosition, handleNavigateToRegion } = useMap()
 
   const sheetModalef = useRef<DefaultBottomSheetModal>(null)
 
@@ -100,16 +88,6 @@ export default function Map() {
     sheetModalef.current?.snapTo(0)
   }
 
-  const handleSearch = async (details: GooglePlaceDetail | null) => {
-    handleNavigateToPoint(1, details?.geometry.location.lat, details?.geometry.location.lng)
-
-    try {
-      setPosts(await postService.geyByLocation(details?.geometry))
-    } catch (error) {
-      console.log(error.message)
-    }
-  }
-
   useEffect(() => {
     const permission = async () => {
       await getPosts()
@@ -153,6 +131,24 @@ export default function Map() {
     )
   }
 
+  //Revisado
+  const handleSearch = async (data: GooglePlaceData, detail: GooglePlaceDetail | null) => {
+    if (detail) {
+      const { width, height } = Dimensions.get('window')
+      const ASPECT_RATIO = width / height //No se usa
+      //Calculo la zona
+      const lat = detail.geometry.location.lat
+      const lng = detail.geometry.location.lng
+      const latDelta = detail.geometry.viewport.northeast.lat - detail.geometry.viewport.southwest.lat
+      const lngDelta = latDelta
+      handleNavigateToRegion({ latitude: lat, longitude: lng, latitudeDelta: latDelta, longitudeDelta: lngDelta })
+      try {
+        setPosts(await postService.geyByLocation(detail.geometry))
+      } catch (error) {
+        console.log(error.message)
+      }
+    }
+  }
   return (
     <BottomSheetModalProvider>
       {sheetModalef.current?.present()}
@@ -175,6 +171,7 @@ export default function Map() {
             latitudeDelta: 1.003,
             longitudeDelta: 1.003
           }}
+          showsMyLocationButton={false}
           onPress={handleMapPress}
         >
           {myPin && <Marker onPress={createPost} coordinate={myPin}></Marker>}
@@ -280,7 +277,7 @@ export default function Map() {
             ref={sheetModalef}
             dismissOnPanDown={false}
             backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
-            style={{ backgroundColor: colors.navigation, borderRadius: 22 }}
+            style={{ backgroundColor: theme.navigation, borderRadius: 22 }}
             snapPoints={snapPoints}
           >
             {/*  <PostPreview post={selectedPost} /> */}
@@ -290,7 +287,7 @@ export default function Map() {
                   /*       headerTintColor: colors.text,
                    */
                   headerStyle: {
-                    backgroundColor: colors.navigation,
+                    backgroundColor: theme.navigation,
                     height: 30
                   },
                   headerBackTitleStyle: {
@@ -303,9 +300,9 @@ export default function Map() {
                   headerStatusBarHeight: 0,
                   headerBackTitleVisible: false,
                   cardStyle: {
-                    backgroundColor: colors.background
+                    backgroundColor: theme.background
                   },
-                  headerBackImage: () => <Icon style={{ color: colors.text, fontSize: 22 }} name="left-arrow-hand-drawn-outline" />
+                  headerBackImage: () => <Icon style={{ color: theme.text, fontSize: 22 }} name="left-arrow-hand-drawn-outline" />
                   /*    header: (props) => (
                       <View style={{ padding: 16 }}>
                       

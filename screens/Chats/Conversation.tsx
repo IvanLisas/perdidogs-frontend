@@ -55,7 +55,6 @@ const Conversation: React.FC = (props) => {
   const scrollViewRef = useRef<any>()
   return (
     <View style={styles.root}>
-      {(console.disableYellowBox = true)}
       <ScrollView
         ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
