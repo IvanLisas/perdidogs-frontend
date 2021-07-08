@@ -18,7 +18,7 @@ const MyInput: React.FC<React.ComponentProps<typeof Input> & MyInputProps> = (pr
       inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
       containerStyle={{ paddingHorizontal: 0 }}
       placeholderTextColor={'grey'}
-      errorStyle={{ color: 'red' }}
+      errorStyle={{ color: 'red', fontSize: 14 }}
       style={[style, styles.input]}
       {...otherProps}
     />

@@ -26,9 +26,12 @@ import { borderColor } from 'styled-system'
 import { Chat } from '../../types/models/Chat'
 import Chats from '../Chats/Chats'
 import Conversation from '../Chats/Conversation'
+import { PermissionStatus } from 'unimodules-permissions-interface'
 
 export default function Map() {
   const colorMode = Appearance.getColorScheme()
+
+  const [foregroundPermissionsStatus, setForegroundPermissionsStatus] = useState<PermissionStatus>(PermissionStatus.UNDETERMINED)
 
   const theme = useTheme()
 
@@ -62,9 +65,7 @@ export default function Map() {
 
   const [marker, setMarker] = useState()
 
-  const snapPoints = useMemo(() => [1, 350, '90%'], [])
-
-  const handleMyLocation = () => handleNavigateToPoint(1, myLocation?.lat, myLocation?.lng)
+  const snapPoints = useMemo(() => [1, 350, '80%'], [])
 
   const handleMarketPress = (post: Post, index: number, lat: number, long: number) => {
     navigationRef.current?.navigate('PostPreview')
@@ -89,20 +90,12 @@ export default function Map() {
   }
 
   useEffect(() => {
-    const permission = async () => {
+    const init = async () => {
       await getPosts()
-      /*   sheetModalef.current?.present() */
-
-      const { status } = await requestForegroundPermissionsAsync()
-      if (status !== 'granted') {
-        setErrorMessage('Permission to access location was denied')
-        return
-      }
-      const location = (await getCurrentPositionAsync()).coords
-      setMyLocation({ lat: location.latitude, lng: location.longitude })
+      await askForLocationPermissions()
     }
 
-    permission()
+    init()
   }, [])
 
   const pin = require('../../assets/images/dogPin2.png')
@@ -149,6 +142,32 @@ export default function Map() {
       }
     }
   }
+
+  const askForLocationPermissions = async () => {
+    try {
+      const { status } = await requestForegroundPermissionsAsync()
+      setForegroundPermissionsStatus(status)
+      if (status !== 'granted') {
+        console.log('El permiso para obtener la localizacion fue denegado')
+        return
+      }
+      try {
+        const location = (await getCurrentPositionAsync()).coords
+        setMyLocation({ lat: location.latitude, lng: location.longitude })
+      } catch (error) {
+        console.log('Error al obtener la localizacion:' + error.message)
+      }
+    } catch (error) {
+      console.log('Error al obtener los permisos de localizacion:' + error.message)
+    }
+  }
+
+  const handleMyLocation = async () => {
+    if (foregroundPermissionsStatus == PermissionStatus.GRANTED) {
+      handleNavigateToPoint(1, myLocation?.lat, myLocation?.lng)
+    } else console.log('No tiene permisos de localizacion')
+  }
+
   return (
     <BottomSheetModalProvider>
       {sheetModalef.current?.present()}
@@ -157,7 +176,7 @@ export default function Map() {
         <MapView
           ref={mapRef}
           onRegionChangeComplete={(e) => handleRegionChange(e)}
-          // onUserLocationChange={(event) => setMyLocation({ lat: event.nativeEvent.coordinate.latitude, lng: event.nativeEvent.coordinate.longitude })}
+          onUserLocationChange={(event) => setMyLocation({ lat: event.nativeEvent.coordinate.latitude, lng: event.nativeEvent.coordinate.longitude })}
           /*     showsMyLocationButton={true} */
           showsUserLocation={true}
           onLongPress={(e) => createMarker(e)}

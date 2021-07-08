@@ -43,12 +43,13 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompletesProps> = ({ ha
       enablePoweredByContainer={false}
       renderRightButton={() => <ClearButton onPress={crearText} />}
       renderLeftButton={() => <LeftButton />}
+      onPress={(data, details) => handleSearch(data, details)}
       styles={{
         textInputContainer: {
           backgroundColor: theme.navigation,
           borderRadius: 8,
           flexDirection: 'row',
-          borderWidth: 1,
+          borderWidth: 1.5,
           borderColor: 'grey',
           fontSize: 16
         },
@@ -70,7 +71,7 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompletesProps> = ({ ha
           borderRadius: 12,
           marginTop: 8,
           backgroundColor: theme.navigation,
-          borderWidth: 1,
+          /*    borderWidth: 1, */
           borderColor: 'grey'
         },
         row: {
@@ -97,7 +98,6 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompletesProps> = ({ ha
           width: '100%'
         }
       }}
-      onPress={(data, details) => handleSearch(data, details)}
       query={{
         key: 'AIzaSyCahzx0wpr4G7jiI_LfsAUf0JWJ3-FZVDs',
         language: 'es',
