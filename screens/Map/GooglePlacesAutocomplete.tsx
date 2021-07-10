@@ -7,6 +7,7 @@ import {
   GooglePlacesAutocomplete as DefaultGooglePlacesAutocomplete
 } from 'react-native-google-places-autocomplete'
 import useTheme from '../../hooks/useTheme'
+import { useBottomSheet } from '@gorhom/bottom-sheet'
 
 interface GooglePlacesAutocompletesProps {
   handleSearch: (data: GooglePlaceData, detail: GooglePlaceDetail | null) => Promise<void>

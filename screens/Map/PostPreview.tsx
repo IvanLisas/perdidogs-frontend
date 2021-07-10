@@ -19,11 +19,12 @@ import { Chat } from '../../types/models/Chat'
 import { MessageDTO } from '../../services/ChatService'
 import MyModal from '../../components/Moda'
 import { Message } from '../../types/models/Message'
-/* interface PostPageProps {
-  post: Post | undefined
+import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
+interface PostPreviewProps {
+  modalRef: React.RefObject<BottomSheetModalMethods>
 }
- */
-const PostPreview: React.FC = () => {
+
+const PostPreview: React.FC<PostPreviewProps> = ({ modalRef }) => {
   const { post, setPost } = useContext(PostContext)
   const [modalVisible, setModalVisible] = useState(false)
   const { user, Tab } = useContext(userContext)
@@ -46,6 +47,10 @@ const PostPreview: React.FC = () => {
     setText('')
   }
 
+  const handleCloseModal = () => {
+    modalRef.current?.dismiss()
+  }
+
   if (!post) return null
   else
     return (
@@ -58,8 +63,11 @@ const PostPreview: React.FC = () => {
               <View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 8, paddingRight: 8 }}>
                   <UserAvatar user={post?.owner} />
-                  <TouchableOpacity onPress={sendChatMenssage}>
+                  {/*                   <TouchableOpacity onPress={sendChatMenssage}>
                     <Icon style={{ color: theme.primary, fontSize: 28 }} name="mail-envelope-back-hand-drawn-outline" />
+                  </TouchableOpacity> */}
+                  <TouchableOpacity onPress={handleCloseModal}>
+                    <Icon style={{ color: theme.primary, fontSize: 28 }} name="cancel-circular-button-with-a-cross-inside-hand-drawn-outlines" />
                   </TouchableOpacity>
                 </View>
                 <View style={{ paddingLeft: 48 }}>
@@ -153,9 +161,9 @@ const PostPreview: React.FC = () => {
             </View>
           </TouchableWithoutFeedback>
         </ScrollView>
-        <View>
+        {/*         <View style={{ position: 'absolute', bottom: 0 }}>
           <SendBar text={text} setText={setText} onPress={sendMessage}></SendBar>
-        </View>
+        </View> */}
       </BottomSheetScrollView>
     )
 }

@@ -11,6 +11,7 @@ import { PostContextProvider } from './contexts/PostContext'
 import { MapContextProvider } from './contexts/MapContext'
 import { NativeBaseProvider } from 'native-base'
 import { FilterContextProvider } from './contexts/FiltersContext'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()

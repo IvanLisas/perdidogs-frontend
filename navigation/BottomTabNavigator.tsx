@@ -21,6 +21,7 @@ export default function BottomTabNavigator() {
     <Tab.Navigator
       tabBarOptions={{
         inactiveTintColor: 'grey',
+
         activeTintColor: colors.primary,
         showLabel: false,
 

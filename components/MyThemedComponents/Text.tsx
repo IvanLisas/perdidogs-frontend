@@ -11,7 +11,7 @@ import useTheme from '../../hooks/useTheme'
 
 type TextProps = DefaultText['props']
 
-function Text(props: TextProps) {
+function MyText(props: TextProps) {
   const { style, ...otherProps } = props
 
   const colors = useTheme()
@@ -19,7 +19,7 @@ function Text(props: TextProps) {
   return <DefaultText style={[{ color: colors.text }, style]} {...otherProps} />
 }
 
-export default Text
+export default MyText
 
 /*  export function Text(props: TextProps) {
     const { style, lightColor, darkColor, ...otherProps } = props;
