@@ -20,6 +20,7 @@ import FiltersContext from '../../contexts/FiltersContext'
 import { PermissionStatus } from 'unimodules-permissions-interface'
 import { Extrapolate, interpolateNode, useSharedValue } from 'react-native-reanimated'
 import PetCard from '../../components/PetCard'
+import GooglePlacesSearch from './GooglePlacesSearch'
 
 export default function Map() {
   //Theme
@@ -31,7 +32,7 @@ export default function Map() {
   const [errorMessage, setErrorMessage] = useState('')
   //Contexts
   const { setPost, posts, setPosts, post } = useContext(PostContext)
-  const { setSearchLocation, setMyLocation, myLocation, setSearchLocationDelta } = useContext(FiltersContext)
+  const { setSearchLocation, setSearchLocationDelta } = useContext(FiltersContext)
   //Navigation
   const navigation = useNavigation()
   //Hook's
@@ -41,7 +42,7 @@ export default function Map() {
   const postPreviewModalRef = useRef<DefaultBottomSheetModal>(null)
   const searchModalRef = useRef<DefaultBottomSheetModal>(null)
   //Modal handle
-  const snapPoints = useMemo(() => [50, 350, '90%'], [])
+  const snapPoints = useMemo(() => [50, '45%', '90%'], [])
   //Pin
   const [myMarket, setMyMarket] = useState<any>()
   const marketImage = require('../../assets/images/dogPin2.png')
@@ -57,20 +58,17 @@ export default function Map() {
     }
   }
 
-  const goToPost = useCallback((post: Post) => {
-    setPost(post)
-    postPreviewModalRef.current?.snapTo(1)
-    postPreviewModalRef.current?.present()
-  }, [])
-
   const createPost = () => navigation.navigate('CreatePost', myMarket)
 
   const createMarker = (event: any) => setMyMarket(event.nativeEvent.coordinate)
 
   //Handle's
-  const handleMarketPress = (post: Post, index: number, lat: number, long: number) => {
-    handleNavigateToPoint(index, lat, long)
-    goToPost(post)
+
+  const handleGoToPost = (post: Post) => {
+    handleNavigateToPoint(1, post.location.lat, post.location.long)
+    setPost(post)
+    postPreviewModalRef.current?.snapTo(1)
+    postPreviewModalRef.current?.present()
   }
 
   //TODO preguntar si estan presentes?
@@ -97,17 +95,18 @@ export default function Map() {
   }
 
   const handleGoToMyLocation = async () => {
+    console.log(foregroundPermissionsStatus)
     if (foregroundPermissionsStatus == PermissionStatus.GRANTED) {
-      handleNavigateToPoint(1, myLocation?.lat, myLocation?.lng)
+      try {
+        const location = (await getCurrentPositionAsync()).coords
+        handleNavigateToPoint(10, location.latitude, location.longitude)
+      } catch (error) {
+        console.log('Error al obtener la localizacion:' + error.message)
+      }
     } else console.log('No tiene permisos de localizacion')
   }
 
-  /*   const handleFilters = async () => {
-    resultsModalRef.current?.snapTo(1)
-  } */
-
-  //Revisado
-  const handleSearch = async (data: GooglePlaceData, detail: GooglePlaceDetail | null) => {
+  const handleGoToPlace = async (detail: GooglePlaceDetail | null) => {
     //TODO los dos presentes y hacer snap?
     resultsModalRef.current?.present()
     if (detail) {
@@ -127,6 +126,10 @@ export default function Map() {
     }
   }
 
+  /*const handleFilters = async () => {
+    resultsModalRef.current?.snapTo(1)
+  } */
+
   //Permissions
   const askForLocationPermissions = async () => {
     try {
@@ -136,12 +139,9 @@ export default function Map() {
         console.log('El permiso para obtener la localizacion fue denegado')
         return
       }
-      try {
-        const location = (await getCurrentPositionAsync()).coords
-        setMyLocation({ lat: location.latitude, lng: location.longitude })
-      } catch (error) {
-        console.log('Error al obtener la localizacion:' + error.message)
-      }
+      //TODO guardala, lenta en IOS
+      const location = (await getCurrentPositionAsync()).coords
+      handleNavigateToPoint(10, location.latitude, location.longitude)
     } catch (error) {
       console.log('Error al obtener los permisos de localizacion:' + error.message)
     }
@@ -152,6 +152,7 @@ export default function Map() {
   //TODO ver diferencia entre este useEffect y el normal
   useLayoutEffect(() => {
     searchModalRef.current?.present()
+
     const init = async () => {
       await getPosts()
       await askForLocationPermissions()
@@ -187,35 +188,30 @@ export default function Map() {
           onTouchStart={() => dismissAll()}
           onPress={handleMapPress}
           initialRegion={{
-            latitude: -34.535532,
+            latitude: -38.535532,
             longitude: -58.541518,
             latitudeDelta: 1.003,
             longitudeDelta: 1.003
           }}
         >
           {myMarket && <Marker onPress={createPost} coordinate={myMarket}></Marker>}
-          {posts?.map((marketPost, index) => (
+          {posts?.map((post, index) => (
             <MarkerAnimated
               zIndex={index}
-              onPress={() => handleMarketPress(marketPost, index, marketPost.location.lat, marketPost.location.long)}
+              onPress={() => handleGoToPost(post)}
               stopPropagation={true}
-              key={marketPost.Id + Math.floor(Math.random() * 16777215)}
+              key={post.Id + Math.floor(Math.random() * 16777215)}
               pinColor={theme.primary}
-              coordinate={{ latitude: marketPost.location.lat, longitude: marketPost.location.long }}
+              coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
               shouldRasterizeIOS
-              /*   style={{ width: 20, height: 20 }} */
-              /*  icon={pin} */
-
               image={marketImage}
-              /*  image={pin} */
-              /*  title={post.descripti on} */
             />
           ))}
         </MapView>
-        {/*      <TouchableOpacity onPress={() => sheetModalef.current?.present()} style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
+        {/*<TouchableOpacity onPress={() => sheetModalef.current?.present()} style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
           <GooglePlacesAutocomplete handleSearch={handleSearch} />
         </TouchableOpacity> */}
-        {/*      <TouchableOpacity style={[styles.button, { top: 200 }]} onPress={handleFilters}>
+        {/*<TouchableOpacity style={[styles.button, { top: 200 }]} onPress={handleFilters}>
           <Icon style={styles.icon} name="settings-hand-drawn-symbol" />
         </TouchableOpacity> */}
 
@@ -224,31 +220,31 @@ export default function Map() {
         </TouchableOpacity>
 
         <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
-          {/*    <Button onPress={handlePresentModalPress} title="Present Modal" color="black" /> */}
           <DefaultBottomSheetModal
             snapPoints={snapPoints}
-            key="PoiDetailsSheet3"
-            index={1}
-            keyboardBlurBehavior="restore"
+            key="searchModal"
+            index={0}
+            enableContentPanningGesture
+            /*   keyboardBlurBehavior="restore" */
             ref={searchModalRef}
-            /*         animatedPosition={currentPosition} */
             dismissOnPanDown={false}
+            onChange={(index) => {
+              index < 1 ? Keyboard.dismiss() : null
+            }}
             stackBehavior="replace"
-            keyboardBehavior="fullScreen"
             backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
             style={{ backgroundColor: theme.navigation, borderRadius: 5 }}
           >
-            <GooglePlacesAutocomplete handleSearch={handleSearch} />
+            <GooglePlacesSearch handleGoToPlace={handleGoToPlace} modalRef={searchModalRef} />
           </DefaultBottomSheetModal>
 
           <DefaultBottomSheetModal
             snapPoints={snapPoints}
             index={1}
+            enableContentPanningGesture
             key="PoiDetailsSheet"
             ref={resultsModalRef}
-            /*   dismissOnPanDown={false} */
-            /*  stackBehavior="replace" */
-            keyboardBehavior="interactive"
+            stackBehavior="replace"
             backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
             style={{ backgroundColor: theme.navigation, borderRadius: 5 }}
           >
@@ -260,7 +256,7 @@ export default function Map() {
               showsHorizontalScrollIndicator
               disableVirtualization={false}
               keyExtractor={(item) => item.description}
-              renderItem={({ item }) => <PetCard post={item} handleOnPress={goToPost} />}
+              renderItem={({ item }) => <PetCard post={item} handleOnPress={handleGoToPost} />}
               style={{ flex: 1 }}
             />
           </DefaultBottomSheetModal>
@@ -269,96 +265,19 @@ export default function Map() {
             snapPoints={snapPoints}
             key="PoiDetailsSheet2"
             index={1}
+            enableHandlePanningGesture
             ref={postPreviewModalRef}
-            /*           animatedPosition={currentPosition} */
-            /*   dismissOnPanDown={false} */
             stackBehavior="replace"
-            keyboardBehavior="fullScreen"
             backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
             style={{ backgroundColor: theme.navigation, borderRadius: 5 }}
           >
-            {/*     <GooglePlacesAutocomplete handleSearch={handleSearch} />
-             */}
-
             <PostPreview modalRef={postPreviewModalRef} />
           </DefaultBottomSheetModal>
-
-          {/*     <DefaultBottomSheetModal
-              ref={sheetModalef2}
-
-              backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
-              style={{ backgroundColor: colors.navigation, borderRadius: 22 }}
-              snapPoints={snapPoints}
-            >
-              <Navigator2 />
-            </DefaultBottomSheetModal> */}
         </View>
       </View>
     </BottomSheetModalProvider>
   )
 }
-
-/* const Navigator = () => { */
-/*   const screenOptions = useMemo<StackNavigationOptions>(
-    () => ({
-      ...TransitionPresets.SlideFromRightIOS,
-      headerShown: true,
-      safeAreaInsets: { top: 0 },
-      headerLeft: ({ onPress, ...props }) => (
-        <TouchableOpacity onPress={onPress}>
-          <HeaderBackButton {...props} />
-        </TouchableOpacity>
-      ),
-      cardStyle: {
-        backgroundColor: 'white',
-        overflow: 'visible'
-      }
-    }),
-    []
-  ) */
-
-/*   const screenAOptions = useMemo(() => ({ headerLeft: () => null }), [])
-  return (
-    <Stack.Navigator initialRouteName="SearchResults">
-      <Stack.Screen name="SearchByFilters" component={SearchByFilters} />
-      <Stack.Screen name="PostPreview" component={PostPreview} />
-      <Stack.Screen name="SearchResults" component={SearchResults} />
-    </Stack.Navigator>
-  )
-} */
-
-/* const Navigator2 = () => {
-  const screenOptions = useMemo<StackNavigationOptions>(
-    () => ({
-      ...TransitionPresets.SlideFromRightIOS,
-      headerShown: true,
-      safeAreaInsets: { top: 0 },
-      headerLeft: ({ onPress, ...props }) => (
-        <TouchableOpacity onPress={onPress}>
-          <HeaderBackButton {...props} />
-        </TouchableOpacity>
-      ),
-      cardStyle: {
-        backgroundColor: 'white',
-        overflow: 'visible'
-      }
-    }),
-    []
-  )
-
-  const screenAOptions = useMemo(() => ({ headerLeft: () => null }), [])
-  return (
-    <NavigationContainer independent={true}>
-      <NavigationContainer independent={true}>
-        <Stack.Navigator>
-          <Stack.Screen name="SearchByFilters" component={SearchByFilters} />
-          <Stack.Screen name="SearchResults" component={SearchResults} />
-          <Stack.Screen name="PostPreview" component={PostPreview} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </NavigationContainer>
-  )
-} */
 
 const styles = StyleSheet.create({
   icon: {
@@ -367,7 +286,6 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    /*     top: 300, */
     marginRight: 16,
     right: 0,
     shadowColor: '#000',
@@ -379,19 +297,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     borderRadius: 25,
     backgroundColor: 'yellow',
-
     padding: 8
-  },
-  root: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-    alignItems: 'center',
-    justifyContent: 'center'
   },
   mapStyle: {
     width: '100%',
@@ -401,26 +307,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute'
-  },
-  input: {
-    marginVertical: 2,
-    borderRadius: 15,
-    padding: 16,
-    backgroundColor: 'white'
-    /*   alignSelf: 'center', */
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center'
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center'
   }
 })
-
-/*   const post1 = { Id: 13, description: 'Post numero 1', location: { Id: 1, x: -34.54289695652187, y: -58.54144144943036 } } as Post
-  const post2 = { Id: 24, description: 'Post numero 2', location: { Id: 1, x: -34.54309695652187, y: -58.54244144943036 } } as Post
-  const post3 = { Id: 35, description: 'Post numero 3', location: { Id: 1, x: -34.54309695652187, y: -58.53244144943036 } } as Post
-  const post4 = { Id: 46, description: 'Post numero 4', location: { Id: 1, x: -34.54309695652187, y: -58.52244144943036 } } as Post
-  const posts: Post[] = [post1, post2, post3, post4] */

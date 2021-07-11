@@ -10,7 +10,7 @@ class ImageService {
         file: base64Img,
         upload_preset: 'MyUploadPresent'
       }
-      return (await axios.post<any>(`https://api.cloudinary.com/v1_1/ivanlisas/image/upload`, data)).data.secure_url
+      return (await axios.post<any>(apiUrl, data)).data.secure_url
     }
   }
 }
