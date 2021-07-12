@@ -1,14 +1,12 @@
 import * as React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
-import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack'
-import { ColorSchemeName } from 'react-native'
-import RootStackParamList from '../types/RootStackParamList'
+import { createStackNavigator } from '@react-navigation/stack'
+import RootStackParamList from '../types/StackParamLists/RootStackParamList'
 import BottomTabNavigator from './BottomTabNavigator'
 import LinkingConfiguration from '../types/LinkingConfiguration'
-import { MyDefaultTheme, MyDarkTheme } from '../styles/Theme'
 import { useContext } from 'react'
 import UserContext from '../contexts/UserContext'
-import LoginStackScreen from './LoginStackScreen'
+import LoginStackScreen from './StackScreens/LoginStackScreen'
 
 export default function Navigation() {
   const Stack = createStackNavigator<RootStackParamList>()

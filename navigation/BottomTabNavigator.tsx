@@ -1,130 +1,56 @@
-import React, { ComponentProps, useRef } from 'react'
-import { Ionicons } from '@expo/vector-icons'
+import React from 'react'
+import { StyleSheet } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import BottomTabParamList from '../types/BottomTabParamList'
-import ProfileStackScreen from './ProfileStackScreen'
+import BottomTabParamList from '../types/StackParamLists/BottomTabParamList'
 import useTheme from '../hooks/useTheme'
-import Icon from '../components/icon/index'
-import MapStackScreen from './MapStackScreen'
-import ChatsStackScreen from './ChatsStackScreen'
+import Icon from '../components/icons/index'
+import ChatsStackScreen from './StackScreens/ChatsStackScreen'
+import MapStackScreen from './StackScreens/MapStackScreen'
+import ProfileStackScreen from './StackScreens/ChatsStackScreen'
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
 
 export default function BottomTabNavigator() {
-  const colors = useTheme()
-
-  function TabBarIcon(props: { name: ComponentProps<typeof Ionicons>['name']; color: string }) {
-    return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />
-  }
-
+  const theme = useTheme()
   return (
     <Tab.Navigator
       tabBarOptions={{
         inactiveTintColor: 'grey',
-
-        activeTintColor: colors.primary,
+        activeTintColor: theme.primary,
         showLabel: false,
-
-        tabStyle: { backgroundColor: colors.navigation, borderTopWidth: 0.6 },
+        tabStyle: { backgroundColor: theme.navigation, borderTopWidth: 0.6 },
         style: {
-          backgroundColor: colors.navigation,
+          backgroundColor: theme.navigation,
           borderRadius: 16
         }
       }}
-      initialRouteName="Map"
+      initialRouteName="Mapa"
     >
       <Tab.Screen
         name="Chats"
         component={ChatsStackScreen}
         options={{
-          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="chat-bubbles-couple-hand-drawn-outlines" />
+          tabBarIcon: ({ color }) => <Icon style={[{ color: color }, styles.icon]} name="chat-bubbles-couple-hand-drawn-outlines" />
         }}
       />
-      {/*       <Tab.Screen
-        name="Camara"
-        component={ProfileStackScreen}
-        options={{
-          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="arrow-pointing-to-left-hand-drawn-outline" />
-        }}
-      /> */}
       <Tab.Screen
-        name="Map"
+        name="Mapa"
         component={MapStackScreen}
         options={{
-          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="compass-hand-drawn-circular-tool-outline" />
+          tabBarIcon: ({ color }) => <Icon style={[{ color: color }, styles.icon]} name="compass-hand-drawn-circular-tool-outline" />
         }}
       />
-
-      {/*       <Tab.Screen
-        name="Alertas"
-        component={ProfileStackScreen}
-        options={{
-          tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? 'ios-notifications' : 'ios-notifications-outline'} color={color} />
-        }}
-      /> */}
       <Tab.Screen
         name="Perfil"
         component={ProfileStackScreen}
         options={{
-          tabBarIcon: ({ color }) => <Icon style={{ color: color, fontSize: 30 }} name="user-list-hand-drawn-interface-symbol-outline" />
+          tabBarIcon: ({ color }) => <Icon style={[{ color: color }, styles.icon]} name="user-list-hand-drawn-interface-symbol-outline" />
         }}
       />
-      {/*       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />
-        }}
-      />
-      <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoNavigator}
-        options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />
-        }}
-      /> */}
     </Tab.Navigator>
   )
 }
-/* // You can explore the built-in icon families and icons on the web at:
-// https://icons.expo.fyi/
-function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']; color: string }) {
-  return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />
-}
-
-// Each tab has its own navigation stack, you can read more about this pattern here:
-// https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
-const TabOneStack = createStackNavigator<TabOneParamList>()
-
-function TabOneNavigator() {
-  return (
-    <TabOneStack.Navigator
-      screenOptions={{
-        headerTintColor: '#000',
-        headerTitleStyle: {
-          fontWeight: 'bold'
-        }
-      }}
-    >
-      <TabOneStack.Screen name="TabOneScreen" component={TabOneScreen} />
-    </TabOneStack.Navigator>
-  )
-}
-
-const TabTwoStack = createStackNavigator<TabTwoParamList>()
-
-function TabTwoNavigator() {
-  return (
-    <TabTwoStack.Navigator>
-      <TabTwoStack.Screen name="TabTwoScreen" component={TabTwoScreen} options={{ headerTitle: 'Tab Two Title' }} />
-    </TabTwoStack.Navigator>
-  )
-}
-
 
 const styles = StyleSheet.create({
-  label: {
-    color: 'black'
-  }
+  icon: { fontSize: 30 }
 })
- */

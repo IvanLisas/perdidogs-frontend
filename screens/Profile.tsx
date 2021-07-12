@@ -1,21 +1,23 @@
+import React, { useContext } from 'react'
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import React from 'react'
-import { Dimensions, TouchableOpacity, View, Image } from 'react-native'
+import Icon from '../components/icons/index'
+import { FlatList } from 'react-native-gesture-handler'
+import UserContext from '../contexts/UserContext'
 import useTheme from '../hooks/useTheme'
 import { Post } from '../types/models/Post'
-import MyText from './MyThemedComponents/MyText'
-import UserAvatar from './UserAvatar'
-import Icon from './icons/index'
+import MyText from '../components/MyThemedComponents/MyText'
+import { Avatar } from 'react-native-elements'
 
-interface PetCardProps {
-  post: Post
-  handleOnPress: (post: Post) => void
-}
+const Profile: React.FC = () => {
+  const { user, setUser } = useContext(UserContext)
 
-const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
+  if (!user) return null
+
   const theme = useTheme()
-  return (
-    <TouchableOpacity style={{ paddingHorizontal: 16, paddingVertical: 8 }} key={post.Id + 'e'} onPress={() => handleOnPress(post)}>
+
+  const Card = (post: Post) => (
+    <TouchableOpacity style={{ paddingVertical: 8 }} key={post.Id + 'e'}>
       <View
         style={{
           shadowColor: '#000',
@@ -30,27 +32,13 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
           elevation: 7
         }}
       >
-        <View
-          style={{
-            height: 60,
-            borderColor: theme.primary,
-            /*    borderEndWidth: 0.2,
-            borderBottomWidth: 0.2,
-            borderStartWidth: 0.2, */
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            padding: 16,
-            backgroundColor: theme.navigation,
-            justifyContent: 'center'
-          }}
-        >
-          <UserAvatar user={post.owner}></UserAvatar>
-        </View>
         <Image
           key={post.Id + 'photo'}
           style={{
             width: Dimensions.get('window').width - 32,
-            height: 200
+            height: 200,
+            borderTopLeftRadius: 25,
+            borderTopRightRadius: 25
             /*     position:'absolute', */
           }}
           onError={() => console.log('error al cargar')}
@@ -65,7 +53,7 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
           colors={['rgba(0,0,0,0.5)', 'transparent']}
           style={{
             position: 'absolute',
-            height: 250,
+            height: 200,
             marginTop: 50,
             width: Dimensions.get('window').width - 32,
             borderRadius: 25
@@ -107,6 +95,55 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
       </View>
     </TouchableOpacity>
   )
+
+  return (
+    <View style={styles.root}>
+      <View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <View style={{ paddingRight: 8 }}>
+              <Avatar
+                size="medium"
+                titleStyle={{ color: 'white' }}
+                source={{ uri: user.avatar }}
+                overlayContainerStyle={{ backgroundColor: 'grey' }}
+                rounded
+                title={user.firstName[0] + user.lastName[0]}
+              />
+            </View>
+
+            <View style={{ paddingVertical: 2 }}>
+              <MyText style={{ fontSize: 28, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName} </MyText>
+              <MyText style={{ fontSize: 11, color: 'grey' }}>En linea </MyText>
+            </View>
+          </View>
+          <TouchableOpacity onPress={() => setUser(undefined)}>
+            <Icon style={{ color: theme.primary, fontSize: 28 }} name="exit-hand-drawn-interface-symbol-variant" />
+          </TouchableOpacity>
+        </View>
+        <MyText style={{ fontSize: 28, fontWeight: 'bold' }}>Mis publicaciones </MyText>
+      </View>
+      <FlatList
+        data={user?.post}
+        showsHorizontalScrollIndicator
+        /* persistentScrollbar */
+        disableVirtualization={false}
+        keyExtractor={(item, index) => item.description}
+        renderItem={({ item }) => Card(item)}
+        style={{ flex: 1 }}
+      />
+    </View>
+  )
 }
 
-export default PetCard
+export default Profile
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    padding: 16
+    /* 
+    alignItems: 'center',
+    justifyContent: 'center' */
+  }
+})
