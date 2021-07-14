@@ -3,7 +3,7 @@ export type Prediction = {
   place_id: string
   reference: string
   matched_substrings: any[]
-  tructured_formatting: Object
+  structured_formatting: any
   terms: Object[]
   types: string[]
 }

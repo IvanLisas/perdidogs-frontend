@@ -8,9 +8,9 @@ type MyTextProps = Text['props']
 function MyText(props: MyTextProps) {
   const { style, ...otherProps } = props
 
-  const colors = useTheme()
+  const theme = useTheme()
 
-  return <Text style={[{ color: colors.text }, style]} {...otherProps} />
+  return <Text style={[{ color: theme.text }, style]} {...otherProps} />
 }
 
 export default MyText

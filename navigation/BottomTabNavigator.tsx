@@ -16,6 +16,7 @@ export default function BottomTabNavigator() {
     <Tab.Navigator
       tabBarOptions={{
         inactiveTintColor: 'grey',
+        /*  keyboardHidesTabBar: true, */
         activeTintColor: theme.primary,
         showLabel: false,
         tabStyle: { backgroundColor: theme.navigation, borderTopWidth: 0.6 },

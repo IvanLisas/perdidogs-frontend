@@ -21,6 +21,7 @@ import { Extrapolate, interpolateNode, useSharedValue } from 'react-native-reani
 import PetCard from '../components/PetCard'
 import GooglePlacesSearch from '../components/BottomSheetModals/SearchPlacesBottomSheetModal'
 import SearchPlacesBottomSheetModal from '../components/BottomSheetModals/SearchPlacesBottomSheetModal'
+import ResultsBottomSheetModal from '../components/BottomSheetModals/ResultsBottomSheetModal'
 
 export default function Map() {
   //Theme
@@ -35,6 +36,7 @@ export default function Map() {
   const { setSearchLocation, setSearchLocationDelta } = useContext(FiltersContext)
   //Navigation
   const navigation = useNavigation()
+  const [currentSearchPlace, setCurrentSearchPlace] = useState({ primaryText: '', secondaryText: '' })
   //Hook's
   const { mapRef, handleNavigateToPoint, handleNavigateToRegion } = useMap()
   //Modals Ref's
@@ -42,7 +44,7 @@ export default function Map() {
   const postPreviewModalRef = useRef<DefaultBottomSheetModal>(null)
   const searchModalRef = useRef<DefaultBottomSheetModal>(null)
   //Modal handle
-  const snapPoints = useMemo(() => ['15%', '45%', '90%'], [])
+  const snapPoints = useMemo(() => [94, '45%', '90%'], [])
   //Pin
   const [myMarket, setMyMarket] = useState<any>()
   const marketImage = require('../assets/images/dogPin2.png')
@@ -107,9 +109,12 @@ export default function Map() {
     } else console.log('No tiene permisos de localizacion')
   }
 
-  const handleGoToPlace = async (detail: GooglePlaceDetail | null) => {
+  const handleGoToPlace = async (detail: GooglePlaceDetail | null, primaryPlaceText: string, secondaryPlaceText: string) => {
     //TODO los dos presentes y hacer snap?
     resultsModalRef.current?.present()
+    // TODO: No agarra los paises
+    console.log(detail)
+    if (detail) setCurrentSearchPlace({ primaryText: primaryPlaceText, secondaryText: secondaryPlaceText })
     if (detail) {
       const { width, height } = Dimensions.get('window')
       const ASPECT_RATIO = width / height //No se usa
@@ -224,28 +229,13 @@ export default function Map() {
         <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
           <SearchPlacesBottomSheetModal handleGoToPlace={handleGoToPlace} snapPoints={snapPoints} modalRef={searchModalRef} />
 
-          <DefaultBottomSheetModal
+          <ResultsBottomSheetModal
+            handleGoToPost={handleGoToPost}
             snapPoints={snapPoints}
-            index={1}
-            enableContentPanningGesture
-            key="PoiDetailsSheet"
-            ref={resultsModalRef}
-            stackBehavior="replace"
-            backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
-            style={{ backgroundColor: theme.navigation, borderRadius: 5 }}
-          >
-            <TouchableOpacity onPress={() => resultsModalRef.current?.dismiss()}>
-              <Icon style={{ color: theme.primary, fontSize: 28 }} name="cancel-circular-button-with-a-cross-inside-hand-drawn-outlines" />
-            </TouchableOpacity>
-            <BottomSheetFlatList
-              data={posts}
-              showsHorizontalScrollIndicator
-              disableVirtualization={false}
-              keyExtractor={(item: Post) => item.description}
-              renderItem={({ item }) => <PetCard post={item} handleOnPress={handleGoToPost} />}
-              style={{ flex: 1 }}
-            />
-          </DefaultBottomSheetModal>
+            modalRef={resultsModalRef}
+            posts={posts}
+            currentSearchPlace={currentSearchPlace}
+          />
 
           <DefaultBottomSheetModal
             snapPoints={snapPoints}

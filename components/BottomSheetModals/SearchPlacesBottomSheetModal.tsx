@@ -1,6 +1,6 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
 import React, { useState } from 'react'
-import { StyleSheet, View, Keyboard, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Keyboard, TouchableOpacity, SafeAreaView } from 'react-native'
 import googleService from '../../services/GoogleService'
 import { Prediction } from '../../types/models/Prediction'
 import { useDebounce } from '../../hooks/useDebounce'
@@ -9,10 +9,13 @@ import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet'
 import MyInput from '../MyThemedComponents/MyInput'
 import MyText from '../MyThemedComponents/MyText'
 import useTheme from '../../hooks/useTheme'
+import { Input } from 'react-native-elements'
+import MyIcon from '../MyThemedComponents/MyIcon'
+import PlaceBar from '../PlaceBar'
 
 interface SearchPlacesBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
-  handleGoToPlace: (detail: GooglePlaceDetail | null) => Promise<void>
+  handleGoToPlace: (detail: GooglePlaceDetail | null, primaryPlaceText: string, secondaryPlaceText: string) => Promise<void>
   snapPoints: (string | number)[]
 }
 
@@ -42,11 +45,11 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
   }
   useDebounce(onChangeText, 1000, [search.term])
 
-  const onPredictionTapped = async (placeId: string, description: string) => {
+  const onPredictionTapped = async (placeId: string, primaryPlaceText: string, secondaryPlaceText: string) => {
     try {
       const details = (await googleService.get(placeId)).result as GooglePlaceDetail
-
-      handleGoToPlace(details)
+      Keyboard.dismiss()
+      handleGoToPlace(details, primaryPlaceText, secondaryPlaceText)
       /*  setSearch((prevState) => ({ ...prevState, term: description })) */
     } catch (e) {
       console.log(e)
@@ -61,49 +64,59 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
       enableDismissOnClose={false}
       index={0}
       ref={modalRef}
-      /*      onChange={(snapPoint: number) => {
-        console.log(snapPoint)
-        Keyboard.dismiss()
-      }} */
-      /*  keyboardBehavior="interactive" */
-      onAnimate={(fromIndex: number, toIndex: number) => {
-        Keyboard.dismiss()
-      }}
-      keyboardBlurBehavior="none"
-      /*   keyboardBehavior="fullScreen" */
+      onAnimate={() => Keyboard.dismiss()}
+      android_keyboardInputMode="adjustPan"
       stackBehavior="push"
       backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
       style={{ backgroundColor: theme.navigation, borderRadius: 5 }}
     >
-      <MyInput
+      {/*    <View style={{ paddingTop: 8, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ backgroundColor: 'grey', width: 48, height: 4, borderRadius: 50, marginBottom: 8 }}></View>
+       */}
+      <Input
         placeholder="¿Donde perdiste tu mascota?"
+        style={styles.input}
         value={search.term}
+        inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
         onTouchStart={() => handleModal()}
-        onChangeText={(text) => {
-          setSearch({ term: text, fetchPredictions: true })
-          onChangeText()
+        onChange={(text) => {
+          setSearch({ term: text.nativeEvent.text, fetchPredictions: true })
+          /*   onChangeText() */
         }}
         /* returnKeyType="search" */
       />
-
+      {/*    </View> */}
       {showPredictions && (
         <BottomSheetFlatList
           data={predictions}
           scrollEnabled
-          /*           onScroll={() => Keyboard.dismiss}
-          onTouchStart={() => Keyboard.dismiss} */
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="always"
+          /*   onTouchStart={() => Keyboard.dismiss()} */
           renderItem={({ item }) => {
             return (
-              <TouchableOpacity style={styles.predictionRow} onPress={() => onPredictionTapped(item.place_id, item.description)}>
-                <MyText style={styles.result} numberOfLines={1}>
-                  {item.description}
-                </MyText>
-              </TouchableOpacity>
+              /* <TouchableOpacity style={styles.predictionRow} onPress={() => onPredictionTapped(item.place_id, item.description)}>
+                <MyIcon style={{ marginRight: 16 }} name="compass-hand-drawn-circular-tool-outline" />
+                <View>
+                  <MyText style={styles.result} numberOfLines={1}>
+                    {item.structured_formatting.main_text}
+                  </MyText>
+                  {item.structured_formatting.secondary_text && (
+                    <MyText style={{ fontSize: 14, color: theme.textLabel }} numberOfLines={1}>
+                      {item.structured_formatting.secondary_text}
+                    </MyText>
+                  )}
+                </View>
+              </TouchableOpacity> */
+              <PlaceBar
+                style={{ marginLeft: 16, paddingVertical: 16, borderBottomWidth: 0.5, borderColor: 'black' }}
+                onPress={() => onPredictionTapped(item.place_id, item.structured_formatting.main_text, item.structured_formatting.secondary_text)}
+                primaryText={item.structured_formatting.main_text}
+                secondaryText={item.structured_formatting.secondary_text}
+              ></PlaceBar>
             )
           }}
           keyExtractor={(item: Prediction) => item.place_id}
-
-          /* style={[predictionsContainer, calculatedStyle]} */
         />
       )}
     </BottomSheetModal>
@@ -111,13 +124,21 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
 }
 const styles = StyleSheet.create({
   predictionRow: {
-    paddingBottom: 16,
-    marginBottom: 16,
-    borderBottomColor: 'black',
-    borderBottomWidth: 1
+    paddingVertical: 16,
+    marginLeft: 16,
+    borderBottomWidth: 1,
+    borderColor: '#DEDEDE',
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   result: {
     fontSize: 20
+  },
+  input: {
+    borderRadius: 15,
+    padding: 16,
+    backgroundColor: '#E5E5EA',
+    width: 234
   }
 })
 

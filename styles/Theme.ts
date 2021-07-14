@@ -20,7 +20,7 @@ export const MyDefaultTheme: MyTheme = {
   navigation: 'white',
   primary: '#B5B4FB',
   card: '#B5B4FB',
-  text: '#3F414E',
+  text: '#000',
   border: '#F7A59E',
   background: '#E8F7FB',
   input: '#F6F6F6',
