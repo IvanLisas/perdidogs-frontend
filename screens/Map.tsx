@@ -42,7 +42,7 @@ export default function Map() {
   const postPreviewModalRef = useRef<DefaultBottomSheetModal>(null)
   const searchModalRef = useRef<DefaultBottomSheetModal>(null)
   //Modal handle
-  const snapPoints = useMemo(() => [50, '95%'], [])
+  const snapPoints = useMemo(() => ['15%', '45%', '90%'], [])
   //Pin
   const [myMarket, setMyMarket] = useState<any>()
   const marketImage = require('../assets/images/dogPin2.png')
@@ -67,7 +67,7 @@ export default function Map() {
   const handleGoToPost = (post: Post) => {
     handleNavigateToPoint(1, post.location.lat, post.location.long)
     setPost(post)
-    postPreviewModalRef.current?.snapTo(1)
+    postPreviewModalRef.current?.snapToIndex(1)
     postPreviewModalRef.current?.present()
   }
 
@@ -76,10 +76,11 @@ export default function Map() {
   const handleMapPress = () => dismissAll()
 
   const dismissAll = () => {
+    console.log('dismissAll')
     Keyboard.dismiss()
-    searchModalRef.current?.snapTo(0)
-    resultsModalRef.current?.snapTo(0)
-    postPreviewModalRef.current?.snapTo(0)
+    searchModalRef.current?.collapse()
+    resultsModalRef.current?.collapse()
+    postPreviewModalRef.current?.collapse()
   }
 
   const handleRegionChange = async (region: Region) => {
@@ -152,6 +153,7 @@ export default function Map() {
   //TODO ver diferencia entre este useEffect y el normal
   useLayoutEffect(() => {
     searchModalRef.current?.present()
+    searchModalRef.current?.snapToIndex(0)
 
     const init = async () => {
       await getPosts()
@@ -178,7 +180,7 @@ export default function Map() {
       <View style={StyleSheet.absoluteFillObject}>
         <MapView
           ref={mapRef}
-          onRegionChangeComplete={(event) => handleRegionChange(event)}
+          /*    onRegionChangeComplete={(event) => handleRegionChange(event)} */
           showsUserLocation={true}
           onLongPress={(event) => createMarker(event)}
           customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
@@ -186,7 +188,7 @@ export default function Map() {
           style={StyleSheet.absoluteFillObject}
           showsMyLocationButton={false}
           onTouchStart={() => dismissAll()}
-          onPress={handleMapPress}
+          /*     onPress={handleMapPress} */
           initialRegion={{
             latitude: -38.535532,
             longitude: -58.541518,
@@ -239,7 +241,7 @@ export default function Map() {
               data={posts}
               showsHorizontalScrollIndicator
               disableVirtualization={false}
-              keyExtractor={(item) => item.description}
+              keyExtractor={(item: Post) => item.description}
               renderItem={({ item }) => <PetCard post={item} handleOnPress={handleGoToPost} />}
               style={{ flex: 1 }}
             />
@@ -249,7 +251,7 @@ export default function Map() {
             snapPoints={snapPoints}
             key="PoiDetailsSheet2"
             index={1}
-            enableHandlePanningGesture
+            onDismiss={() => console.log('a')}
             ref={postPreviewModalRef}
             stackBehavior="replace"
             backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}

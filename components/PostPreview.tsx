@@ -44,7 +44,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef }) => {
   }
 
   const handleCloseModal = () => {
-    modalRef.current?.dismiss()
+    modalRef.current?.close()
   }
 
   if (!post) return null

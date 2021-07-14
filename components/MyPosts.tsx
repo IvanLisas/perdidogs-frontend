@@ -98,7 +98,7 @@ const MyPosts: React.FC<MyPosts> = (props) => {
       showsHorizontalScrollIndicator
       /* persistentScrollbar */
       disableVirtualization={false}
-      keyExtractor={(item, index) => item.description}
+      keyExtractor={(item: Post) => item.description}
       renderItem={({ item }) => Card(item)}
       style={{ flex: 1 }}
     />

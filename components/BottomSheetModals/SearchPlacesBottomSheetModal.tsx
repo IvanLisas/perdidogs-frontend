@@ -57,18 +57,21 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
     <BottomSheetModal
       snapPoints={snapPoints}
       key="searchModal"
+      enablePanDownToClose={false}
+      enableDismissOnClose={false}
       index={0}
-      enableContentPanningGesture
-      /*   keyboardBlurBehavior="restore" */
       ref={modalRef}
-      dismissOnPanDown={false}
-      onDismiss={() => Keyboard.dismiss()}
-      onChange={(index) => {
-        console.log(index == 0)
-        index == 0 ? Keyboard.dismiss() : null
+      /*      onChange={(snapPoint: number) => {
+        console.log(snapPoint)
+        Keyboard.dismiss()
+      }} */
+      /*  keyboardBehavior="interactive" */
+      onAnimate={(fromIndex: number, toIndex: number) => {
+        Keyboard.dismiss()
       }}
-      /*  onAnimate={() => Keyboard.dismiss()} */
-      stackBehavior="replace"
+      keyboardBlurBehavior="none"
+      /*   keyboardBehavior="fullScreen" */
+      stackBehavior="push"
       backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
       style={{ backgroundColor: theme.navigation, borderRadius: 5 }}
     >
@@ -87,8 +90,8 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
         <BottomSheetFlatList
           data={predictions}
           scrollEnabled
-          onScroll={() => Keyboard.dismiss}
-          onTouchStart={() => Keyboard.dismiss}
+          /*           onScroll={() => Keyboard.dismiss}
+          onTouchStart={() => Keyboard.dismiss} */
           renderItem={({ item }) => {
             return (
               <TouchableOpacity style={styles.predictionRow} onPress={() => onPredictionTapped(item.place_id, item.description)}>
@@ -98,7 +101,7 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
               </TouchableOpacity>
             )
           }}
-          keyExtractor={(item) => item.place_id}
+          keyExtractor={(item: Prediction) => item.place_id}
 
           /* style={[predictionsContainer, calculatedStyle]} */
         />
@@ -109,7 +112,7 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
 const styles = StyleSheet.create({
   predictionRow: {
     paddingBottom: 16,
-    marginBottom: 116,
+    marginBottom: 16,
     borderBottomColor: 'black',
     borderBottomWidth: 1
   },
