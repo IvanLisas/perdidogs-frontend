@@ -17,8 +17,9 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
   return (
     <TouchableOpacity style={{ paddingHorizontal: 16, paddingVertical: 8 }} key={post.Id + 'e'} onPress={() => handleOnPress(post)}>
       <View
-        style={{
-          shadowColor: '#000',
+        style={
+          {
+            /*           shadowColor: '#000',
           shadowOffset: {
             width: 0,
             height: 3
@@ -27,8 +28,9 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
           shadowRadius: 4.65,
           borderRadius: 25,
 
-          elevation: 7
-        }}
+          elevation: 7 */
+          }
+        }
       >
         <View
           style={{
@@ -37,51 +39,45 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
             /*    borderEndWidth: 0.2,
             borderBottomWidth: 0.2,
             borderStartWidth: 0.2, */
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            padding: 16,
+
+            /*  padding: 16, */
             backgroundColor: theme.navigation,
             justifyContent: 'center'
           }}
         >
           <UserAvatar user={post.owner}></UserAvatar>
         </View>
-        <Image
-          key={post.Id + 'photo'}
-          style={{
-            width: Dimensions.get('window').width - 32,
-            height: 200
-            /*     position:'absolute', */
-          }}
-          onError={() => console.log('error al cargar')}
-          source={{
-            uri: post.pictures[0]
-              ? post.pictures[0].url
-              : 'https://as01.epimg.net/mexico/imagenes/2019/01/19/tikitakas/1547933521_851367_1547933683_noticia_normal_recorte1.jpg'
-          }}
-        />
-        <LinearGradient
-          key={post.Id + 'gradient'}
-          colors={['rgba(0,0,0,0.5)', 'transparent']}
-          style={{
-            position: 'absolute',
-            height: 250,
-            marginTop: 50,
-            width: Dimensions.get('window').width - 32,
-            borderRadius: 25
-          }}
-          start={{ x: 0, y: 1.0 }}
-          end={{ x: 0, y: 0 }}
-        />
+        <View>
+          <Image
+            key={post.Id + 'photo'}
+            style={{
+              width: Dimensions.get('window').width - 32,
+              height: 200,
+              borderRadius: 20
+
+              /*     position:'absolute', */
+            }}
+            onError={() => console.log('error al cargar')}
+            source={{
+              uri: post.pictures[0]
+                ? post.pictures[0].url
+                : 'https://as01.epimg.net/mexico/imagenes/2019/01/19/tikitakas/1547933521_851367_1547933683_noticia_normal_recorte1.jpg'
+            }}
+          />
+          <LinearGradient
+            key={post.Id + 'gradient'}
+            colors={['rgba(0,0,0,0.5)', 'transparent']}
+            style={{
+              position: 'absolute',
+              height: 250,
+              borderRadius: 20,
+              borderBottomEndRadius: 20,
+              width: Dimensions.get('window').width - 32
+            }}
+          />
+        </View>
         <View
           style={{
-            height: 60,
-            borderColor: theme.primary,
-            /*    borderEndWidth: 0.2,
-            borderBottomWidth: 0.2,
-            borderStartWidth: 0.2, */
-            borderBottomLeftRadius: 20,
-            borderBottomRightRadius: 20,
             backgroundColor: theme.navigation,
             justifyContent: 'center'
           }}
@@ -93,15 +89,15 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
               <MyText
                 numberOfLines={2}
                 style={{
-                  fontSize: 22,
+                  fontSize: 22
                   /*  padding: 16 */
-                  paddingLeft: 8
+                  /*    paddingLeft: 8 */
                 }}
               >
                 {post.pet.breed.description}
               </MyText>
             </View>
-            <Icon style={{ paddingRight: 8, color: theme.primary, fontSize: 22 }} name="arrow-point-hand-drawn-outline-pointing-to-right-direction" />
+            {/* <Icon style={{ paddingRight: 8, color: theme.primary, fontSize: 22 }} name="arrow-point-hand-drawn-outline-pointing-to-right-direction" /> */}
           </View>
         </View>
       </View>

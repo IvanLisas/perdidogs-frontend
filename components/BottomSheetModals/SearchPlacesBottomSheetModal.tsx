@@ -15,7 +15,7 @@ import PlaceBar from '../PlaceBar'
 
 interface SearchPlacesBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
-  handleGoToPlace: (detail: GooglePlaceDetail | null, primaryPlaceText: string, secondaryPlaceText: string) => Promise<void>
+  handleGoToPlace: (detail: GooglePlaceDetail, primaryPlaceText: string, secondaryPlaceText: string) => Promise<void>
   snapPoints: (string | number)[]
 }
 
@@ -35,12 +35,11 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
       return
     } */
     if (!search.fetchPredictions) return
-    console.log(search.term)
     try {
       setShowPredictions(true)
       setPredictions((await googleService.getPredictions(search.term)).predictions)
-    } catch (e) {
-      console.log(e)
+    } catch (error) {
+      console.log(error)
     }
   }
   useDebounce(onChangeText, 1000, [search.term])
@@ -51,8 +50,8 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
       Keyboard.dismiss()
       handleGoToPlace(details, primaryPlaceText, secondaryPlaceText)
       /*  setSearch((prevState) => ({ ...prevState, term: description })) */
-    } catch (e) {
-      console.log(e)
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -66,7 +65,7 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
       ref={modalRef}
       onAnimate={() => Keyboard.dismiss()}
       android_keyboardInputMode="adjustPan"
-      stackBehavior="push"
+      stackBehavior="replace"
       backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
       style={{ backgroundColor: theme.navigation, borderRadius: 5 }}
     >
@@ -92,22 +91,8 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
           scrollEnabled
           keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="always"
-          /*   onTouchStart={() => Keyboard.dismiss()} */
           renderItem={({ item }) => {
             return (
-              /* <TouchableOpacity style={styles.predictionRow} onPress={() => onPredictionTapped(item.place_id, item.description)}>
-                <MyIcon style={{ marginRight: 16 }} name="compass-hand-drawn-circular-tool-outline" />
-                <View>
-                  <MyText style={styles.result} numberOfLines={1}>
-                    {item.structured_formatting.main_text}
-                  </MyText>
-                  {item.structured_formatting.secondary_text && (
-                    <MyText style={{ fontSize: 14, color: theme.textLabel }} numberOfLines={1}>
-                      {item.structured_formatting.secondary_text}
-                    </MyText>
-                  )}
-                </View>
-              </TouchableOpacity> */
               <PlaceBar
                 style={{ marginLeft: 16, paddingVertical: 16, borderBottomWidth: 0.5, borderColor: 'black' }}
                 onPress={() => onPredictionTapped(item.place_id, item.structured_formatting.main_text, item.structured_formatting.secondary_text)}

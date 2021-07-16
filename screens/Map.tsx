@@ -8,7 +8,7 @@ import { Appearance } from 'react-native-appearance'
 import { mapStyleNight } from '../styles/MapNight'
 import { getCurrentPositionAsync, requestForegroundPermissionsAsync } from 'expo-location'
 import useTheme from '../hooks/useTheme'
-import { BottomSheetFlatList, BottomSheetModal as DefaultBottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { BottomSheetFlatList, BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { Post } from '../types/models/Post'
 import postService from '../services/PostService'
 import PostPreview from '../components/PostPreview'
@@ -21,7 +21,16 @@ import { Extrapolate, interpolateNode, useSharedValue } from 'react-native-reani
 import PetCard from '../components/PetCard'
 import GooglePlacesSearch from '../components/BottomSheetModals/SearchPlacesBottomSheetModal'
 import SearchPlacesBottomSheetModal from '../components/BottomSheetModals/SearchPlacesBottomSheetModal'
-import ResultsBottomSheetModal from '../components/BottomSheetModals/ResultsBottomSheetModal'
+import PostResultsBottomSheetModal from '../components/BottomSheetModals/PostResultsBottomSheetModal'
+import FiltersBottomSheetModal from '../components/BottomSheetModals/FiltersBottomSheetModal'
+import { Filter } from '../types/models/Filter'
+
+const initialRegion = {
+  latitude: -38.535532,
+  longitude: -58.541518,
+  latitudeDelta: 1.003,
+  longitudeDelta: 1.003
+}
 
 export default function Map() {
   //Theme
@@ -36,19 +45,29 @@ export default function Map() {
   const { setSearchLocation, setSearchLocationDelta } = useContext(FiltersContext)
   //Navigation
   const navigation = useNavigation()
-  const [currentSearchPlace, setCurrentSearchPlace] = useState({ primaryText: '', secondaryText: '' })
+  const [currentSearchPlaceName, setCurrentSearchPlaceName] = useState({ primaryText: '', secondaryText: '' })
   //Hook's
   const { mapRef, handleNavigateToPoint, handleNavigateToRegion } = useMap()
   //Modals Ref's
-  const resultsModalRef = useRef<DefaultBottomSheetModal>(null)
-  const postPreviewModalRef = useRef<DefaultBottomSheetModal>(null)
-  const searchModalRef = useRef<DefaultBottomSheetModal>(null)
+  const resultsModalRef = useRef<BottomSheetModal>(null)
+  const postPreviewModalRef = useRef<BottomSheetModal>(null)
+  const searchModalRef = useRef<BottomSheetModal>(null)
+  const filtersModalRef = useRef<BottomSheetModal>(null)
   //Modal handle
   const snapPoints = useMemo(() => [94, '45%', '90%'], [])
   //Pin
   const [myMarket, setMyMarket] = useState<any>()
   const marketImage = require('../assets/images/dogPin2.png')
-  /*const imagePin = () => <Image source={pin} style={{ width: 20, height: 20 }} /> */
+  //Filters
+  const [filter, setFilter] = useState<Filter>({
+    searchLocation: { lat: initialRegion.latitude, lng: initialRegion.longitude },
+    deltaLocation: { lat: initialRegion.latitudeDelta, lng: initialRegion.longitudeDelta }
+  })
+  //Dimensions
+  const { width, height } = Dimensions.get('window')
+  const ASPECT_RATIO = width / height //No se usa
+  //Others
+  const [isMount, setIsMount] = useState(false)
 
   //Post
   const getPosts = async () => {
@@ -73,12 +92,15 @@ export default function Map() {
     postPreviewModalRef.current?.present()
   }
 
+  const handleFiltersModal = () => {
+    filtersModalRef.current?.present()
+  }
+
   //TODO preguntar si estan presentes?
   //Hacer lista de modales?
   const handleMapPress = () => dismissAll()
 
   const dismissAll = () => {
-    console.log('dismissAll')
     Keyboard.dismiss()
     searchModalRef.current?.collapse()
     resultsModalRef.current?.collapse()
@@ -98,7 +120,6 @@ export default function Map() {
   }
 
   const handleGoToMyLocation = async () => {
-    console.log(foregroundPermissionsStatus)
     if (foregroundPermissionsStatus == PermissionStatus.GRANTED) {
       try {
         const location = (await getCurrentPositionAsync()).coords
@@ -109,27 +130,26 @@ export default function Map() {
     } else console.log('No tiene permisos de localizacion')
   }
 
-  const handleGoToPlace = async (detail: GooglePlaceDetail | null, primaryPlaceText: string, secondaryPlaceText: string) => {
-    //TODO los dos presentes y hacer snap?
-    resultsModalRef.current?.present()
-    // TODO: No agarra los paises
-    console.log(detail)
-    if (detail) setCurrentSearchPlace({ primaryText: primaryPlaceText, secondaryText: secondaryPlaceText })
-    if (detail) {
-      const { width, height } = Dimensions.get('window')
-      const ASPECT_RATIO = width / height //No se usa
-      //Calculo la zona
-      const lat = detail.geometry.location.lat
-      const lng = detail.geometry.location.lng
-      const latDelta = detail.geometry.viewport.northeast.lat - detail.geometry.viewport.southwest.lat
-      const lngDelta = latDelta
-      handleNavigateToRegion({ latitude: lat, longitude: lng, latitudeDelta: latDelta, longitudeDelta: lngDelta })
-      try {
-        setPosts(await postService.geyByLocation(detail.geometry))
-      } catch (error) {
-        console.log(error.message)
-      }
+  const handleSearch = async () => {
+    try {
+      setPosts(await postService.getPostByFilters(filter))
+    } catch (error) {
+      console.log(error)
     }
+  }
+
+  // TODO: No agarra los paises
+  const handleGoToPlace = async (detail: GooglePlaceDetail, primaryPlaceText: string, secondaryPlaceText: string) => {
+    setCurrentSearchPlaceName({ primaryText: primaryPlaceText, secondaryText: secondaryPlaceText })
+    //Calculo la zona
+    const lat = detail.geometry.location.lat
+    const lng = detail.geometry.location.lng
+    const latDelta = detail.geometry.viewport.northeast.lat - detail.geometry.viewport.southwest.lat
+    const lngDelta = latDelta
+    handleNavigateToRegion({ latitude: lat, longitude: lng, latitudeDelta: latDelta, longitudeDelta: lngDelta })
+    setFilter((preState) => ({ ...preState, searchLocation: { lat: lat, lng: lng }, deltaLocation: { lat: latDelta, lng: lngDelta } }))
+
+    await handleSearch()
   }
 
   /*const handleFilters = async () => {
@@ -154,18 +174,25 @@ export default function Map() {
   }
 
   //UseEffect
-
-  //TODO ver diferencia entre este useEffect y el normal
   useLayoutEffect(() => {
     searchModalRef.current?.present()
-    searchModalRef.current?.snapToIndex(0)
-
     const init = async () => {
       await getPosts()
       await askForLocationPermissions()
+      setIsMount(true)
     }
     init()
   }, [])
+
+  useLayoutEffect(() => {
+    if (isMount) {
+      resultsModalRef.current?.present()
+      const search = async () => {
+        await handleSearch()
+      }
+      search()
+    }
+  }, [filter])
 
   /* 
   const currentPosition = useSharedValue(0)
@@ -185,7 +212,7 @@ export default function Map() {
       <View style={StyleSheet.absoluteFillObject}>
         <MapView
           ref={mapRef}
-          /*    onRegionChangeComplete={(event) => handleRegionChange(event)} */
+          /*onRegionChangeComplete={(event) => handleRegionChange(event)} */
           showsUserLocation={true}
           onLongPress={(event) => createMarker(event)}
           customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
@@ -193,7 +220,7 @@ export default function Map() {
           style={StyleSheet.absoluteFillObject}
           showsMyLocationButton={false}
           onTouchStart={() => dismissAll()}
-          /*     onPress={handleMapPress} */
+          /*onPress={handleMapPress} */
           initialRegion={{
             latitude: -38.535532,
             longitude: -58.541518,
@@ -215,12 +242,6 @@ export default function Map() {
             />
           ))}
         </MapView>
-        {/*<TouchableOpacity onPress={() => sheetModalef.current?.present()} style={{ position: 'absolute', padding: 16, top: 20, width: '100%' }}>
-          <GooglePlacesAutocomplete handleSearch={handleSearch} />
-        </TouchableOpacity> */}
-        {/*<TouchableOpacity style={[styles.button, { top: 200 }]} onPress={handleFilters}>
-          <Icon style={styles.icon} name="settings-hand-drawn-symbol" />
-        </TouchableOpacity> */}
 
         <TouchableOpacity style={[styles.button, { top: 300 }]} onPress={handleGoToMyLocation}>
           <Icon style={styles.icon} name="target-hand-drawn-circle" />
@@ -229,26 +250,28 @@ export default function Map() {
         <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
           <SearchPlacesBottomSheetModal handleGoToPlace={handleGoToPlace} snapPoints={snapPoints} modalRef={searchModalRef} />
 
-          <ResultsBottomSheetModal
+          <PostResultsBottomSheetModal
             handleGoToPost={handleGoToPost}
+            handleFiltersModal={handleFiltersModal}
             snapPoints={snapPoints}
             modalRef={resultsModalRef}
             posts={posts}
-            currentSearchPlace={currentSearchPlace}
+            currentSearchPlaceName={currentSearchPlaceName}
           />
 
-          <DefaultBottomSheetModal
+          <FiltersBottomSheetModal modalRef={filtersModalRef} snapPoints={snapPoints} />
+
+          <BottomSheetModal
             snapPoints={snapPoints}
             key="PoiDetailsSheet2"
             index={1}
-            onDismiss={() => console.log('a')}
             ref={postPreviewModalRef}
             stackBehavior="replace"
-            backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
+            backgroundComponent={() => <View style={{ backgroundColor: theme.background }}></View>}
             style={{ backgroundColor: theme.navigation, borderRadius: 5 }}
           >
             <PostPreview modalRef={postPreviewModalRef} />
-          </DefaultBottomSheetModal>
+          </BottomSheetModal>
         </View>
       </View>
     </BottomSheetModalProvider>

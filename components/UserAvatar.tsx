@@ -42,9 +42,9 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
 
 const styles = StyleSheet.create({
   row: {
-    backgroundColor: 'white',
-    marginBottom: 16,
-    paddingVertical: 16,
+    /*     backgroundColor: 'white',
+    marginBottom: 16, */
+    /*     paddingVertical: 16, */
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderTopColor: '#E0E0E0',

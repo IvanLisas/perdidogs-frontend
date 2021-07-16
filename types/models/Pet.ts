@@ -7,7 +7,7 @@ export type Pet = {
   name?: string
   sex?: string
   hasCollar?: boolean
-  fur: Fur
-  breed: Breed
-  size: Size
+  fur?: Fur
+  breed?: Breed
+  size?: Size
 }
