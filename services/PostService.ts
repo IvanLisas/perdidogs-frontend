@@ -39,12 +39,13 @@ class PostService {
     return (await axios.delete<Post>(`${SERVER_URL}/post/${id}`)).data
   }
 
-  async post(post: Post): Promise<Post> {
+  //TODO hacer DTO
+  async post(post: any): Promise<Post> {
     return (await axios.post<Post>(`${SERVER_URL}/post`, post)).data
   }
 
   async getPostByFilters(filter: Filter): Promise<Post[]> {
-    console.log((await axios.put<Post[]>(`${SERVER_URL}/post/by-filter`, filter)).data)
+    console.log(filter)
     return (await axios.put<Post[]>(`${SERVER_URL}/post/by-filter`, filter)).data
   }
 }

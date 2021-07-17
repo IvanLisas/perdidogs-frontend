@@ -12,6 +12,7 @@ import PlaceBar from '../PlaceBar'
 interface PostResultsBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
   handleGoToPost: (post: Post) => void
+
   handleFiltersModal: () => void
   snapPoints: (string | number)[]
   posts: Post[]
@@ -38,7 +39,7 @@ const PostResultsBottomSheetModal: React.FC<PostResultsBottomSheetModalProps> = 
   return (
     <BottomSheetModal
       snapPoints={snapPoints}
-      index={1}
+      index={2}
       enableContentPanningGesture
       key="resultsModal"
       ref={modalRef}

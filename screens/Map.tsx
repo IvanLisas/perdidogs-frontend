@@ -24,6 +24,7 @@ import SearchPlacesBottomSheetModal from '../components/BottomSheetModals/Search
 import PostResultsBottomSheetModal from '../components/BottomSheetModals/PostResultsBottomSheetModal'
 import FiltersBottomSheetModal from '../components/BottomSheetModals/FiltersBottomSheetModal'
 import { Filter } from '../types/models/Filter'
+import { Pet } from '../types/models/Pet'
 
 const initialRegion = {
   latitude: -38.535532,
@@ -53,6 +54,7 @@ export default function Map() {
   const postPreviewModalRef = useRef<BottomSheetModal>(null)
   const searchModalRef = useRef<BottomSheetModal>(null)
   const filtersModalRef = useRef<BottomSheetModal>(null)
+  /*   const [filterModa, setFilterModa] = useState(false) */
   //Modal handle
   const snapPoints = useMemo(() => [94, '45%', '90%'], [])
   //Pin
@@ -93,6 +95,7 @@ export default function Map() {
   }
 
   const handleFiltersModal = () => {
+    /*     setFilterModa(true) */
     filtersModalRef.current?.present()
   }
 
@@ -148,8 +151,10 @@ export default function Map() {
     const lngDelta = latDelta
     handleNavigateToRegion({ latitude: lat, longitude: lng, latitudeDelta: latDelta, longitudeDelta: lngDelta })
     setFilter((preState) => ({ ...preState, searchLocation: { lat: lat, lng: lng }, deltaLocation: { lat: latDelta, lng: lngDelta } }))
+  }
 
-    await handleSearch()
+  const handleApplyFilters = (pet: Pet | undefined) => {
+    setFilter((prev) => ({ ...prev, pet: pet }))
   }
 
   /*const handleFilters = async () => {
@@ -176,6 +181,7 @@ export default function Map() {
   //UseEffect
   useLayoutEffect(() => {
     searchModalRef.current?.present()
+    console.log('mount')
     const init = async () => {
       await getPosts()
       await askForLocationPermissions()
@@ -259,7 +265,7 @@ export default function Map() {
             currentSearchPlaceName={currentSearchPlaceName}
           />
 
-          <FiltersBottomSheetModal modalRef={filtersModalRef} snapPoints={snapPoints} />
+          <FiltersBottomSheetModal pet={filter.pet} handleApplyFilters={handleApplyFilters} modalRef={filtersModalRef} snapPoints={snapPoints} />
 
           <BottomSheetModal
             snapPoints={snapPoints}

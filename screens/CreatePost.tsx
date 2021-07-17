@@ -63,14 +63,18 @@ const CreatePost: React.FC = ({}) => {
       const im2 = await imageService.savePhoto(image2)
       const im3 = await imageService.savePhoto(image3)
       const im4 = await imageService.savePhoto(image4)
-      await postService.post({
-        pet: pet,
-        description: description,
-        pictures: [im1 && { url: im1 }, im2 && { url: im2 }, im3 && { url: im3 }, im4 && { url: im4 }],
-        owner: { Id: user?.Id },
-        location: { lat: myLocation.latitude, long: myLocation.longitude }
-      } as Post)
-
+      try {
+        await postService.post({
+          pet: pet,
+          description: description,
+          pictures: [im1 && { url: im1 }, im2 && { url: im2 }, im3 && { url: im3 }, im4 && { url: im4 }],
+          owner: user?.Id,
+          postStatus: 1,
+          location: { lat: myLocation.latitude, long: myLocation.longitude }
+        })
+      } catch (error) {
+        console.log(error.message)
+      }
       navigation.navigate('Main')
     }
   }
