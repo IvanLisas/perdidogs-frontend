@@ -87,7 +87,7 @@ const MyPosts: React.FC<MyPosts> = (props) => {
           /*  fontFamily: 'LoveMeLikeASister' */
         }}
       >
-        {post.pet.breed.description}
+        {post.pet.breed?.description}
       </Text>
     </TouchableOpacity>
   )

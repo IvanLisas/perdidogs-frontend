@@ -2,7 +2,7 @@ import axios from 'axios'
 import { SERVER_URL } from '../constants/Rest'
 import { Breed } from '../types/models/Breed'
 import { Color } from '../types/models/Color'
-import { Length } from '../types/models/Lenght'
+import { FurLength } from '../types/models/FurLength'
 import { Size } from '../types/models/Size'
 
 class DropDownService {
@@ -18,8 +18,8 @@ class DropDownService {
     return (await axios.get<Size[]>(`${SERVER_URL}/dropdown/sizes`)).data
   }
 
-  async getAllLengths(): Promise<Length[]> {
-    return (await axios.get<Length[]>(`${SERVER_URL}/dropdown/lengths`)).data
+  async getAllLengths(): Promise<FurLength[]> {
+    return (await axios.get<FurLength[]>(`${SERVER_URL}/dropdown/lengths`)).data
   }
 }
 

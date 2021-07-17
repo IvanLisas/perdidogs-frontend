@@ -16,6 +16,8 @@ import { useNavigation } from '@react-navigation/native'
 import { Chat } from '../types/models/Chat'
 import { Message } from '../types/models/Message'
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
+import MyText from './MyThemedComponents/MyText'
+import SendAMessageBar from './SendAMessageBar'
 interface PostPreviewProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
 }
@@ -68,7 +70,8 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef }) => {
               </View>
               <View style={{ paddingLeft: 48 }}>
                 <Text style={styles(theme).description2}>{post?.description}</Text>
-
+                <MyText>{post?.pet?.color?.description}</MyText>
+                <MyText>{post?.pet?.furLength?.description}</MyText>
                 {/*      <Text numberOfLines={1} style={styles(theme).tittle}>
             {post?.description}
           </Text> */}
@@ -157,9 +160,9 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef }) => {
           </View>
           {/*  </TouchableWithoutFeedback> */}
         </ScrollView>
-        {/*         <View style={{ position: 'absolute', bottom: 0 }}>
-          <SendBar text={text} setText={setText} onPress={sendMessage}></SendBar>
-        </View> */}
+        <View style={{ position: 'absolute', bottom: 0 }}>
+          <SendAMessageBar text={text} setText={setText} onPress={sendMessage}></SendAMessageBar>
+        </View>
       </BottomSheetScrollView>
     )
 }

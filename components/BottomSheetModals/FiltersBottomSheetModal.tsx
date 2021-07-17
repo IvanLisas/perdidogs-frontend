@@ -9,7 +9,7 @@ import { Pet } from '../../types/models/Pet'
 
 import dropDownService from '../../services/DropDownService'
 import { Breed } from '../../types/models/Breed'
-import { Length } from '../../types/models/Lenght'
+import { FurLength } from '../../types/models/FurLength'
 import { Size } from '../../types/models/Size'
 import { Color } from '../../types/models/Color'
 import SingleFilterBottomSheetModal from './SingleFilterBottomSheetModal'
@@ -32,7 +32,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
   const [localPet, setLocalPet] = useState<Pet | undefined>(pet)
   const [colors, setColors] = useState<Color[]>()
   const [breeds, setBreeds] = useState<Breed[]>()
-  const [lenghts, setLenghts] = useState<Length[]>()
+  const [lenghts, setLenghts] = useState<FurLength[]>()
   const [sizes, setSizes] = useState<Size[]>()
 
   const colorsModalRef = useRef<BottomSheetModal>(null)
@@ -62,11 +62,11 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
           modalRef.current?.dismiss()
           /*      setFilterModa(false) */
         }}
-        style={styles.iconButton}
+        /* style={styles.iconButton} */
       >
         <Ionicons size={24} color="#8E8E93" name="close" />
       </TouchableOpacity>
-      <MyText>Filtros</MyText>
+      <MyText style={{ fontSize: 18 }}>Filtros</MyText>
       <TouchableOpacity
         onPress={() => {
           console.log('no reset')
@@ -76,7 +76,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
           change = true
           modalRef.current?.dismiss()
         }}
-        style={styles.iconButton}
+        /*   style={styles.iconButton} */
       >
         <Ionicons size={24} color="#8E8E93" name="checkmark" />
       </TouchableOpacity>
@@ -109,11 +109,11 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
       </TouchableOpacity>
       <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={styles.row}>
         <MyText style={{ fontSize: 16 }}>Colores</MyText>
-        <MyText style={{ fontSize: 16 }}>{localPet?.fur?.color?.description ? localPet?.fur?.color?.description : 'Ninguno'}</MyText>
+        <MyText style={{ fontSize: 16 }}>{localPet?.color?.description ? localPet?.color?.description : 'Ninguno'}</MyText>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={styles.row}>
         <MyText style={{ fontSize: 16 }}>Pelaje</MyText>
-        <MyText style={{ fontSize: 16 }}>{localPet?.fur?.length?.description ? localPet?.fur?.length?.description : 'Ninguno'}</MyText>
+        <MyText style={{ fontSize: 16 }}>{localPet?.furLength?.description ? localPet?.furLength?.description : 'Ninguno'}</MyText>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={styles.row}>
         <MyText style={{ fontSize: 16 }}>Tamaño</MyText>
@@ -124,15 +124,15 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
         <SingleFilterBottomSheetModal
           title="Colores"
           list={colors}
-          setFilter={(color: Color) => setLocalPet((prev) => ({ ...prev, fur: { color: color, length: localPet?.fur?.length } }))}
-          filter={localPet?.fur?.color}
+          setFilter={(color: Color) => setLocalPet((prev) => ({ ...prev, color: color }))}
+          filter={localPet?.color}
           modalRef={colorsModalRef}
         />
         <SingleFilterBottomSheetModal
           title="Pelaje"
           list={lenghts}
-          setFilter={(length: Length) => setLocalPet((prev) => ({ ...prev, fur: { ...prev.fur, length: length } }))}
-          filter={localPet?.fur?.length}
+          setFilter={(length: FurLength) => setLocalPet((prev) => ({ ...prev, furLength: length }))}
+          filter={localPet?.furLength}
           modalRef={lenghtsModalRef}
         />
         <SingleFilterBottomSheetModal
@@ -159,10 +159,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#DEDEDE',
     padding: 16,
+    alignContent: 'center',
     justifyContent: 'space-between'
   },
   iconButton: {
-    marginLeft: 8,
     backgroundColor: '#E5E5EA',
     borderRadius: 50,
     width: 28,

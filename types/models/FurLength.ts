@@ -1,4 +1,4 @@
-export type Length = {
+export type FurLength = {
   Id: number
   description: string
 }

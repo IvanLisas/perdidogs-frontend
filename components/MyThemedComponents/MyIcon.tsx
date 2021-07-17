@@ -1,6 +1,6 @@
 import { IconProps, Input, InputProps } from 'react-native-elements'
 import React from 'react'
-import { StyleProp, StyleSheet, TextInput as DefaultTextInput, TextStyle, TouchableOpacity, View } from 'react-native'
+import { StyleProp, StyleSheet, TextInput as DefaultTextInput, TextStyle, TouchableOpacity, View, ViewProps } from 'react-native'
 import useTheme from '../../hooks/useTheme'
 import Icon from '../icons/index'
 import { Ionicons } from '@expo/vector-icons'
@@ -11,7 +11,7 @@ export type MyIconProps = {
   backgroundColor?: string
   padding?: number
   name: string
-} & IconProps
+} & ViewProps
 
 const MyIcon: React.FC<MyIconProps> = (props) => {
   const theme = useTheme()
@@ -20,7 +20,7 @@ const MyIcon: React.FC<MyIconProps> = (props) => {
 
   return (
     <View>
-      <View style={[style, { alignSelf: 'flex-start', borderRadius: 25, backgroundColor: backgroundColor ? backgroundColor : 'transparent' }]}>
+      <View style={[style, { alignSelf: 'flex-start', borderRadius: 25, backgroundColor: backgroundColor ? backgroundColor : backgroundColor }]}>
         <Ionicons size={24} color="blue" name="pin" />
       </View>
     </View>

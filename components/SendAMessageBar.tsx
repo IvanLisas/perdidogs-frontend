@@ -29,7 +29,6 @@ const SendAMessageBar: React.FC<SendAMessageBarProps> = (props) => {
         borderTopRightRadius: 0,
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
         backgroundColor: theme.navigation,
         borderTopColor: theme.text,
         shadowColor: '#000',

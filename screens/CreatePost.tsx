@@ -17,7 +17,7 @@ import { background, backgroundColor } from 'styled-system'
 import dropDownService from '../services/DropDownService'
 import { Color } from '../types/models/Color'
 import { Breed } from '../types/models/Breed'
-import { Length } from '../types/models/Lenght'
+import { FurLength } from '../types/models/FurLength'
 import { Size } from '../types/models/Size'
 import MySelecter from '../components/MyThemedComponents/MySelecter'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
@@ -38,11 +38,11 @@ const CreatePost: React.FC = ({}) => {
   const { setPost, posts, setPosts } = useContext(PostContext)
   const [color, setColor] = useState<Color>()
   const [breed, setBreed] = useState<Breed>()
-  const [lenght, setLenght] = useState<Length>()
+  const [lenght, setLenght] = useState<FurLength>()
   const [size, setSize] = useState<Size>()
   const [colors, setColors] = useState<Color[]>()
   const [breeds, setBreeds] = useState<Breed[]>()
-  const [lenghts, setLenghts] = useState<Length[]>()
+  const [lenghts, setLenghts] = useState<FurLength[]>()
   const [sizes, setSizes] = useState<Size[]>()
   const [image1, setImage1] = useState()
   const [image2, setImage2] = useState()
@@ -58,7 +58,7 @@ const CreatePost: React.FC = ({}) => {
   const createPost = async () => {
     if (color && lenght && size && breed) {
       setIsLoading(true)
-      const pet: Pet = { fur: { color: color, length: lenght }, breed: breed, size: size }
+      const pet: Pet = { color: color, furLength: lenght, breed: breed, size: size }
       const im1 = await imageService.savePhoto(image1)
       const im2 = await imageService.savePhoto(image2)
       const im3 = await imageService.savePhoto(image3)

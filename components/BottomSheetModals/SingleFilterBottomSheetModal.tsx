@@ -9,7 +9,7 @@ import { Pet } from '../../types/models/Pet'
 
 import dropDownService from '../../services/DropDownService'
 import { Breed } from '../../types/models/Breed'
-import { Length } from '../../types/models/Lenght'
+import { FurLength } from '../../types/models/FurLength'
 import { Size } from '../../types/models/Size'
 import { Color } from '../../types/models/Color'
 

@@ -20,6 +20,7 @@ const ListOfChats: React.FC = () => {
 
   useEffect(() => {
     const getChat = async () => {
+      /*  console.log(chats) */
       if (!fetchFlag) setTimeout(() => setFetchFlag(true), 3000)
       else await fetchChat()
     }

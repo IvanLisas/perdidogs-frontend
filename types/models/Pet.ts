@@ -1,5 +1,6 @@
 import { Breed } from './Breed'
-import { Fur } from './Fur'
+import { Color } from './Color'
+import { FurLength } from './FurLength'
 import { Size } from './Size'
 
 export type Pet = {
@@ -7,7 +8,8 @@ export type Pet = {
   name?: string
   sex?: string
   hasCollar?: boolean
-  fur?: Fur
+  furLength?: FurLength
   breed?: Breed
+  color?: Color
   size?: Size
 }
