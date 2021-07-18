@@ -9,11 +9,13 @@ import UserContext from './UserContext'
 interface ContextProps {
   readonly chats: Chat[]
   readonly setChats: (chats: Chat[]) => void
+  readonly findChatId: (addresseeId: number) => number | undefined
 }
 
 const ChatContext = createContext<ContextProps>({
   chats: [],
-  setChats: () => null
+  setChats: () => null,
+  findChatId: (addresseeId: number) => addresseeId
 })
 
 export const ChatContextProvider: React.FC = ({ children }) => {
@@ -21,25 +23,34 @@ export const ChatContextProvider: React.FC = ({ children }) => {
   const [fetchFlag, setFetchFlag] = useState<boolean>(true)
   const { user } = useContext(UserContext)
 
+  const findChatId = (addresseeId: number) =>
+    chats.find((chat) => (chat.owner.Id == user?.Id && chat.owner2.Id == addresseeId) || (chat.owner2.Id == user?.Id && chat.owner.Id == addresseeId))
+      ?.Id
+
   useEffect(() => {
     const getChat = async () => {
+      console.log('...Starting to fetching chats')
       if (!fetchFlag) setTimeout(() => setFetchFlag(true), 1000)
       else {
-        try {
-          setFetchFlag(false)
-          if (user) {
-            setChats([...(await chatService.getAll(user?.Id))])
-            console.log('Fetching chats')
+        setFetchFlag(false)
+
+        if (user) {
+          try {
+            console.log('...Trying to fetching chats')
+            const chats = await chatService.getAll(user?.Id)
+            console.log('Fetching complete')
+            setChats([...chats])
+          } catch (error) {
+            console.log('Fetching Fail')
+            console.log(error.message)
           }
-        } catch (error) {
-          console.log(error.message)
         }
       }
     }
     getChat()
   }, [fetchFlag])
 
-  return <ChatContext.Provider value={{ chats, setChats }}>{children}</ChatContext.Provider>
+  return <ChatContext.Provider value={{ chats, setChats, findChatId }}>{children}</ChatContext.Provider>
 }
 
 export default ChatContext

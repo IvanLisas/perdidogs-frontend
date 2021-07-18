@@ -33,6 +33,7 @@
           "apiKey": "AIzaSyCahzx0wpr4G7jiI_LfsAUf0JWJ3-FZVDs"
         }
       },
+      "softwareKeyboardLayoutMode": "pan",
       "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
     },
     "web": {

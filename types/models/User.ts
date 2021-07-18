@@ -1,7 +1,7 @@
 import { Post } from './Post'
 
 export type User = {
-  Id?: number
+  Id: number
   firstName: string
   lastName: string
   email: string

@@ -20,7 +20,9 @@ const ListOfChats: React.FC = () => {
   const navigation = useNavigation()
 
   const goToChat = (chat: Chat) => {
-    navigation.navigate('Chat', { chatId: chat.Id })
+    const addressee = chat.owner.Id == user?.Id ? chat.owner2 : chat.owner
+    console.log(addressee)
+    navigation.navigate('Chat', { addressee: addressee })
   }
 
   if (!user) return null

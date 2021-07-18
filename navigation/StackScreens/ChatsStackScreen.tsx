@@ -14,6 +14,7 @@ function ProfileStackScreen() {
     <ChatsStack.Navigator
       screenOptions={{
         headerTintColor: colors.text,
+
         cardStyle: {
           backgroundColor: colors.background
         },

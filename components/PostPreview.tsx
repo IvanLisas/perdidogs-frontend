@@ -33,7 +33,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef }) => {
 
   const sendChatMenssage = () => {
     const messanges: Message[] = []
-    navigation.navigate('Chat', { Id: 0, owner: { Id: user?.Id }, owner2: { Id: post?.owner.Id }, messageList: messanges } as Chat)
+    navigation.navigate('Chat', { addressee: post?.owner })
     /*  setModalVisible(false) */
   }
 
@@ -160,9 +160,9 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef }) => {
           </View>
           {/*  </TouchableWithoutFeedback> */}
         </ScrollView>
-        <View style={{ position: 'absolute', bottom: 0 }}>
+        {/*         <View style={{ position: 'absolute', bottom: 0 }}>
           <SendAMessageBar text={text} setText={setText} onPress={sendMessage}></SendAMessageBar>
-        </View>
+        </View> */}
       </BottomSheetScrollView>
     )
 }
