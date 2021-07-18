@@ -8,37 +8,21 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import SendAMessageBar from '../components/SendAMessageBar'
 import MyText from '../components/MyThemedComponents/MyText'
+import ChatContext from '../contexts/ChatsContext'
+import { Chat } from '../types/models/Chat'
 
 const ChatConversation: React.FC = (props) => {
   const { user } = useContext(UserContext)
-
-  const navigation = useNavigation()
+  const { chats } = useContext(ChatContext)
   const route = useRoute()
+
+  const chatId = (route.params as any).chatId as Number
+  const chat = chats.filter((chat) => chat.Id == chatId)[0]
+  const navigation = useNavigation()
+
   const [fetchFlag, setFetchFlag] = useState<boolean>(true) //Si es true traigo mensajes del backend
-  const [chat, setChat] = useState<any>(route.params)
+  /*   const [chat, setChat] = useState<Chat>(route.params as Chat) */
   const [text, setText] = useState('')
-
-  /*   const chat = route.params as Chat */
-  useEffect(() => {
-    const getChat = async () => {
-      if (!fetchFlag) setTimeout(() => setFetchFlag(true), 3000)
-      else await fetchChat()
-    }
-    getChat()
-  }, [fetchFlag])
-
-  const fetchChat = async () => {
-    try {
-      const chatId = await chatService.getId({ user1Id: chat.owner.Id, user2Id: chat.owner2.Id })
-
-      const chats = await chatService.getAll(user?.Id)
-      const myChat = chats.find((_chat, index) => _chat.Id == chatId)
-      if (myChat) setChat(myChat)
-      setFetchFlag(false)
-    } catch (errorMessage) {
-      console.log(errorMessage)
-    }
-  }
 
   const sendMessage = async () => {
     const address = chat.owner.Id == user?.Id ? chat.owner2.Id : chat.owner.Id

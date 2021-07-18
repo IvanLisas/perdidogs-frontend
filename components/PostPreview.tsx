@@ -61,9 +61,9 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef }) => {
             <View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 8, paddingRight: 8 }}>
                 <UserAvatar user={post?.owner} />
-                {/*                   <TouchableOpacity onPress={sendChatMenssage}>
-                    <Icon style={{ color: theme.primary, fontSize: 28 }} name="mail-envelope-back-hand-drawn-outline" />
-                  </TouchableOpacity> */}
+                <TouchableOpacity onPress={sendChatMenssage}>
+                  <Icon style={{ color: theme.primary, fontSize: 28 }} name="mail-envelope-back-hand-drawn-outline" />
+                </TouchableOpacity>
                 <TouchableOpacity onPress={handleCloseModal}>
                   <Icon style={{ color: theme.primary, fontSize: 28 }} name="cancel-circular-button-with-a-cross-inside-hand-drawn-outlines" />
                 </TouchableOpacity>

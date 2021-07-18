@@ -8,37 +8,19 @@ import chatService from '../services/ChatService'
 import { Dimensions, View, StyleSheet } from 'react-native'
 import MyText from '../components/MyThemedComponents/MyText'
 import useTheme from '../hooks/useTheme'
+import ChatContext from '../contexts/ChatsContext'
 
 const ListOfChats: React.FC = () => {
   const { user } = useContext(UserContext)
 
-  const [chats, setChats] = useState<Chat[]>([])
-  const [fetchFlag, setFetchFlag] = useState<boolean>(true) //Si es true traigo mensajes del backend
+  const { chats } = useContext(ChatContext)
+
   const theme = useTheme()
 
   const navigation = useNavigation()
 
-  useEffect(() => {
-    const getChat = async () => {
-      /*  console.log(chats) */
-      if (!fetchFlag) setTimeout(() => setFetchFlag(true), 3000)
-      else await fetchChat()
-    }
-    getChat()
-  }, [fetchFlag])
-
-  const fetchChat = async () => {
-    try {
-      setChats(await chatService.getAll(user?.Id))
-
-      setFetchFlag(false)
-    } catch (errorMessage) {
-      console.log(errorMessage)
-    }
-  }
-
   const goToChat = (chat: Chat) => {
-    navigation.navigate('Chat', chat)
+    navigation.navigate('Chat', { chatId: chat.Id })
   }
 
   if (!user) return null

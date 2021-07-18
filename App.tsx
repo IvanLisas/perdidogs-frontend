@@ -12,6 +12,7 @@ import { MapContextProvider } from './contexts/MapContext'
 import { NativeBaseProvider } from 'native-base'
 import { FilterContextProvider } from './contexts/FiltersContext'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { ChatContextProvider } from './contexts/ChatsContext'
 
 export default function App() {
   const isLoadingComplete = useCachedResources()
@@ -23,18 +24,20 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <UserContextProvider>
-          <FilterContextProvider>
-            <PostContextProvider>
-              <MapContextProvider>
-                <ThemeContextProvider>
-                  <NativeBaseProvider>
-                    <Navigation />
-                    <StatusBar />
-                  </NativeBaseProvider>
-                </ThemeContextProvider>
-              </MapContextProvider>
-            </PostContextProvider>
-          </FilterContextProvider>
+          <ChatContextProvider>
+            <FilterContextProvider>
+              <PostContextProvider>
+                <MapContextProvider>
+                  <ThemeContextProvider>
+                    <NativeBaseProvider>
+                      <Navigation />
+                      <StatusBar />
+                    </NativeBaseProvider>
+                  </ThemeContextProvider>
+                </MapContextProvider>
+              </PostContextProvider>
+            </FilterContextProvider>
+          </ChatContextProvider>
         </UserContextProvider>
       </SafeAreaProvider>
     )
