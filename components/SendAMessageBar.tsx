@@ -25,21 +25,14 @@ const SendAMessageBar: React.FC<SendAMessageBarProps> = (props) => {
   return (
     <View
       style={{
-        borderTopLeftRadius: 0,
-        borderTopRightRadius: 0,
-        flexDirection: 'row',
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.navigation,
-        borderTopColor: theme.text,
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 12
-        },
-        shadowOpacity: 0.58,
-        shadowRadius: 16.0,
-
-        elevation: 24
+        position: 'absolute',
+        bottom: 20,
+        right: 20
       }}
     >
       <Input

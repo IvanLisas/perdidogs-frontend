@@ -6,7 +6,8 @@ import useTheme from '../hooks/useTheme'
 import Icon from '../components/icons/index'
 import ChatsStackScreen from './StackScreens/ChatsStackScreen'
 import MapStackScreen from './StackScreens/MapStackScreen'
-import ProfileStackScreen from './StackScreens/ChatsStackScreen'
+import ProfileStackScreen from './StackScreens/ProfileStackScreen'
+import AlertsStackScreen from './StackScreens/AlertsStackScreen'
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
 
@@ -40,6 +41,13 @@ export default function BottomTabNavigator() {
           component={MapStackScreen}
           options={{
             tabBarIcon: ({ color }) => <Icon style={[{ color: color }, styles.icon]} name="compass-hand-drawn-circular-tool-outline" />
+          }}
+        />
+        <Tab.Screen
+          name="Alertas"
+          component={AlertsStackScreen}
+          options={{
+            tabBarIcon: ({ color }) => <Icon style={[{ color: color }, styles.icon]} name="bell-hand-drawn-interface-symbol" />
           }}
         />
         <Tab.Screen
