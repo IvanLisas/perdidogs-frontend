@@ -86,7 +86,7 @@ const Profile: React.FC = () => {
                   paddingLeft: 8
                 }}
               >
-                {post.pet.breed.description}
+                {post?.pet?.breed?.description}
               </MyText>
             </View>
             <Icon style={{ paddingRight: 8, color: theme.primary, fontSize: 22 }} name="arrow-point-hand-drawn-outline-pointing-to-right-direction" />

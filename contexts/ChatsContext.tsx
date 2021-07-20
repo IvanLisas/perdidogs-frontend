@@ -28,18 +28,18 @@ export const ChatContextProvider: React.FC = ({ children }) => {
       ?.Id
 
   useEffect(() => {
+    let isActive = true
     const getChat = async () => {
-      console.log('...Starting to fetching chats')
       if (!fetchFlag) setTimeout(() => setFetchFlag(true), 1000)
       else {
         setFetchFlag(false)
 
         if (user) {
           try {
-            console.log('...Trying to fetching chats')
             const chats = await chatService.getAll(user?.Id)
-            console.log('Fetching complete')
-            setChats([...chats])
+            if (isActive) {
+              setChats([...chats])
+            }
           } catch (error) {
             console.log('Fetching Fail')
             console.log(error.message)
@@ -48,6 +48,10 @@ export const ChatContextProvider: React.FC = ({ children }) => {
       }
     }
     getChat()
+    /*     return () => {
+      console.log('Desmontado')
+      isActive = false
+    } */
   }, [fetchFlag])
 
   return <ChatContext.Provider value={{ chats, setChats, findChatId }}>{children}</ChatContext.Provider>

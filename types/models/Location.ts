@@ -1,5 +1,5 @@
 export type Location = {
-  Id: number
+  Id?: number
   lat: number
   long: number
 }
