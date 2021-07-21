@@ -44,7 +44,7 @@ function AlertsStackScreen() {
       <AlertsStack.Screen name="Main" options={{ title: 'Notificaciones' }} component={Alerts} />
       <AlertsStack.Screen name="newAlert" options={{ title: 'Nueva Alerta' }} component={NewAlert} />
       <AlertsStack.Screen name="myAlerts" options={{ title: 'Mis Alertas' }} component={MyAlerts} />
-      <AlertsStack.Screen name="editAlert" options={{ title: 'Editar Alerta' }} component={MyAlert} />
+      <AlertsStack.Screen name="editAlert" options={{ title: 'Modificar Alerta' }} component={MyAlert} />
     </AlertsStack.Navigator>
   )
 }

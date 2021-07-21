@@ -35,6 +35,8 @@ const MyAlerts: React.FC = () => {
     if (user) setNotifications([...(await alertService.getAllActiveAlerts(user?.Id))]) */
   }
 
+  const goToNewAlert = () => navigation.navigate('newAlert')
+
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
@@ -51,12 +53,27 @@ const MyAlerts: React.FC = () => {
 
   return (
     <View style={styles.root}>
+      <TouchableOpacity
+        onPress={goToNewAlert}
+        style={{
+          justifyContent: 'space-between',
+          borderBottomWidth: 1,
+          borderColor: '#DEDEDE',
+          flexDirection: 'row',
+          paddingVertical: 20,
+          alignItems: 'center'
+        }}
+      >
+        <MyText style={{ fontSize: 18 }}>Crear nueva alerta</MyText>
+        <Ionicons style={{ marginRight: 8 }} size={22} color="#8E8E93" name="add" />
+      </TouchableOpacity>
       <ScrollView showsVerticalScrollIndicator={false}>
         {alerts.map((alert, index) => (
           <TouchableOpacity onPress={() => handleEditAlert(alert)} key={alert.Id + 'Alert'} style={styles.notification}>
+            <Ionicons style={{ marginRight: 4 }} size={28} color="#8E8E93" name="notifications" />
             <View style={{ flexDirection: 'column', flex: 1, marginLeft: 8 }}>
-              <MyText style={{ fontSize: 16, fontWeight: 'bold' }}>{alert.creationDate}</MyText>
-              <MyText style={{ fontSize: 16 }}>{user.firstName} esta mascota que podría ser la tuya</MyText>
+              <MyText style={{ fontSize: 16, fontWeight: 'bold' }}>Titulo?</MyText>
+              <MyText style={{ fontSize: 16 }}>Creada el {alert.creationDate}</MyText>
             </View>
             {/*             <TouchableOpacity onPress={async () => handleRejectNotification(notification)} style={{ alignSelf: 'flex-start' }}>
               <Ionicons size={24} color="#8E8E93" name="close" />

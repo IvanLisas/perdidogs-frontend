@@ -78,7 +78,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
     try {
       console.log('hola')
       await alertService.create({ pet: localPet, location: myLocation, owner: user })
-      navigation.navigate('Main')
+      navigation.goBack()
     } catch (error) {
       console.log(error.message)
     }

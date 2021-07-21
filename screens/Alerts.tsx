@@ -24,8 +24,6 @@ const Alerts: React.FC = () => {
 
   const navigation = useNavigation()
 
-  const goToNewAlert = () => navigation.navigate('newAlert')
-
   const goToMyAlerts = () => navigation.navigate('myAlerts')
 
   //TODO trys
@@ -41,10 +39,25 @@ const Alerts: React.FC = () => {
     })
   }
 
+  const hasNotifications = notifications.length !== 0
+
   if (!user) return null
 
   return (
     <View style={styles.root}>
+      <TouchableOpacity
+        onPress={goToMyAlerts}
+        style={{ borderBottomWidth: 1, borderColor: '#DEDEDE', flexDirection: 'row', paddingVertical: 20, alignItems: 'center' }}
+      >
+        <Ionicons style={{ marginRight: 8 }} size={22} color="#8E8E93" name="notifications" />
+        <MyText style={{ fontSize: 18 }}>Administrar alertas personalizadas</MyText>
+      </TouchableOpacity>
+
+      {!hasNotifications && (
+        <View style={{ alignItems: 'center', flex: 2, justifyContent: 'center', height: '100%' }}>
+          <MyText style={{ fontSize: 18 }}>No tienes notificaciones nuevas</MyText>
+        </View>
+      )}
       <ScrollView showsVerticalScrollIndicator={false}>
         {notifications.map((notification, index) => (
           <TouchableOpacity onPress={() => handlePressAlert(notification)} key={notification.alertId + notification.url} style={styles.notification}>
@@ -58,8 +71,8 @@ const Alerts: React.FC = () => {
             </TouchableOpacity>
           </TouchableOpacity>
         ))}
-        <MyButton onPress={goToNewAlert} title="Crear Alerta"></MyButton>
-        <MyButton onPress={goToMyAlerts} title="Mis Alertas"></MyButton>
+        {/*         <MyButton onPress={goToNewAlert} title="Crear Alerta"></MyButton>
+        <MyButton onPress={goToMyAlerts} title="Mis Alertas"></MyButton> */}
       </ScrollView>
     </View>
   )
@@ -71,6 +84,8 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     paddingHorizontal: 16
+    /*     justifyContent: 'center',
+    alignItems: 'center' */
   },
   row: {
     flexDirection: 'column',
