@@ -7,6 +7,8 @@ import ListOfChats from '../../screens/ListOfChats'
 import ChatConversation from '../../screens/ChatConversation'
 import Alerts from '../../screens/Alerts'
 import NewAlert from '../../screens/NewAlert'
+import MyAlerts from '../../screens/MyAlerts'
+import MyAlert from '../../screens/MyAlert'
 const AlertsStack = createStackNavigator()
 
 function AlertsStackScreen() {
@@ -39,8 +41,10 @@ function AlertsStackScreen() {
         headerBackTitleVisible: false
       }}
     >
-      <AlertsStack.Screen name="Main" options={{ title: 'Alertas' }} component={Alerts} />
+      <AlertsStack.Screen name="Main" options={{ title: 'Notificaciones' }} component={Alerts} />
       <AlertsStack.Screen name="newAlert" options={{ title: 'Nueva Alerta' }} component={NewAlert} />
+      <AlertsStack.Screen name="myAlerts" options={{ title: 'Mis Alertas' }} component={MyAlerts} />
+      <AlertsStack.Screen name="editAlert" options={{ title: 'Editar Alerta' }} component={MyAlert} />
     </AlertsStack.Navigator>
   )
 }

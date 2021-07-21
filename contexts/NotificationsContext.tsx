@@ -29,7 +29,6 @@ export const NotificationsContextProvider: React.FC = ({ children }) => {
         setFetchFlag(false)
         if (user) {
           try {
-            console.log(await alertService.getAllActiveAlerts(user?.Id))
             setNotifications([...(await alertService.getAllActiveAlerts(user?.Id))])
           } catch (error) {
             console.log('Fetching Fail')

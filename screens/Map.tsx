@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Image, Keyboard, StyleSheet, View, TouchableOpacity, Dimensions } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import MapView, { Marker, MarkerAnimated, PROVIDER_GOOGLE, Region } from 'react-native-maps'
 import { mapStyleDay } from '../styles/MapDay'
 import { useMap } from '../hooks/useMap'
@@ -25,6 +25,7 @@ import PostResultsBottomSheetModal from '../components/BottomSheetModals/PostRes
 import FiltersBottomSheetModal from '../components/BottomSheetModals/FiltersBottomSheetModal'
 import { Filter } from '../types/models/Filter'
 import { Pet } from '../types/models/Pet'
+import MapContext from '../contexts/MapContext'
 
 const initialRegion = {
   latitude: -38.535532,
@@ -43,6 +44,7 @@ export default function Map() {
   const [errorMessage, setErrorMessage] = useState('')
   //Contexts
   const { setPost, posts, setPosts, post } = useContext(PostContext)
+  const { setMapRef } = useContext(MapContext)
   const { setSearchLocation, setSearchLocationDelta } = useContext(FiltersContext)
   //Navigation
   const navigation = useNavigation()
@@ -60,6 +62,7 @@ export default function Map() {
   //Pin
   const [myMarket, setMyMarket] = useState<any>()
   const marketImage = require('../assets/images/dogPin2.png')
+  const [customPostId, setCustomPostId] = useState(0)
   //Filters
   const [filter, setFilter] = useState<Filter>({
     searchLocation: { lat: initialRegion.latitude, lng: initialRegion.longitude },
@@ -89,7 +92,7 @@ export default function Map() {
 
   const handleGoToPost = (post: Post) => {
     handleNavigateToPoint(1, post.location.lat, post.location.long)
-    setPost(post)
+    /* setPost(post) */
     postPreviewModalRef.current?.snapToIndex(1)
     postPreviewModalRef.current?.present()
   }
@@ -180,6 +183,7 @@ export default function Map() {
 
   //UseEffect
   useLayoutEffect(() => {
+    setMapRef(mapRef)
     searchModalRef.current?.present()
     console.log('mount')
     const init = async () => {
@@ -199,6 +203,21 @@ export default function Map() {
       search()
     }
   }, [filter])
+  const route = useRoute()
+  const param = route.params
+
+  useFocusEffect(() => {
+    console.log('hola mapa', param)
+    if ((param as any)?.postId) setCustomPostId((param as any)?.postId as number)
+  })
+
+  useEffect(() => {
+    console.log('hola', customPostId)
+  }, [customPostId])
+
+  useEffect(() => {
+    if (post) handleGoToPost(post)
+  }, [post])
 
   /* 
   const currentPosition = useSharedValue(0)
@@ -223,6 +242,7 @@ export default function Map() {
           onLongPress={(event) => createMarker(event)}
           customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
           provider={PROVIDER_GOOGLE}
+          /*      onRegionChange={(event) => console.log(event)} */
           style={StyleSheet.absoluteFillObject}
           showsMyLocationButton={false}
           onTouchStart={() => dismissAll()}
@@ -235,10 +255,21 @@ export default function Map() {
           }}
         >
           {myMarket && <Marker onPress={createPost} coordinate={myMarket}></Marker>}
+          {post && (
+            <MarkerAnimated
+              onPress={() => setPost(post)}
+              stopPropagation={true}
+              key={post.Id + Math.floor(Math.random() * 16777215)}
+              pinColor={theme.primary}
+              coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
+              shouldRasterizeIOS
+              image={marketImage}
+            />
+          )}
           {posts?.map((post, index) => (
             <MarkerAnimated
               zIndex={index}
-              onPress={() => handleGoToPost(post)}
+              onPress={() => setPost(post)}
               stopPropagation={true}
               key={post.Id + Math.floor(Math.random() * 16777215)}
               pinColor={theme.primary}

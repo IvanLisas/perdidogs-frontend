@@ -1,5 +1,5 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
-import React, { useRef } from 'react'
+import React, { useContext, useRef } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import useTheme from '../../hooks/useTheme'
@@ -8,6 +8,7 @@ import PetCard from '../PetCard'
 import MyText from '../MyThemedComponents/MyText'
 import { Ionicons } from '@expo/vector-icons'
 import PlaceBar from '../PlaceBar'
+import PostContext from '../../contexts/PostContext'
 
 interface PostResultsBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
@@ -24,6 +25,7 @@ interface PostResultsBottomSheetModalProps {
 
 const PostResultsBottomSheetModal: React.FC<PostResultsBottomSheetModalProps> = (props) => {
   const theme = useTheme()
+  const { setPost } = useContext(PostContext)
 
   const { modalRef, handleGoToPost, handleFiltersModal, snapPoints, posts, currentSearchPlaceName: currentSearchPlace } = props
 
@@ -65,7 +67,7 @@ const PostResultsBottomSheetModal: React.FC<PostResultsBottomSheetModalProps> = 
           </TouchableOpacity>
         </View>
         {posts.map((item) => (
-          <PetCard post={item} key={item.description} handleOnPress={handleGoToPost} />
+          <PetCard post={item} key={item.description} handleOnPress={setPost} />
         ))}
       </BottomSheetScrollView>
     </BottomSheetModal>

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import UserContext from '../contexts/UserContext'
@@ -12,60 +12,63 @@ import { Ionicons } from '@expo/vector-icons'
 import PostContext from '../contexts/PostContext'
 import postService from '../services/PostService'
 import { NotificationDTO } from '../types/models/NotificationDTO'
+import { Alert } from '../types/models/Alert'
+import AlertsContext from '../contexts/AlertsContext'
 
-const Alerts: React.FC = () => {
-  const { setPost } = useContext(PostContext)
-
+const MyAlerts: React.FC = () => {
   const { user } = useContext(UserContext)
 
-  const { notifications, setNotifications } = useContext(NotificationsContext)
+  const { alerts, setAlerts } = useContext(AlertsContext)
 
   const theme = useTheme()
 
   const navigation = useNavigation()
-
+  /* 
   const goToNewAlert = () => navigation.navigate('newAlert')
 
-  const goToMyAlerts = () => navigation.navigate('myAlerts')
+  const goToMyAlerts = () => navigation.navigate('myAlerts') */
 
   //TODO trys
-  const handleRejectNotification = async (notification: NotificationDTO) => {
-    await alertService.reject(notification.postId, notification.alertId)
-    if (user) setNotifications([...(await alertService.getAllActiveAlerts(user?.Id))])
+  const handleEditAlert = async (alert: Alert) => {
+    navigation.navigate('editAlert', { alert: alert })
+    /*     await alertService.reject(notification.postId, notification.alertId)
+    if (user) setNotifications([...(await alertService.getAllActiveAlerts(user?.Id))]) */
   }
 
-  const handlePressAlert = async (notification: NotificationDTO) => {
-    setPost(await postService.get(notification.postId))
-    navigation.navigate('Mapa', {
-      screen: 'Main'
-    })
-  }
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        console.log('mis alertas')
+        if (user) setAlerts([...(await alertService.getAll(user.Id))])
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchAlerts()
+  }, [])
 
   if (!user) return null
 
   return (
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {notifications.map((notification, index) => (
-          <TouchableOpacity onPress={() => handlePressAlert(notification)} key={notification.alertId + notification.url} style={styles.notification}>
-            <Image source={{ uri: notification.url }} style={styles.image} />
+        {alerts.map((alert, index) => (
+          <TouchableOpacity onPress={() => handleEditAlert(alert)} key={alert.Id + 'Alert'} style={styles.notification}>
             <View style={{ flexDirection: 'column', flex: 1, marginLeft: 8 }}>
-              <MyText style={{ fontSize: 16, fontWeight: 'bold' }}>Alerta sobre mascota</MyText>
+              <MyText style={{ fontSize: 16, fontWeight: 'bold' }}>{alert.creationDate}</MyText>
               <MyText style={{ fontSize: 16 }}>{user.firstName} esta mascota que podría ser la tuya</MyText>
             </View>
-            <TouchableOpacity onPress={async () => handleRejectNotification(notification)} style={{ alignSelf: 'flex-start' }}>
+            {/*             <TouchableOpacity onPress={async () => handleRejectNotification(notification)} style={{ alignSelf: 'flex-start' }}>
               <Ionicons size={24} color="#8E8E93" name="close" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </TouchableOpacity>
         ))}
-        <MyButton onPress={goToNewAlert} title="Crear Alerta"></MyButton>
-        <MyButton onPress={goToMyAlerts} title="Mis Alertas"></MyButton>
       </ScrollView>
     </View>
   )
 }
 
-export default Alerts
+export default MyAlerts
 
 const styles = StyleSheet.create({
   root: {

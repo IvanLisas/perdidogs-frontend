@@ -33,6 +33,10 @@ const SingleFilterBottomSheetModal: React.FC<SingleFilterBottomSheetModalProps> 
     setLocalFilter({ ...filter })
   }
 
+  useEffect(() => {
+    setLocalFilter(() => ({ ...filter }))
+  }, [filter])
+
   const TopBar = (
     <View style={styles.handleRoot}>
       <TouchableOpacity
