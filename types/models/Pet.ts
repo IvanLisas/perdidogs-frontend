@@ -8,8 +8,8 @@ export type Pet = {
   name?: string
   sex?: string
   hasCollar?: boolean
-  furLength?: FurLength
-  breed?: Breed
-  color?: Color
-  size?: Size
+  furLength?: FurLength | null
+  breed?: Breed | null
+  color?: Color | null
+  size?: Size | null
 }

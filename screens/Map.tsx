@@ -44,13 +44,13 @@ export default function Map() {
   const [errorMessage, setErrorMessage] = useState('')
   //Contexts
   const { setPost, posts, setPosts, post } = useContext(PostContext)
-  const { setMapRef } = useContext(MapContext)
+  const { setMapRef, handleNavigateToPoint } = useContext(MapContext)
   const { setSearchLocation, setSearchLocationDelta } = useContext(FiltersContext)
   //Navigation
   const navigation = useNavigation()
   const [currentSearchPlaceName, setCurrentSearchPlaceName] = useState({ primaryText: '', secondaryText: '' })
   //Hook's
-  const { mapRef, handleNavigateToPoint, handleNavigateToRegion } = useMap()
+  const { mapRef, handleNavigateToRegion } = useMap()
   //Modals Ref's
   const resultsModalRef = useRef<BottomSheetModal>(null)
   const postPreviewModalRef = useRef<BottomSheetModal>(null)
@@ -91,7 +91,7 @@ export default function Map() {
   //Handle's
 
   const handleGoToPost = (post: Post) => {
-    handleNavigateToPoint(1, post.location.lat, post.location.long)
+    handleNavigateToPoint(post.location.lat, post.location.long)
     /* setPost(post) */
     postPreviewModalRef.current?.snapToIndex(1)
     postPreviewModalRef.current?.present()
@@ -129,7 +129,7 @@ export default function Map() {
     if (foregroundPermissionsStatus == PermissionStatus.GRANTED) {
       try {
         const location = (await getCurrentPositionAsync()).coords
-        handleNavigateToPoint(10, location.latitude, location.longitude)
+        handleNavigateToPoint(location.latitude, location.longitude)
       } catch (error) {
         console.log('Error al obtener la localizacion:' + error.message)
       }
@@ -175,7 +175,7 @@ export default function Map() {
       }
       //TODO guardala, lenta en IOS
       const location = (await getCurrentPositionAsync()).coords
-      handleNavigateToPoint(10, location.latitude, location.longitude)
+      handleNavigateToPoint(location.latitude, location.longitude)
     } catch (error) {
       console.log('Error al obtener los permisos de localizacion:' + error.message)
     }

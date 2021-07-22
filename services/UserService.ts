@@ -24,6 +24,14 @@ class UserService {
   async delete(id: number): Promise<User> {
     return (await axios.delete<User>(`${SERVER_URL}/user/${id}`, this.axiosConfig)).data
   }
+
+  async sendToken(email: string): Promise<void> {
+    return (await axios.put<void>(`${SERVER_URL}/user/forgot-password`, { email }, this.axiosConfig)).data
+  }
+
+  async changePasswordWithToken(email: string, newPassword: string, token: string) {
+    return (await axios.put<void>(`${SERVER_URL}/user/changePasswordWithToken`, { email, newPassword, token }, this.axiosConfig)).data
+  }
 }
 
 const userService = new UserService()

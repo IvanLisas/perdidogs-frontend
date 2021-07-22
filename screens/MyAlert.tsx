@@ -61,16 +61,15 @@ const MyAlert: React.FC<FiltersBottomSheetModalProps> = () => {
     getParams()
   }, [])
 
-  useEffect(() => {
-    console.log(localPet, 'render')
-  }, [localPet])
+  useEffect(() => {}, [localPet])
 
   const createAlert = async () => {
     try {
-      console.log('hola')
-      await alertService.update({ Id: (route.params as any).alert.Id, pet: localPet })
-      if (user) setAlerts([...(await alertService.getAll(user.Id))])
-      navigation.navigate('myAlerts')
+      if (localPet?.breed || localPet?.color || localPet?.furLength || localPet?.size) {
+        await alertService.update({ Id: (route.params as any).alert.Id, pet: localPet })
+        if (user) setAlerts([...(await alertService.getAll(user.Id))])
+        navigation.navigate('myAlerts')
+      } else console.log('no no')
     } catch (error) {
       console.log(error.message)
     }
@@ -102,28 +101,28 @@ const MyAlert: React.FC<FiltersBottomSheetModalProps> = () => {
           <SingleFilterBottomSheetModal
             title="Colores"
             list={colors}
-            setFilter={(color: Color | undefined) => setLocalPet((prev) => ({ ...prev, color: color }))}
+            setFilter={(color: Color) => setLocalPet((prev) => ({ ...prev, color: color.Id !== undefined ? color : null }))}
             filter={localPet?.color}
             modalRef={colorsModalRef}
           />
           <SingleFilterBottomSheetModal
             title="Pelaje"
             list={lenghts}
-            setFilter={(length: FurLength) => setLocalPet((prev) => ({ ...prev, furLength: length }))}
+            setFilter={(furLength: FurLength) => setLocalPet((prev) => ({ ...prev, furLength: furLength.Id !== undefined ? furLength : null }))}
             filter={localPet?.furLength}
             modalRef={lenghtsModalRef}
           />
           <SingleFilterBottomSheetModal
             title="Tamaño"
             list={sizes}
-            setFilter={(size: Size) => setLocalPet((prev) => ({ ...prev, size: size }))}
+            setFilter={(size: Size) => setLocalPet((prev) => ({ ...prev, size: size.Id !== undefined ? size : null }))}
             filter={localPet?.size}
             modalRef={sizesModalRef}
           />
           <SingleFilterBottomSheetModal
             title="Raza"
             list={breeds}
-            setFilter={(breed: Breed) => setLocalPet((prev) => ({ ...prev, breed: breed }))}
+            setFilter={(breed: Breed) => setLocalPet((prev) => ({ ...prev, breed: breed.Id !== undefined ? breed : null }))}
             filter={localPet?.breed}
             modalRef={breedsModalRef}
           />

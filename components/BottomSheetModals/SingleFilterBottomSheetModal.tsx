@@ -79,7 +79,7 @@ const SingleFilterBottomSheetModal: React.FC<SingleFilterBottomSheetModalProps> 
       handleComponent={() => TopBar}
     >
       <BottomSheetScrollView style={{ padding: 16 }}>
-        <TouchableOpacity onPress={() => handleAppleFilter(undefined)} style={styles.row}>
+        <TouchableOpacity onPress={() => handleAppleFilter(null)} style={styles.row}>
           <MyText style={{ fontSize: 16 }}>Ninguno</MyText>
           <Ionicons size={24} color={undefined === localFilter?.description ? '#8E8E93' : 'transparent'} name="checkmark" />
         </TouchableOpacity>

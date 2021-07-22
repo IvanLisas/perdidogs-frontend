@@ -17,31 +17,41 @@ import { TouchableOpacity } from '@gorhom/bottom-sheet'
 
 type authScreenProp = StackNavigationProp<LoginStackParamList>
 
-export default function Login() {
+export default function ForgotPassword() {
   const { setUser } = useContext(UserContext)
 
-  const [email, setEmail] = useState('ivanelisas@gmail.com')
+  const [email, setEmail] = useState('')
 
-  const [password, setPassword] = useState('12345678')
+  const [password, setPassword] = useState('')
 
-  const [loading, setLoading] = useState(false)
+  const [repeatPassword, setRepeatPassword] = useState('')
+
+  const [token, setToken] = useState('')
 
   const navigation = useNavigation<authScreenProp>()
 
   const [errorMessage, setErrorMessage] = useState('')
 
-  /*   const inputEmail = React.createRef<DefaultTextInput>()
+  const [mailWasSend, setMailWasSend] = useState(false)
 
-  const inputPassword = React.createRef<DefaultTextInput>() */
-
-  const logo = require('../assets/images/login-logo.png')
-
-  const labrador = require('../assets/images/golden.png')
-
-  const goToForgotPassword = () => {
-    navigation.navigate('ForgotPassword')
+  const sendToken = async () => {
+    try {
+      await userService.sendToken(email)
+      setMailWasSend(true)
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 
+  const changePassword = async () => {
+    try {
+      await userService.changePasswordWithToken(email, password, token)
+      setUser(await userService.login(email, password))
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+  /* 
   const login = async () => {
     try {
       setLoading(true)
@@ -51,7 +61,7 @@ export default function Login() {
       setErrorMessage(showError(error))
     }
     setLoading(false)
-  }
+  } */
 
   return (
     /*  <TouchableWithoutFeedback  onPress={() => Keyboard.dismiss() }> */
@@ -72,17 +82,10 @@ export default function Login() {
           ></ImageBackground> */}
           <View style={styles.content}>
             <View style={styles.content2}>
-              <View style={styles.titleContainer}>
-                <View style={styles.logoContainer}>
-                  <Image style={styles.logo} source={logo} />
-                </View>
-                <Text style={styles.tittleLabel}>Perdidogs</Text>
-              </View>
-
               {/* <MyInput placeholder="Email"  textContentType="emailAddress" onChangeText={setEmail}></MyInput> */}
               <Input textContentType="emailAddress" placeholder="Email" autoCompleteType="email" onChangeText={setEmail} value={email} />
 
-              <Input
+              {/*      <Input
                 textContentType="newPassword"
                 placeholder="Contraseña"
                 onChangeText={setPassword}
@@ -91,20 +94,22 @@ export default function Login() {
                 secureTextEntry={true}
                 errorMessage={errorMessage}
               />
-
+ */}
               <View style={styles.button}>
-                <MyButton title="Ingresar" loading={loading} onPress={login} />
+                <MyButton onPress={() => sendToken()} title="Enviar codigo" />
               </View>
+              {mailWasSend && (
+                <View>
+                  <Input maxLength={6} keyboardType="numeric" placeholder="Codigo" onChangeText={setToken} value={token} />
+                  <Input textContentType="newPassword" placeholder="Contraseña" onChangeText={setPassword} value={password} />
+                  <Input textContentType="password" placeholder="Repetir contraseña" onChangeText={setRepeatPassword} value={repeatPassword} />
 
-              <View style={styles.registerContainer}>
-                <Text style={styles.link}>Sin cuenta? </Text>
-                <Text onPress={() => navigation.navigate('Registration')} style={styles.register}>
-                  Registrate!
-                </Text>
-              </View>
-              <TouchableOpacity onPress={goToForgotPassword} style={styles.forgotPasswordContainer}>
-                <Text style={styles.link}>Olvidaste tu contraseña?</Text>
-              </TouchableOpacity>
+                  <View style={styles.button}>
+                    <MyButton onPress={() => changePassword()} title="Cambiar contraseña" />
+                  </View>
+                </View>
+              )}
+
               {/*  <View style={styles.logoContainer}> */}
               {/*   <Image style={styles.labrador} source={labrador} /> */}
               {/*   </View> */}

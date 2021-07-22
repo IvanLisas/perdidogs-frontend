@@ -20,6 +20,7 @@ import alertService from '../services/AlertService'
 import UserContext from '../contexts/UserContext'
 import { useNavigation } from '@react-navigation/native'
 import { useFocusEffect } from '@react-navigation/native'
+import AlertsContext from '../contexts/AlertsContext'
 
 interface FiltersBottomSheetModalProps {}
 
@@ -45,7 +46,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
   const [myLocation, setMyLocation] = useState<Location>()
 
   const { user } = useContext(UserContext)
-
+  const { alerts, setAlerts } = useContext(AlertsContext)
   const askForLocationPermissions = async () => {
     try {
       const { status } = await requestForegroundPermissionsAsync()
@@ -78,6 +79,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
     try {
       console.log('hola')
       await alertService.create({ pet: localPet, location: myLocation, owner: user })
+      if (user) setAlerts([...(await alertService.getAll(user.Id))])
       navigation.goBack()
     } catch (error) {
       console.log(error.message)

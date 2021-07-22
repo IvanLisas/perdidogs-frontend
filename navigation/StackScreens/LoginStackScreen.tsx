@@ -6,6 +6,7 @@ import LoginStackParamList from '../../types/StackParamLists/LoginStackParamList
 import useTheme from '../../hooks/useTheme'
 import Login from '../../screens/Login'
 import Registration from '../../screens/Registration'
+import ForgotPassword from '../../screens/ForgotPassword'
 
 const HomeStack = createStackNavigator<LoginStackParamList>()
 
@@ -39,7 +40,7 @@ function ProfileStackScreen() {
     >
       <HomeStack.Screen name="Main" options={{ headerShown: false }} component={Login} />
       <HomeStack.Screen name="Registration" options={{ title: 'Registro' }} component={Registration} />
-      {/*  <HomeStack.Screen name="Details" component={TabOneScreen} /> */}
+      <HomeStack.Screen name="ForgotPassword" options={{ headerShown: false }} component={ForgotPassword} />
     </HomeStack.Navigator>
     /*   </LinearGradient> */
   )
