@@ -14,7 +14,9 @@ import showError from '../utils/Erros'
 import Input from '../components/MyThemedComponents/MyInput'
 import LoginStackParamList from '../types/StackParamLists/LoginStackParamList'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
-
+import * as Google from 'expo-google-app-auth'
+/* import { IOS_CLIENT_ID, AND_CLIENT_ID } from 'react-native-dotenv'
+ */
 type authScreenProp = StackNavigationProp<LoginStackParamList>
 
 export default function Login() {
@@ -39,9 +41,32 @@ export default function Login() {
   const labrador = require('../assets/images/golden.png')
 
   const goToForgotPassword = () => {
-    navigation.navigate('ForgotPassword')
+    navigation.navigate('Registration')
   }
 
+  async function signInWithGoogleAsync() {
+    try {
+      const result = await Google.logInAsync({
+        behavior: 'web',
+        iosClientId: '590796624066-impgq6p0le34qcumtqk4j5iat7sqdeb1.apps.googleusercontent.com',
+        //androidClientId: AND_CLIENT_ID,
+        scopes: ['profile', 'email']
+      })
+      console.log(result)
+      if (result.type === 'success') {
+        return result.accessToken
+      } else {
+        return { cancelled: true }
+      }
+    } catch (e) {
+      return { error: true }
+    }
+  }
+
+  /*   const signInWithGoogle = () => {
+   await signInWithGoogleAsync()
+  }
+ */
   const login = async () => {
     try {
       setLoading(true)
@@ -105,6 +130,10 @@ export default function Login() {
               <TouchableOpacity onPress={goToForgotPassword} style={styles.forgotPasswordContainer}>
                 <Text style={styles.link}>Olvidaste tu contraseña?</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => signInWithGoogleAsync()} style={styles.forgotPasswordContainer}>
+                <Text style={styles.link}>GOOOOOGLE</Text>
+              </TouchableOpacity>
+
               {/*  <View style={styles.logoContainer}> */}
               {/*   <Image style={styles.labrador} source={labrador} /> */}
               {/*   </View> */}
