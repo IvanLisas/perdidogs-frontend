@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { StyleSheet, View, Image } from 'react-native'
+import { StyleSheet, View, Image, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Text from '../components/MyThemedComponents/MyText'
 
@@ -13,8 +13,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import showError from '../utils/Erros'
 import Input from '../components/MyThemedComponents/MyInput'
 import LoginStackParamList from '../types/StackParamLists/LoginStackParamList'
+import GoogleLogin from 'react-google-login'
 
 type authScreenProp = StackNavigationProp<LoginStackParamList>
+
+const responseGoogle = (response: any) => {
+  console.log(response.profileObj)
+}
 
 export default function Login() {
   const { setUser } = useContext(UserContext)
@@ -106,9 +111,21 @@ export default function Login() {
             </View>
           </View>
         </View>
+
+        <GoogleLogin
+          clientId="590796624066-impgq6p0le34qcumtqk4j5iat7sqdeb1.apps.googleusercontent.com"
+          //buttonText="Login"
+          render={(renderProps) => (
+            <TouchableOpacity onPress={renderProps.onClick} disabled={renderProps.disabled}>
+              This is my custom Google button
+            </TouchableOpacity>
+          )}
+          onSuccess={responseGoogle}
+          onFailure={responseGoogle}
+          cookiePolicy={'single_host_origin'}
+        />
       </KeyboardAwareScrollView>
     </LinearGradient>
-    /*  </KeyboardAwareScrollView> */
   )
 }
 
