@@ -23,18 +23,22 @@ function AlertsStackScreen() {
           backgroundColor: colors.background
         },
         headerStyle: {
-          backgroundColor: colors.navigation
+          backgroundColor: '#CEDAFF'
         },
         headerTitleStyle: {
           /*      fontFamily: 'LoveMeLikeASister' */
-          fontSize: 22
+          /*    fontSize: 22 */
+
+          fontFamily: 'sans-serif'
         },
+
         headerBackTitleStyle: {
-          fontFamily: 'LoveMeLikeASister'
+          fontFamily: 'LoveMeLikeASister',
+          color: '#6879B1'
         },
         headerBackImage: () => (
-          <View style={{ paddingHorizontal: 16 }}>
-            <Icon style={{ color: colors.text, fontSize: 18 }} name="arrow-pointing-to-left-hand-drawn-outline" />
+          <View style={{ paddingHorizontal: 8 }}>
+            <Icon style={{ color: 'black', fontSize: 18 }} name="arrow-pointing-to-left-hand-drawn-outline" />
           </View>
         ),
 

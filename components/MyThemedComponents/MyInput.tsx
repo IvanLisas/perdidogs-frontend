@@ -10,16 +10,16 @@ type MyInputProps = {
 const MyInput: React.FC<React.ComponentProps<typeof Input> & MyInputProps> = (props) => {
   const theme = useTheme()
 
-  const { style, _ref, ...otherProps } = props
+  const { containerStyle, style, _ref, ...otherProps } = props
 
   return (
     <Input
       ref={_ref}
       inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
-      containerStyle={{ paddingHorizontal: 0 }}
+      containerStyle={[{}, containerStyle]}
       placeholderTextColor={'grey'}
       errorStyle={{ color: 'red', fontSize: 14 }}
-      style={[style, styles.input]}
+      style={[styles.input, style]}
       {...otherProps}
     />
   )
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: 15,
     padding: 16,
+    justifyContent: 'center',
     backgroundColor: 'white',
     /*     width: 234, */
     //Shadoww

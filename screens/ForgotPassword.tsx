@@ -14,6 +14,7 @@ import showError from '../utils/Erros'
 import Input from '../components/MyThemedComponents/MyInput'
 import LoginStackParamList from '../types/StackParamLists/LoginStackParamList'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
+import MyText from '../components/MyThemedComponents/MyText'
 
 type authScreenProp = StackNavigationProp<LoginStackParamList>
 
@@ -22,13 +23,9 @@ export default function ForgotPassword() {
 
   const [email, setEmail] = useState('')
 
-  const [password, setPassword] = useState('')
-
-  const [repeatPassword, setRepeatPassword] = useState('')
-
   const [token, setToken] = useState('')
 
-  const navigation = useNavigation<authScreenProp>()
+  const navigation = useNavigation()
 
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -36,21 +33,15 @@ export default function ForgotPassword() {
 
   const sendToken = async () => {
     try {
+      setErrorMessage('')
       await userService.sendToken(email)
-      setMailWasSend(true)
+      navigation.navigate('ChangeForgotPassword', { email: email })
     } catch (error) {
+      setErrorMessage(showError(error))
       console.log(error.message)
     }
   }
 
-  const changePassword = async () => {
-    try {
-      await userService.changePasswordWithToken(email, password, token)
-      setUser(await userService.login(email, password))
-    } catch (error) {
-      console.log(error.message)
-    }
-  }
   /* 
   const login = async () => {
     try {
@@ -63,57 +54,42 @@ export default function ForgotPassword() {
     setLoading(false)
   } */
 
+  const labrador = require('../assets/images/golden.png')
+
   return (
     /*  <TouchableWithoutFeedback  onPress={() => Keyboard.dismiss() }> */
-    <LinearGradient colors={['#FFE5B2', '#EFB865']} style={styles.background}>
+    <LinearGradient colors={['#FFE5B2', '#EFB865']}>
       <KeyboardAwareScrollView
         contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}
         scrollEnabled={false}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.root}>
-          {/*           <ImageBackground
+          <MyText style={{ marginBottom: 8, fontSize: 22, fontWeight: '600' }}>¿Olvidaste tu contraseña?</MyText>
+          <Image
             source={labrador}
             style={styles.labrador}
-            imageStyle={{
-              resizeMode: 'contain',
-              alignSelf: 'flex-start'
-            }}
-          ></ImageBackground> */}
-          <View style={styles.content}>
-            <View style={styles.content2}>
-              {/* <MyInput placeholder="Email"  textContentType="emailAddress" onChangeText={setEmail}></MyInput> */}
-              <Input textContentType="emailAddress" placeholder="Email" autoCompleteType="email" onChangeText={setEmail} value={email} />
+            /*    imageStyle={{
+                  resizeMode: 'contain',
+                }} */
+          ></Image>
+          <MyText style={{ marginBottom: 24, fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+            Te enviarmos un codigo al correo asociado a tu cuenta
+          </MyText>
 
-              {/*      <Input
-                textContentType="newPassword"
-                placeholder="Contraseña"
-                onChangeText={setPassword}
-                autoCompleteType="password"
-                value={password}
-                secureTextEntry={true}
-                errorMessage={errorMessage}
-              />
- */}
-              <View style={styles.button}>
-                <MyButton onPress={() => sendToken()} title="Enviar codigo" />
-              </View>
-              {mailWasSend && (
-                <View>
-                  <Input maxLength={6} keyboardType="numeric" placeholder="Codigo" onChangeText={setToken} value={token} />
-                  <Input textContentType="newPassword" placeholder="Contraseña" onChangeText={setPassword} value={password} />
-                  <Input textContentType="password" placeholder="Repetir contraseña" onChangeText={setRepeatPassword} value={repeatPassword} />
+          <Input
+            errorMessage={errorMessage}
+            textContentType="emailAddress"
+            placeholder="Email"
+            autoCompleteType="email"
+            onChangeText={setEmail}
+            value={email}
+            containerStyle={{ marginBottom: 16 }}
+            renderErrorMessage={true}
+          />
 
-                  <View style={styles.button}>
-                    <MyButton onPress={() => changePassword()} title="Cambiar contraseña" />
-                  </View>
-                </View>
-              )}
-
-              {/*  <View style={styles.logoContainer}> */}
-              {/*   <Image style={styles.labrador} source={labrador} /> */}
-              {/*   </View> */}
-            </View>
+          <View style={styles.button}>
+            <MyButton onPress={() => sendToken()} title="Enviar codigo" />
           </View>
         </View>
       </KeyboardAwareScrollView>
@@ -123,86 +99,20 @@ export default function ForgotPassword() {
 }
 
 const styles = StyleSheet.create({
-  background: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: '100%',
-    width: '100%'
-  },
   root: {
     flex: 1,
     alignItems: 'center',
     flexDirection: 'column',
-    /*     top: -100, */
-    justifyContent: 'center'
-    /*   width: 248, */
-    /*     alignSelf: 'center' */
-  },
-  content: {
-    flex: 1,
     width: 310,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    height: '100%'
-    /*     alignSelf: 'center' */
+    justifyContent: 'center'
   },
-  content2: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%'
-  },
-
   button: {
-    alignSelf: 'stretch',
-    marginTop: 8
-  },
-  titleContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 32
-  },
-  logoContainer: {
-    paddingRight: 8
-  },
-  logo: {
-    width: 50,
-    height: 55,
-    paddingRight: 50
-  },
-  tittleLabel: {
-    fontFamily: 'LoveMeLikeASister',
-    fontSize: 36,
-    color: 'black'
+    alignSelf: 'stretch'
   },
   labrador: {
-    width: 300,
-    height: 200,
-    position: 'absolute',
-    top: -100,
-    transform: [{ rotate: '180deg' }]
-    /*    alignSelf: 'stretch' */
-  },
-  link: {
-    fontWeight: '500',
-    color: 'black',
-    /*     fontFamily: 'LoveMeLikeASister', */
-    fontSize: 14
-  },
-  registerContainer: {
-    flexDirection: 'row',
-    paddingTop: 16
-  },
-  register: {
-    /*     fontFamily: 'LoveMeLikeASister', */
-    fontSize: 14,
-    color: 'blue'
-  },
-  forgotPasswordContainer: {
-    padding: 8
+    marginBottom: 16
+    /*    alignSelf: 'center' */
+    /*     width: 200,
+    height: 200 */
   }
 })

@@ -25,10 +25,6 @@ interface FiltersBottomSheetModalProps {
 }
 
 const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, modalRef, handleApplyFilters, snapPoints }) => {
-  /* const [color, setColor] = useState<Color>()
-  const [breed, setBreed] = useState<Breed>()
-  const [lenght, setLenght] = useState<Length>()
-  const [size, setSize] = useState<Size>() */
   const [localPet, setLocalPet] = useState<Pet | undefined>(pet)
   const [colors, setColors] = useState<Color[]>()
   const [breeds, setBreeds] = useState<Breed[]>()

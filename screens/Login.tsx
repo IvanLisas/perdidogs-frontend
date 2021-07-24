@@ -41,7 +41,7 @@ export default function Login() {
   const labrador = require('../assets/images/golden.png')
 
   const goToForgotPassword = () => {
-    navigation.navigate('Registration')
+    navigation.navigate('ForgotPassword')
   }
 
   async function signInWithGoogleAsync() {
@@ -80,7 +80,7 @@ export default function Login() {
 
   return (
     /*  <TouchableWithoutFeedback  onPress={() => Keyboard.dismiss() }> */
-    <LinearGradient colors={['#FFE5B2', '#EFB865']} style={styles.background}>
+    <LinearGradient colors={['#9f77e0', '#8BA5F8']} style={styles.background}>
       <KeyboardAwareScrollView
         contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}
         scrollEnabled={false}
@@ -130,9 +130,9 @@ export default function Login() {
               <TouchableOpacity onPress={goToForgotPassword} style={styles.forgotPasswordContainer}>
                 <Text style={styles.link}>Olvidaste tu contraseña?</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => signInWithGoogleAsync()} style={styles.forgotPasswordContainer}>
+              {/*               <TouchableOpacity onPress={() => signInWithGoogleAsync()} style={styles.forgotPasswordContainer}>
                 <Text style={styles.link}>GOOOOOGLE</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               {/*  <View style={styles.logoContainer}> */}
               {/*   <Image style={styles.labrador} source={labrador} /> */}
@@ -215,15 +215,16 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'black',
     /*     fontFamily: 'LoveMeLikeASister', */
-    fontSize: 14
+    fontSize: 18
   },
   registerContainer: {
     flexDirection: 'row',
-    paddingTop: 16
+    paddingTop: 18,
+    alignItems: 'center'
   },
   register: {
     /*     fontFamily: 'LoveMeLikeASister', */
-    fontSize: 14,
+    fontSize: 18,
     color: 'blue'
   },
   forgotPasswordContainer: {

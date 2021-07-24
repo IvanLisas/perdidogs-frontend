@@ -18,7 +18,7 @@ export const MyDefaultTheme: MyTheme = {
   ...DefaultTheme.colors,
   textLabel: 'grey',
   navigation: 'white',
-  primary: '#B5B4FB',
+  primary: '#9f77e0',
   card: '#B5B4FB',
   text: '#000',
   border: '#F7A59E',

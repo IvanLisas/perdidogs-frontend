@@ -7,6 +7,7 @@ import useTheme from '../../hooks/useTheme'
 import Login from '../../screens/Login'
 import Registration from '../../screens/Registration'
 import ForgotPassword from '../../screens/ForgotPassword'
+import ChangeForgotPassword from '../../screens/ChangeForgotPassword'
 
 const HomeStack = createStackNavigator<LoginStackParamList>()
 
@@ -15,7 +16,7 @@ function ProfileStackScreen() {
   return (
     <HomeStack.Navigator
       screenOptions={{
-        headerTintColor: '#3F414E',
+        headerTintColor: 'black',
         headerStyle: {
           backgroundColor: '#F0C591'
         },
@@ -29,18 +30,19 @@ function ProfileStackScreen() {
           backgroundColor: '#F9D394',
           padding: 0
         },
-        headerBackImage: () => (
+        /*     headerBackImage: () => (
           <View style={{ paddingHorizontal: 16 }}>
             <Icon style={{ color: '#3F414E', fontSize: 22 }} name="left-arrow-hand-drawn-outline" />
           </View>
-        ),
+        ), */
 
         headerBackTitleVisible: false
       }}
     >
       <HomeStack.Screen name="Main" options={{ headerShown: false }} component={Login} />
       <HomeStack.Screen name="Registration" options={{ title: 'Registro' }} component={Registration} />
-      <HomeStack.Screen name="ForgotPassword" options={{ headerShown: false }} component={ForgotPassword} />
+      <HomeStack.Screen name="ForgotPassword" options={{ title: 'Envio de codigo' }} component={ForgotPassword} />
+      <HomeStack.Screen name="ChangeForgotPassword" options={{ title: 'Nueva contraseña' }} component={ChangeForgotPassword} />
     </HomeStack.Navigator>
     /*   </LinearGradient> */
   )

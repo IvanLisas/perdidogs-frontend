@@ -1,8 +1,10 @@
 import * as React from 'react'
 import { Button, ButtonProps } from 'react-native-elements'
 import { StyleSheet } from 'react-native'
+import useTheme from '../../hooks/useTheme'
 
 function MyButton(props: ButtonProps) {
+  const theme = useTheme()
   return (
     <Button
       {...props}
@@ -10,33 +12,24 @@ function MyButton(props: ButtonProps) {
       disabledStyle={{
         borderWidth: 1,
         borderColor: '#000',
-        borderRadius: 15
+        borderRadius: 25
       }}
-      containerStyle={{
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 3
-        },
-        shadowOpacity: 0.29,
-        shadowRadius: 4.65,
-        borderRadius: 12,
-        elevation: 7
-      }}
+      containerStyle={{}}
       loadingProps={{ color: 'black' }}
       disabledTitleStyle={{ color: '#00F' }}
-      titleStyle={{ marginHorizontal: 5, color: 'black', fontFamily: 'LoveMeLikeASister', fontSize: 14 }}
+      titleStyle={{ color: 'black', fontSize: 20, fontFamily: 'sans-serif' }}
     />
   )
 }
 
 const styles = StyleSheet.create({
   button: {
-    borderWidth: 1,
+    borderWidth: 1.2,
+    /*   borderColor: '#6879B1', */
     borderColor: 'black',
-    borderRadius: 15,
     padding: 12,
-    backgroundColor: '#E3BCFB'
+    borderRadius: 18,
+    backgroundColor: 'transparent'
   }
 })
 
