@@ -87,7 +87,7 @@ const MyPosts: React.FC<MyPosts> = (props) => {
           /*  fontFamily: 'LoveMeLikeASister' */
         }}
       >
-        {post.pet.breed?.description}
+        {post.pet?.breed?.description}
       </Text>
     </TouchableOpacity>
   )
@@ -98,7 +98,7 @@ const MyPosts: React.FC<MyPosts> = (props) => {
       showsHorizontalScrollIndicator
       /* persistentScrollbar */
       disableVirtualization={false}
-      keyExtractor={(item: Post) => item.description}
+      keyExtractor={(item: Post) => item.Id + 'MyPost'}
       renderItem={({ item }) => Card(item)}
       style={{ flex: 1 }}
     />

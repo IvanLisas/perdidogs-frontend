@@ -9,11 +9,12 @@ import MyText from '../MyThemedComponents/MyText'
 import { Ionicons } from '@expo/vector-icons'
 import PlaceBar from '../PlaceBar'
 import PostContext from '../../contexts/PostContext'
+import { Pet } from '../../types/models/Pet'
 
 interface PostResultsBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
   handleGoToPost: (post: Post) => void
-
+  petFilter: Pet | undefined
   handleFiltersModal: () => void
   snapPoints: (string | number)[]
   posts: Post[]
@@ -23,11 +24,11 @@ interface PostResultsBottomSheetModalProps {
   }
 }
 
-const PostResultsBottomSheetModal: React.FC<PostResultsBottomSheetModalProps> = (props) => {
+const ResultsBottomSheetModal: React.FC<PostResultsBottomSheetModalProps> = (props) => {
   const theme = useTheme()
   const { setPost } = useContext(PostContext)
 
-  const { modalRef, handleGoToPost, handleFiltersModal, snapPoints, posts, currentSearchPlaceName: currentSearchPlace } = props
+  const { modalRef, petFilter, handleFiltersModal, snapPoints, posts, currentSearchPlaceName: currentSearchPlace } = props
 
   const TopBar = (
     <View style={styles.handleRoot}>
@@ -54,20 +55,39 @@ const PostResultsBottomSheetModal: React.FC<PostResultsBottomSheetModalProps> = 
       <BottomSheetScrollView>
         <View style={styles.scrollContainer}>
           <View style={styles.filterContainer}>
-            <MyText style={{ fontSize: 18 }}>Filtrando por: </MyText>
-            <View style={styles.chip}>
-              <MyText style={styles.chipText}>Color</MyText>
-            </View>
-            <View style={styles.chip}>
-              <MyText style={styles.chipText}>Raza</MyText>
-            </View>
+            {petFilter?.color?.Id || petFilter?.breed?.Id || petFilter?.size?.Id || petFilter?.furLength?.Id ? (
+              <MyText style={{ fontSize: 18 }}>Filtrar por: </MyText>
+            ) : (
+              <MyText style={{ fontSize: 18 }}>Aplicar filtros </MyText>
+            )}
+            {petFilter?.color?.Id && (
+              <View style={styles.chip}>
+                <MyText style={styles.chipText}>Color</MyText>
+              </View>
+            )}
+            {petFilter?.breed?.Id && (
+              <View style={styles.chip}>
+                <MyText style={styles.chipText}>Raza</MyText>
+              </View>
+            )}
+            {petFilter?.furLength?.Id && (
+              <View style={styles.chip}>
+                <MyText style={styles.chipText}>Pelaje</MyText>
+              </View>
+            )}
+            {petFilter?.size?.Id && (
+              <View style={styles.chip}>
+                <MyText style={styles.chipText}>Tamaño</MyText>
+              </View>
+            )}
           </View>
           <TouchableOpacity onPress={handleFiltersModal} style={styles.iconButton}>
             <Ionicons size={24} color="#8E8E93" name="filter-outline" />
           </TouchableOpacity>
         </View>
+
         {posts.map((item) => (
-          <PetCard post={item} key={item.description} handleOnPress={setPost} />
+          <PetCard post={item} key={'keyResult' + item.Id} handleOnPress={setPost} />
         ))}
       </BottomSheetScrollView>
     </BottomSheetModal>
@@ -119,4 +139,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default PostResultsBottomSheetModal
+export default ResultsBottomSheetModal

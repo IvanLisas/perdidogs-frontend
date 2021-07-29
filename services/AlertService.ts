@@ -22,8 +22,15 @@ class AlertService {
     return (await axios.put<NotificationDTO>(`${SERVER_URL}/notifications/reject`, { postId: postId, alertId: alertId }, this.axiosConfig)).data
   }
 
+  async read(postId: number): Promise<NotificationDTO> {
+    return (await axios.put<NotificationDTO>(`${SERVER_URL}/notifications/read`, { postId: postId }, this.axiosConfig)).data
+  }
+
+  async delete(alertId: number): Promise<Alert> {
+    return (await axios.delete<Alert>(`${SERVER_URL}/alerts/${alertId}`, this.axiosConfig)).data
+  }
+
   async update(alert: Alert): Promise<Alert> {
-    console.log(alert)
     return (await axios.put<Alert>(`${SERVER_URL}/alerts/`, alert, this.axiosConfig)).data
   }
 }

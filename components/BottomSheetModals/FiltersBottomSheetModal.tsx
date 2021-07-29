@@ -14,6 +14,7 @@ import { Size } from '../../types/models/Size'
 import { Color } from '../../types/models/Color'
 import SingleFilterBottomSheetModal from './SingleFilterBottomSheetModal'
 import { color } from 'react-native-elements/dist/helpers'
+import MyButton from '../MyThemedComponents/MyButton'
 
 interface FiltersBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
@@ -40,7 +41,6 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
 
   useEffect(() => {
     const getParams = async () => {
-      console.log('montado')
       setColors(await dropDownService.getAllColors())
       setLenghts(await dropDownService.getAllLengths())
       setBreeds(await dropDownService.getAllBreeds())
@@ -48,6 +48,10 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
     }
     getParams()
   }, [])
+
+  const cleanFilters = () => {
+    setLocalPet(undefined)
+  }
 
   const theme = useTheme()
 
@@ -65,8 +69,6 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
       <MyText style={{ fontSize: 18 }}>Filtros</MyText>
       <TouchableOpacity
         onPress={() => {
-          console.log('no reset')
-
           setLocalPet((prev) => ({ ...localPet }))
           handleApplyFilters(localPet)
           change = true
@@ -88,8 +90,6 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
       ref={modalRef}
       onDismiss={() => {
         if (!change) {
-          console.log(change)
-          console.log('reset')
           setLocalPet((prev) => ({ ...pet }))
         }
         /*  setChange(false) */
@@ -115,6 +115,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
         <MyText style={{ fontSize: 16 }}>Tamaño</MyText>
         <MyText style={{ fontSize: 16 }}>{localPet?.size?.description ? localPet.size.description : 'Ninguno'}</MyText>
       </TouchableOpacity>
+      <MyButton onPress={cleanFilters} title="Limpiar filtros"></MyButton>
 
       <BottomSheetScrollView style={{ padding: 16 }}>
         <SingleFilterBottomSheetModal
@@ -152,8 +153,8 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
 const styles = StyleSheet.create({
   handleRoot: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
+    borderBottomWidth: 0.5,
+    borderColor: 'grey',
     padding: 16,
     alignContent: 'center',
     justifyContent: 'space-between'
@@ -171,8 +172,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
+    borderBottomWidth: 0.5,
+    borderColor: 'grey',
     padding: 16,
     alignItems: 'center'
   },

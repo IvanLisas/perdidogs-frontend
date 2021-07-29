@@ -40,7 +40,6 @@ const MyAlerts: React.FC = () => {
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
-        console.log('mis alertas')
         if (user) setAlerts([...(await alertService.getAll(user.Id))])
       } catch (error) {
         console.log(error)
@@ -50,15 +49,15 @@ const MyAlerts: React.FC = () => {
   }, [])
 
   if (!user) return null
-
+  const hasAlerts = alerts.length !== 0
   return (
     <View style={styles.root}>
       <TouchableOpacity
         onPress={goToNewAlert}
         style={{
           justifyContent: 'space-between',
-          borderBottomWidth: 1,
-          borderColor: '#DEDEDE',
+          borderBottomWidth: 0.5,
+          borderColor: 'grey',
           flexDirection: 'row',
           paddingVertical: 20,
           alignItems: 'center'
@@ -67,12 +66,18 @@ const MyAlerts: React.FC = () => {
         <MyText style={{ fontSize: 18 }}>Crear nueva alerta</MyText>
         <Ionicons style={{ marginRight: 8 }} size={22} color="#8E8E93" name="add" />
       </TouchableOpacity>
+      {!hasAlerts && (
+        <View style={{ marginTop: 64, alignItems: 'center' }}>
+          <Ionicons style={{ marginBottom: 16 }} size={44} color={theme.primary} name="notifications-off" />
+          <MyText style={{ fontSize: 17, textAlign: 'center' }}>No tienes alertas creadas</MyText>
+        </View>
+      )}
       <ScrollView showsVerticalScrollIndicator={false}>
         {alerts.map((alert, index) => (
           <TouchableOpacity onPress={() => handleEditAlert(alert)} key={alert.Id + 'Alert'} style={styles.notification}>
             <Ionicons style={{ marginRight: 4 }} size={28} color="#8E8E93" name="notifications" />
             <View style={{ flexDirection: 'column', flex: 1, marginLeft: 8 }}>
-              <MyText style={{ fontSize: 16, fontWeight: 'bold' }}>Titulo?</MyText>
+              <MyText style={{ fontSize: 16, fontWeight: 'bold' }}>{alert.title}</MyText>
               <MyText style={{ fontSize: 16 }}>Creada el {alert.creationDate}</MyText>
             </View>
             {/*             <TouchableOpacity onPress={async () => handleRejectNotification(notification)} style={{ alignSelf: 'flex-start' }}>
@@ -95,8 +100,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
+    borderBottomWidth: 0.8,
+    borderColor: 'grey',
     paddingVertical: 16
   },
   iconButton: {
@@ -111,8 +116,8 @@ const styles = StyleSheet.create({
   },
   notification: {
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
+    borderBottomWidth: 0.5,
+    borderColor: 'grey',
     flex: 1,
     alignSelf: 'flex-start',
     alignItems: 'center',

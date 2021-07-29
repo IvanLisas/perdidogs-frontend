@@ -21,7 +21,7 @@ const MyIcon: React.FC<MyIconProps> = (props) => {
   return (
     <View>
       <View style={[style, { alignSelf: 'flex-start', borderRadius: 25, backgroundColor: backgroundColor ? backgroundColor : backgroundColor }]}>
-        <Ionicons size={24} color="blue" name="pin" />
+        <Ionicons size={24} color="#64D2FF" name="pin" />
       </View>
     </View>
   )

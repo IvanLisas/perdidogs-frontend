@@ -10,17 +10,21 @@ import alertService from '../services/AlertService'
 interface ContextProps {
   readonly notifications: NotificationDTO[]
   readonly setNotifications: (notifications: NotificationDTO[]) => void
+  readonly newNotification: number
 }
 
 const NotificationsContext = createContext<ContextProps>({
   notifications: [],
-  setNotifications: () => null
+  setNotifications: () => null,
+  newNotification: 0
 })
 
 export const NotificationsContextProvider: React.FC = ({ children }) => {
   const [notifications, setNotifications] = useState<NotificationDTO[]>([])
   const [fetchFlag, setFetchFlag] = useState<boolean>(true)
   const { user } = useContext(UserContext)
+
+  const newNotification = notifications.filter((notification) => !notification.hasBeenRead).length
 
   useEffect(() => {
     const getChat = async () => {
@@ -40,7 +44,7 @@ export const NotificationsContextProvider: React.FC = ({ children }) => {
     getChat()
   }, [fetchFlag])
 
-  return <NotificationsContext.Provider value={{ notifications, setNotifications }}>{children}</NotificationsContext.Provider>
+  return <NotificationsContext.Provider value={{ notifications, setNotifications, newNotification }}>{children}</NotificationsContext.Provider>
 }
 
 export default NotificationsContext

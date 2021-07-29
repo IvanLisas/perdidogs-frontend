@@ -106,7 +106,6 @@ export default function ChangeForgotPassword() {
                 _ref={refToken1}
                 onChangeText={(text) => {
                   if (text) {
-                    console.log(text)
                     ;(refToken2.current as any).focus()
                   }
                   setToken1(text)
@@ -121,7 +120,6 @@ export default function ChangeForgotPassword() {
                 keyboardType="numeric"
                 onChangeText={(text) => {
                   if (text) {
-                    console.log(text)
                     ;(refToken3.current as any).focus()
                   }
                   setToken2(text)
@@ -139,7 +137,6 @@ export default function ChangeForgotPassword() {
                 keyboardType="numeric"
                 onChangeText={(text) => {
                   if (text) {
-                    console.log(text)
                     ;(refToken4.current as any).focus()
                   }
                   setToken3(text)
@@ -157,7 +154,6 @@ export default function ChangeForgotPassword() {
                 keyboardType="numeric"
                 onChangeText={(text) => {
                   if (text) {
-                    console.log(text)
                     ;(refToken5.current as any).focus()
                   }
                   setToken4(text)
@@ -175,7 +171,6 @@ export default function ChangeForgotPassword() {
                 keyboardType="numeric"
                 onChangeText={(text) => {
                   if (text) {
-                    console.log(text)
                     ;(refToken6.current as any).focus()
                   }
                   setToken5(text)
@@ -195,7 +190,6 @@ export default function ChangeForgotPassword() {
                 onKeyPress={(event) => {
                   if (event.nativeEvent.key === 'Backspace') (refToken5.current as any).focus()
                   else if (event.nativeEvent.key === '1') setToken6(event.nativeEvent.key)
-                  console.log(event.nativeEvent.key)
                 }}
                 value={token6}
               />

@@ -37,12 +37,13 @@ import userService from '../services/UserService'
   post: Post | undefined
 } */
 
-const CreatePost: React.FC = ({}) => {
+const EditPost: React.FC = ({}) => {
   const theme = useTheme()
   const { user, setUser } = useContext(UserContext)
-  const { setPost } = useContext(PostContext)
+  const { post, setPost } = useContext(PostContext)
 
-  const [localPet, setLocalPet] = useState<Pet | undefined>(undefined)
+  const [localPet, setLocalPet] = useState<Pet | undefined>(post?.pet)
+  const [localDescription, setLocalDescription] = useState(post?.description)
   const [colors, setColors] = useState<Color[]>()
   const [breeds, setBreeds] = useState<Breed[]>()
   const [lenghts, setLenghts] = useState<FurLength[]>()
@@ -53,10 +54,10 @@ const CreatePost: React.FC = ({}) => {
   const lenghtsModalRef = useRef<BottomSheetModal>(null)
   const sizesModalRef = useRef<BottomSheetModal>(null)
 
-  const [image1, setImage1] = useState()
-  const [image2, setImage2] = useState()
-  const [image3, setImage3] = useState()
-  const [image4, setImage4] = useState()
+  const [image1, setImage1] = useState(post?.pictures[0])
+  const [image2, setImage2] = useState(post?.pictures[1])
+  const [image3, setImage3] = useState(post?.pictures[2])
+  const [image4, setImage4] = useState(post?.pictures[3])
   const [description, setDescription] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -64,37 +65,46 @@ const CreatePost: React.FC = ({}) => {
   const route = useRoute()
   const myLocation = route.params as any
 
-  const createPost = async () => {
-    if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size && description) {
-      /*   setIsLoading(true) */
-
-      const im1 = await imageService.savePhoto(image1)
-      const im2 = await imageService.savePhoto(image2)
-      const im3 = await imageService.savePhoto(image3)
-      const im4 = await imageService.savePhoto(image4)
-
-      if (im1 || im2 || im3 || im4) {
-        try {
-          const newPost = await postService.post({
-            pet: localPet,
-            description: description,
-            pictures: [im1 && { url: im1 }, im2 && { url: im2 }, im3 && { url: im3 }, im4 && { url: im4 }],
-            owner: user?.Id,
-            postStatus: 1,
-            location: { lat: myLocation.latitude, long: myLocation.longitude }
-          })
-          if (user) {
-            setPost({ ...newPost })
-            setUser(await userService.getUser(user?.Id))
-
-            console.log(newPost)
-
-            navigation.navigate('Main')
-          }
-        } catch (error) {
-          console.log(error.message)
-        }
+  const deletePost = async () => {
+    try {
+      if (post) {
+        await postService.delete(post?.Id)
+        console.log('borrado')
       }
+      if (user) setUser(await userService.getUser(user?.Id))
+      navigation.navigate('Main')
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
+  const updatePost = async () => {
+    if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size) {
+      setIsLoading(true)
+      console.log(image1, image2, image3, image4)
+      const im1 = image1?.url ? image1 : await imageService.savePhoto(image1)
+      const im2 = image2?.url ? image2 : await imageService.savePhoto(image2)
+      const im3 = image3?.url ? image3 : await imageService.savePhoto(image3)
+      const im4 = image4?.url ? image4 : await imageService.savePhoto(image4)
+      console.log(image1, image2, image3, image4)
+
+      const pictures = [im1?.url ? im1 : { url: im1 }, im2?.url ? im2 : { url: im2 }, im3?.url ? im3 : { url: im3 }, im4?.url ? im4 : { url: im4 }]
+      console.log(pictures)
+      console.log(pictures.filter((x) => x.uri || x.url))
+      try {
+        await postService.update({
+          ...post,
+
+          description: localDescription,
+          pet: localPet,
+          pictures: pictures.filter((x) => x.uri || x.url)
+        })
+
+        if (user) setUser(await userService.getUser(user?.Id))
+      } catch (error) {
+        console.log(error.message)
+      }
+      navigation.navigate('Main')
     }
   }
 
@@ -128,8 +138,7 @@ const CreatePost: React.FC = ({}) => {
             <MyText style={{ fontSize: 16 }}>Tamaño</MyText>
             <MyText style={{ fontSize: 16 }}>{localPet?.size?.description ? localPet.size.description : 'Seleccionar'}</MyText>
           </TouchableOpacity>
-
-          <MyInput value={description} onChangeText={(text) => setDescription(text)}></MyInput>
+          <MyInput value={localDescription} onChangeText={(text) => setLocalDescription(text)}></MyInput>
 
           <SingleFilterBottomSheetModal
             title="Colores"
@@ -169,8 +178,12 @@ const CreatePost: React.FC = ({}) => {
           <ImageChooser pickedImagePath={image3} setPickedImagePath={setImage3} />
           <ImageChooser pickedImagePath={image4} setPickedImagePath={setImage4} />
         </View>
+
         <View style={styles.button}>
-          <MyButton title="Crear" loading={isLoading} onPress={createPost} />
+          <MyButton title="Modificar" loading={isLoading} onPress={updatePost} />
+        </View>
+        <View style={styles.button}>
+          <MyButton title="Borrar" loading={isLoading} onPress={deletePost} />
         </View>
       </ScrollView>
     </BottomSheetModalProvider>
@@ -204,4 +217,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default CreatePost
+export default EditPost

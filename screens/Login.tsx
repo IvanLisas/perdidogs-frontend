@@ -52,7 +52,7 @@ export default function Login() {
         //androidClientId: AND_CLIENT_ID,
         scopes: ['profile', 'email']
       })
-      console.log(result)
+
       if (result.type === 'success') {
         return result.accessToken
       } else {

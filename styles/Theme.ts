@@ -13,27 +13,30 @@ export type MyTheme = {
   input: string
   loginBackground: string
   dark: boolean
+  modal: string
 }
 export const MyDefaultTheme: MyTheme = {
   ...DefaultTheme.colors,
   textLabel: 'grey',
   navigation: 'white',
-  primary: '#9f77e0',
+  primary: '#c99a53',
   card: '#B5B4FB',
   text: '#000',
   border: '#F7A59E',
-  background: '#E8F7FB',
+  background: 'white',
   input: '#F6F6F6',
   loginBackground: '#B4C4FB',
-  dark: false
+  dark: false,
+  modal: '#F8E8FF'
 }
 
 export const MyDarkTheme: MyTheme = {
   ...MyDefaultTheme,
   text: 'white',
-  primary: '#E3BCFB',
+  primary: '#f0b966',
   textLabel: '#7f91a4',
-  navigation: '#19191B',
-  background: '#17202b',
-  dark: true
+  navigation: '#1D1D1D',
+  background: '#1D1D1D',
+  dark: true,
+  modal: '#2C2C2E'
 }

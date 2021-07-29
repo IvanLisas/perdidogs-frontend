@@ -20,7 +20,7 @@ export const MapContextProvider: React.FC = ({ children }) => {
   const [mapRef, setMapRef] = useState<React.RefObject<MapView> | null>(useRef<MapView>(null))
   /*  const mapRef = useRef<MapView>(null) */
   const handleNavigateToPoint = useCallback(
-    (lat, long) => {
+    (lat, long, zoom?) => {
       if (mapRef) {
         mapRef.current?.animateCamera(
           {
@@ -28,7 +28,7 @@ export const MapContextProvider: React.FC = ({ children }) => {
               latitude: lat - DEVIATION,
               longitude: long
             },
-            zoom: 14.5
+            zoom: zoom ? zoom : 14.5
           },
           { duration: 500 }
         )

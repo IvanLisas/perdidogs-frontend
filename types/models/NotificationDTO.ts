@@ -7,4 +7,5 @@ export type NotificationDTO = {
   creationDate: Date
   lat: number
   long: number
+  hasBeenRead: boolean
 }

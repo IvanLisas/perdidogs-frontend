@@ -6,6 +6,7 @@ import { Post } from '../types/models/Post'
 import MyText from './MyThemedComponents/MyText'
 import UserAvatar from './UserAvatar'
 import Icon from './icons/index'
+import { Ionicons } from '@expo/vector-icons'
 
 interface PetCardProps {
   post: Post
@@ -47,6 +48,7 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
         >
           <UserAvatar user={post.owner}></UserAvatar>
         </View>
+
         <View>
           <Image
             key={post.Id + 'photo'}
@@ -86,16 +88,17 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               {/*        <Icon style={{ color: theme.primary, fontSize: 22 }} name="pin-hand-drawn-irregular-outline" />
                */}
-              <MyText
+              {/*         <MyText
                 numberOfLines={2}
                 style={{
                   fontSize: 22
-                  /*  padding: 16 */
-                  /*    paddingLeft: 8 */
+        
                 }}
               >
                 {post.pet.breed?.description}
-              </MyText>
+              </MyText> */}
+              <Ionicons style={{ marginRight: 4 }} size={24} color="#8E8E93" name="compass" />
+              {post.distance && <MyText style={{ fontSize: 16 }}>A {Math.round(post.distance)} Kilometros de distancia</MyText>}
             </View>
             {/* <Icon style={{ paddingRight: 8, color: theme.primary, fontSize: 22 }} name="arrow-point-hand-drawn-outline-pointing-to-right-direction" /> */}
           </View>

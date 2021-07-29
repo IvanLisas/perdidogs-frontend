@@ -99,7 +99,7 @@ const ImageChooser: React.FC<ImageChooserProps> = (props) => {
             /* marginRight: 8 */
           }}
           onError={() => console.log('error al cargar')}
-          source={{ uri: pickedImagePath.uri }}
+          source={{ uri: pickedImagePath.uri ? pickedImagePath.uri : pickedImagePath.url }}
         >
           <LinearGradient
             /*   colors={['rgba(0,0,0,0.5)', 'transparent']} */

@@ -7,6 +7,7 @@ import { Location } from './Location'
 export type Alert = {
   Id?: number
   owner?: User
+  title: string
   pet?: Pet
   location?: Location
   creationDate?: Date

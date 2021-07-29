@@ -8,6 +8,8 @@ import useTheme from '../hooks/useTheme'
 import { Post } from '../types/models/Post'
 import MyText from '../components/MyThemedComponents/MyText'
 import { Avatar } from 'react-native-elements'
+import { useNavigation } from '@react-navigation/native'
+import { Ionicons } from '@expo/vector-icons'
 
 const Profile: React.FC = () => {
   const { user, setUser } = useContext(UserContext)
@@ -15,6 +17,10 @@ const Profile: React.FC = () => {
   if (!user) return null
 
   const theme = useTheme()
+
+  const navigation = useNavigation()
+
+  const goToEditProfile = () => navigation.navigate('EditProfile')
 
   const Card = (post: Post) => (
     <TouchableOpacity style={{ paddingVertical: 8 }} key={post.Id + 'e'}>
@@ -98,31 +104,35 @@ const Profile: React.FC = () => {
 
   return (
     <View style={styles.root}>
-      <View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <View style={{ paddingRight: 8 }}>
-              <Avatar
-                size="medium"
-                titleStyle={{ color: 'white' }}
-                source={{ uri: user.avatar }}
-                overlayContainerStyle={{ backgroundColor: 'grey' }}
-                rounded
-                title={user.firstName[0] + user.lastName[0]}
-              />
-            </View>
-
-            <View style={{ paddingVertical: 2 }}>
-              <MyText style={{ fontSize: 28, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName} </MyText>
-              <MyText style={{ fontSize: 11, color: 'grey' }}>En linea </MyText>
-            </View>
+      <View style={{ flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
+        <View>
+          <Avatar
+            size={120}
+            titleStyle={{ color: 'white' }}
+            source={{ uri: user.avatar }}
+            overlayContainerStyle={{ backgroundColor: 'grey' }}
+            rounded
+            title={user.firstName[0] + user.lastName[0]}
+          />
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View>
+            <MyText style={{ fontSize: 14, color: 'grey' }}> </MyText>
           </View>
-          <TouchableOpacity onPress={() => setUser(undefined)}>
-            <Icon style={{ color: theme.primary, fontSize: 28 }} name="exit-hand-drawn-interface-symbol-variant" />
+          <View style={{ flexDirection: 'column' }}>
+            <MyText style={{ fontSize: 24, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName} </MyText>
+            <MyText style={{ fontSize: 24, fontWeight: 'bold' }}>{user.comments?.length} </MyText>
+
+            {/*    <MyText style={{ fontSize: 14, color: 'grey' }}>En linea </MyText> */}
+          </View>
+          <MyText style={{ fontSize: 24, fontWeight: 'bold' }}>{user.comments?.length} </MyText>
+          <TouchableOpacity onPress={() => goToEditProfile()}>
+            <Ionicons size={24} color="#8E8E93" name="pencil" />
           </TouchableOpacity>
         </View>
-        <MyText style={{ fontSize: 28, fontWeight: 'bold' }}>Mis publicaciones </MyText>
       </View>
+      <MyText style={{ fontSize: 24, fontWeight: 'bold' }}>Mis publicaciones </MyText>
+
       <FlatList
         data={user?.post}
         showsHorizontalScrollIndicator

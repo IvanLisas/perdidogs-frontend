@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons'
 import PostContext from '../contexts/PostContext'
 import postService from '../services/PostService'
 import { NotificationDTO } from '../types/models/NotificationDTO'
+import { justifyContent } from 'styled-system'
 
 const Alerts: React.FC = () => {
   const { setPost } = useContext(PostContext)
@@ -34,6 +35,7 @@ const Alerts: React.FC = () => {
 
   const handlePressAlert = async (notification: NotificationDTO) => {
     setPost(await postService.get(notification.postId))
+    await alertService.read(notification.postId)
     navigation.navigate('Mapa', {
       screen: 'Main'
     })
@@ -47,15 +49,20 @@ const Alerts: React.FC = () => {
     <View style={styles.root}>
       <TouchableOpacity
         onPress={goToMyAlerts}
-        style={{ borderBottomWidth: 1, borderColor: '#DEDEDE', flexDirection: 'row', paddingVertical: 20, alignItems: 'center' }}
+        style={{ paddingVertical: 16, borderBottomWidth: 0.5, borderColor: 'grey', flexDirection: 'row', alignItems: 'center' }}
       >
         <Ionicons style={{ marginRight: 8 }} size={22} color="#8E8E93" name="notifications" />
-        <MyText style={{ fontSize: 18 }}>Administrar alertas personalizadas</MyText>
+        <MyText numberOfLines={1} style={{ flex: 1, fontSize: 18 }}>
+          Administrar alertas personalizadas
+        </MyText>
       </TouchableOpacity>
 
       {!hasNotifications && (
-        <View style={{ alignItems: 'center', flex: 2, justifyContent: 'center', height: '100%' }}>
-          <MyText style={{ fontSize: 18 }}>No tienes notificaciones nuevas</MyText>
+        <View>
+          <View style={{ marginTop: 64, alignItems: 'center' }}>
+            <Ionicons style={{ marginBottom: 16 }} size={44} color={theme.primary} name="paw" />
+            <MyText style={{ fontSize: 17, textAlign: 'center' }}>Crea una alerta asi te avisaremos cuando haya alguna concidencia</MyText>
+          </View>
         </View>
       )}
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -66,9 +73,21 @@ const Alerts: React.FC = () => {
               <MyText style={{ fontSize: 16, fontWeight: 'bold' }}>Alerta sobre mascota</MyText>
               <MyText style={{ fontSize: 16 }}>{user.firstName} esta mascota que podría ser la tuya</MyText>
             </View>
-            <TouchableOpacity onPress={async () => handleRejectNotification(notification)} style={{ alignSelf: 'flex-start' }}>
-              <Ionicons size={24} color="#8E8E93" name="close" />
-            </TouchableOpacity>
+            <View style={{ justifyContent: 'space-between' }}>
+              <TouchableOpacity onPress={async () => handleRejectNotification(notification)}>
+                <Ionicons size={24} color="#8E8E93" name="close" />
+              </TouchableOpacity>
+
+              <View
+                style={{
+                  alignSelf: 'center',
+                  backgroundColor: notification.hasBeenRead ? 'transparent' : '#0A84FF',
+                  width: 8,
+                  height: 8,
+                  borderRadius: 50
+                }}
+              />
+            </View>
           </TouchableOpacity>
         ))}
         {/*         <MyButton onPress={goToNewAlert} title="Crear Alerta"></MyButton>
@@ -84,14 +103,12 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     paddingHorizontal: 16
-    /*     justifyContent: 'center',
-    alignItems: 'center' */
   },
   row: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
+    borderBottomWidth: 0.5,
+    borderColor: 'grey',
     paddingVertical: 16
   },
   iconButton: {
@@ -106,11 +123,12 @@ const styles = StyleSheet.create({
   },
   notification: {
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
+    borderBottomWidth: 0.5,
+
+    borderColor: 'grey',
     flex: 1,
     alignSelf: 'flex-start',
-    alignItems: 'center',
+    /*  alignItems: 'center', */
     flexDirection: 'row',
     width: '100%',
     flexWrap: 'nowrap'

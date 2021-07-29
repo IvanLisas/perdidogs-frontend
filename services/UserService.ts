@@ -10,7 +10,7 @@ class UserService {
   }
 
   async getUser(id: number): Promise<User> {
-    return (await axios.put<User>(`${SERVER_URL}/user/${id}`, this.axiosConfig)).data
+    return (await axios.get<User>(`${SERVER_URL}/user/${id}`, this.axiosConfig)).data
   }
 
   async register(user: User): Promise<User> {
@@ -31,6 +31,10 @@ class UserService {
 
   async changePasswordWithToken(email: string, newPassword: string, token: string) {
     return (await axios.put<void>(`${SERVER_URL}/user/changePasswordWithToken`, { email, newPassword, token }, this.axiosConfig)).data
+  }
+
+  async changePassword(userId: number, oldPassword: string, newPassword: string) {
+    return (await axios.put<void>(`${SERVER_URL}/user/changePassword`, { userId, oldPassword, newPassword }, this.axiosConfig)).data
   }
 }
 

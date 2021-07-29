@@ -49,7 +49,7 @@ export const ChatContextProvider: React.FC = ({ children }) => {
     }
     getChat()
     /*     return () => {
-      console.log('Desmontado')
+ 
       isActive = false
     } */
   }, [fetchFlag])

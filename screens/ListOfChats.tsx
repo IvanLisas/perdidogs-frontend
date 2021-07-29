@@ -21,7 +21,7 @@ const ListOfChats: React.FC = () => {
 
   const goToChat = (chat: Chat) => {
     const addressee = chat.owner.Id == user?.Id ? chat.owner2 : chat.owner
-    console.log(addressee)
+
     navigation.navigate('Chat', { addressee: addressee })
   }
 

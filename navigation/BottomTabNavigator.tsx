@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomTabParamList from '../types/StackParamLists/BottomTabParamList'
@@ -8,11 +8,15 @@ import ChatsStackScreen from './StackScreens/ChatsStackScreen'
 import MapStackScreen from './StackScreens/MapStackScreen'
 import ProfileStackScreen from './StackScreens/ProfileStackScreen'
 import AlertsStackScreen from './StackScreens/AlertsStackScreen'
+import { Ionicons } from '@expo/vector-icons'
+import NotificationsContext from '../contexts/NotificationsContext'
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
 
 export default function BottomTabNavigator() {
   const theme = useTheme()
+  const { newNotification } = useContext(NotificationsContext)
+
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} enabled={true}>
       <Tab.Navigator
@@ -33,28 +37,30 @@ export default function BottomTabNavigator() {
           name="Chats"
           component={ChatsStackScreen}
           options={{
-            tabBarIcon: ({ color }) => <Icon style={[{ color: color }, styles.icon]} name="chat-bubbles-couple-hand-drawn-outlines" />
+            tabBarBadge: 2,
+            tabBarIcon: ({ color }) => <Ionicons style={[{ color: color }, styles.icon]} color={theme.primary} name="chatbox" />
           }}
         />
         <Tab.Screen
           name="Mapa"
           component={MapStackScreen}
           options={{
-            tabBarIcon: ({ color }) => <Icon style={[{ color: color }, styles.icon]} name="compass-hand-drawn-circular-tool-outline" />
+            tabBarIcon: ({ color }) => <Ionicons style={[{ color: color }, styles.icon, { fontSize: 35 }]} color={theme.primary} name="compass" />
           }}
         />
         <Tab.Screen
           name="Alertas"
           component={AlertsStackScreen}
           options={{
-            tabBarIcon: ({ color }) => <Icon style={[{ color: color }, styles.icon]} name="bell-hand-drawn-interface-symbol" />
+            tabBarBadge: newNotification,
+            tabBarIcon: ({ color }) => <Ionicons style={[{ color: color }, styles.icon]} color={theme.primary} name="notifications" />
           }}
         />
         <Tab.Screen
           name="Perfil"
           component={ProfileStackScreen}
           options={{
-            tabBarIcon: ({ color }) => <Icon style={[{ color: color }, styles.icon]} name="user-list-hand-drawn-interface-symbol-outline" />
+            tabBarIcon: ({ color }) => <Ionicons style={[{ color: color }, styles.icon]} color={theme.primary} name="person" />
           }}
         />
       </Tab.Navigator>

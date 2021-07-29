@@ -1,4 +1,5 @@
 import { Post } from './Post'
+import { Comment } from './Comment'
 
 export type User = {
   Id: number
@@ -9,4 +10,5 @@ export type User = {
   creationDate?: Date
   avatar?: string
   post?: Post[]
+  comments?: Comment[]
 }

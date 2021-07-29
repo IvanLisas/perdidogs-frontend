@@ -1,7 +1,7 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
-import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import useTheme from '../../hooks/useTheme'
 import MyText from '../MyThemedComponents/MyText'
 import { Ionicons } from '@expo/vector-icons'
@@ -12,7 +12,10 @@ import { Breed } from '../../types/models/Breed'
 import { FurLength } from '../../types/models/FurLength'
 import { Size } from '../../types/models/Size'
 import { Color } from '../../types/models/Color'
+import CustomBackdrop from '../CustomBackDrop'
+import BlurredBackground from '../BlurredBackground'
 
+const a = '#F8E8FF'
 interface SingleFilterBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
   list: any[] | undefined
@@ -62,11 +65,27 @@ const SingleFilterBottomSheetModal: React.FC<SingleFilterBottomSheetModalProps> 
       </TouchableOpacity>
     </View>
   )
+  /* 
+  const [backdropPressBehavior, setBackdropPressBehavior] = useState<'none' | 'close' | 'collapse'>('collapse')
+
+  const renderBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        style={{
+          backgroundColor: '#a8b5eb'
+        }}
+        {...props}
+        pressBehavior={backdropPressBehavior}
+      />
+    ),
+    [backdropPressBehavior]
+  ) */
 
   return (
     <BottomSheetModal
       enableContentPanningGesture
       snapPoints={['90%']}
+      backdropComponent={CustomBackdrop}
       index={0}
       ref={modalRef}
       stackBehavior="replace"
@@ -74,8 +93,7 @@ const SingleFilterBottomSheetModal: React.FC<SingleFilterBottomSheetModalProps> 
         if (!change) setLocalFilter(() => ({ ...filter }))
         setChange(false)
       }}
-      backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
-      style={{ backgroundColor: theme.navigation, borderRadius: 12 }}
+      backgroundComponent={BlurredBackground}
       handleComponent={() => TopBar}
     >
       <BottomSheetScrollView style={{ padding: 16 }}>
@@ -95,19 +113,23 @@ const SingleFilterBottomSheetModal: React.FC<SingleFilterBottomSheetModalProps> 
     </BottomSheetModal>
   )
 }
+
 const styles = StyleSheet.create({
   handleRoot: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
+    borderBottomWidth: 0.5,
+    /*    backgroundColor: a, */
     padding: 16,
+    borderTopLeftRadius: 12,
+    borderColor: 'grey',
+    borderTopRightRadius: 12,
     justifyContent: 'space-between'
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
+    borderBottomWidth: 0.5,
+    borderColor: 'grey',
     paddingVertical: 16,
     alignItems: 'center'
   },

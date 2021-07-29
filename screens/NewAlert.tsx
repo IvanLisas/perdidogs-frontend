@@ -7,7 +7,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { Pet } from '../types/models/Pet'
 import { Color } from '../types/models/Color'
 import { Location } from '../types/models/Location'
-import { useTheme } from 'react-native-elements'
+import { Input } from 'react-native-elements'
 import SingleFilterBottomSheetModal from '../components/BottomSheetModals/SingleFilterBottomSheetModal'
 import MyText from '../components/MyThemedComponents/MyText'
 import dropDownService from '../services/DropDownService'
@@ -21,6 +21,7 @@ import UserContext from '../contexts/UserContext'
 import { useNavigation } from '@react-navigation/native'
 import { useFocusEffect } from '@react-navigation/native'
 import AlertsContext from '../contexts/AlertsContext'
+import useTheme from '../hooks/useTheme'
 
 interface FiltersBottomSheetModalProps {}
 
@@ -34,6 +35,8 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
   const [breeds, setBreeds] = useState<Breed[]>()
   const [lenghts, setLenghts] = useState<FurLength[]>()
   const [sizes, setSizes] = useState<Size[]>()
+
+  const [title, setTitle] = useState('')
 
   const colorsModalRef = useRef<BottomSheetModal>(null)
   const breedsModalRef = useRef<BottomSheetModal>(null)
@@ -66,7 +69,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
   useEffect(() => {
     const getParams = async () => {
       await askForLocationPermissions()
-      console.log('montado')
+
       setColors(await dropDownService.getAllColors())
       setLenghts(await dropDownService.getAllLengths())
       setBreeds(await dropDownService.getAllBreeds())
@@ -77,8 +80,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
 
   const createAlert = async () => {
     try {
-      console.log('hola')
-      await alertService.create({ pet: localPet, location: myLocation, owner: user })
+      await alertService.create({ pet: localPet, location: myLocation, owner: user, title: title })
       if (user) setAlerts([...(await alertService.getAll(user.Id))])
       navigation.goBack()
     } catch (error) {
@@ -90,7 +92,15 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
 
   return (
     <BottomSheetModalProvider>
-      <View>
+      <View style={{ padding: 8 }}>
+        <Input
+          /*      inputContainerStyle={{ borderBottomWidth: 0.5, alignSelf: 'center' }} */
+          onChangeText={setTitle}
+          inputStyle={{ fontSize: 16, color: theme.text }}
+          clearButtonMode="always"
+          placeholder="Titulo"
+          value={title}
+        ></Input>
         <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
           <MyText style={{ fontSize: 16 }}>Raza</MyText>
           <MyText style={{ fontSize: 16 }}>{localPet?.breed?.description ? localPet.breed.description : 'Ninguno'}</MyText>
@@ -108,7 +118,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
           <MyText style={{ fontSize: 16 }}>{localPet?.size?.description ? localPet.size.description : 'Ninguno'}</MyText>
         </TouchableOpacity>
 
-        <ScrollView style={{ padding: 16 }}>
+        <ScrollView>
           <SingleFilterBottomSheetModal
             title="Colores"
             list={colors}
@@ -137,7 +147,9 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
             filter={localPet?.breed}
             modalRef={breedsModalRef}
           />
-          <MyButton onPress={createAlert} title="Crear Alerta"></MyButton>
+          <View style={{ marginTop: 16 }}>
+            <MyButton onPress={createAlert} title="Crear Alerta"></MyButton>
+          </View>
         </ScrollView>
       </View>
     </BottomSheetModalProvider>
@@ -146,7 +158,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
 const styles = StyleSheet.create({
   handleRoot: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderColor: '#DEDEDE',
     padding: 16,
     alignContent: 'center',
@@ -165,8 +177,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
+    borderBottomWidth: 0.5,
+    borderColor: 'grey',
     padding: 16,
     alignItems: 'center'
   },

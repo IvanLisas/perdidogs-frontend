@@ -6,6 +6,7 @@ import useTheme from '../../hooks/useTheme'
 import { View } from 'react-native'
 import Icon from '../../components/icons/index'
 import Profile from '../../screens/Profile'
+import ChangePassword from '../../screens/ChangePassword'
 
 const HomeStack = createStackNavigator<ProfileStackParamList>()
 
@@ -39,7 +40,8 @@ function ProfileStackScreen() {
       }}
     >
       <HomeStack.Screen name="Main" options={{ title: 'Perfil' }} component={Profile} />
-      <HomeStack.Screen name="Edit" options={{ title: 'Editar Perfil' }} component={EditProfile} />
+      <HomeStack.Screen name="EditProfile" options={{ title: 'Editar Perfil' }} component={EditProfile} />
+      <HomeStack.Screen name="ChangePassword" options={{ title: 'Cambiar contraseña' }} component={ChangePassword} />
     </HomeStack.Navigator>
   )
 }

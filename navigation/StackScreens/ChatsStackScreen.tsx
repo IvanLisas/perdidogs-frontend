@@ -1,25 +1,27 @@
 import * as React from 'react'
-import { createStackNavigator } from '@react-navigation/stack'
+import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack'
 import useTheme from '../../hooks/useTheme'
 import { View } from 'react-native'
 import Icon from '../../components/icons/index'
 import ListOfChats from '../../screens/ListOfChats'
 import ChatConversation from '../../screens/ChatConversation'
+import MyText from '../../components/MyThemedComponents/MyText'
+import { useNavigation } from '@react-navigation/native'
 const ChatsStack = createStackNavigator()
 
 function ProfileStackScreen() {
-  const colors = useTheme()
-
+  const theme = useTheme()
+  const navigation = useNavigation()
   return (
     <ChatsStack.Navigator
       screenOptions={{
-        headerTintColor: colors.text,
+        headerTintColor: theme.text,
 
         cardStyle: {
-          backgroundColor: colors.background
+          backgroundColor: theme.background
         },
         headerStyle: {
-          backgroundColor: colors.navigation
+          backgroundColor: theme.navigation
         },
         headerTitleStyle: {
           /*      fontFamily: 'LoveMeLikeASister' */
@@ -28,17 +30,34 @@ function ProfileStackScreen() {
         headerBackTitleStyle: {
           fontFamily: 'LoveMeLikeASister'
         },
-        headerBackImage: () => (
+        /*      headerBackImage: () => (
           <View style={{ paddingHorizontal: 16 }}>
             <Icon style={{ color: colors.text, fontSize: 18 }} name="arrow-pointing-to-left-hand-drawn-outline" />
           </View>
         ),
-
+ */
         headerBackTitleVisible: false
       }}
     >
       <ChatsStack.Screen name="Main" options={{ title: 'Chats' }} component={ListOfChats} />
-      <ChatsStack.Screen name="Chat" options={{ title: 'Chat' }} component={ChatConversation} />
+      <ChatsStack.Screen
+        name="Chat"
+        options={{
+          title: 'Chat',
+
+          headerLeft: (props) => (
+            <HeaderBackButton
+              tintColor={theme.dark ? 'white' : 'black'}
+              onPress={() =>
+                navigation.navigate('Chats', {
+                  screen: 'Main'
+                })
+              }
+            ></HeaderBackButton>
+          )
+        }}
+        component={ChatConversation}
+      />
     </ChatsStack.Navigator>
   )
 }

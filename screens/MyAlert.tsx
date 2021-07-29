@@ -7,7 +7,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { Pet } from '../types/models/Pet'
 import { Color } from '../types/models/Color'
 import { Location } from '../types/models/Location'
-import { useTheme } from 'react-native-elements'
+import { Input } from 'react-native-elements'
 import SingleFilterBottomSheetModal from '../components/BottomSheetModals/SingleFilterBottomSheetModal'
 import MyText from '../components/MyThemedComponents/MyText'
 import dropDownService from '../services/DropDownService'
@@ -22,6 +22,7 @@ import { useNavigation, useRoute } from '@react-navigation/native'
 import { useFocusEffect } from '@react-navigation/native'
 import { Alert } from '../types/models/Alert'
 import AlertsContext from '../contexts/AlertsContext'
+import useTheme from '../hooks/useTheme'
 
 interface FiltersBottomSheetModalProps {}
 
@@ -35,6 +36,9 @@ const MyAlert: React.FC<FiltersBottomSheetModalProps> = () => {
   const [breeds, setBreeds] = useState<Breed[]>()
   const [lenghts, setLenghts] = useState<FurLength[]>()
   const [sizes, setSizes] = useState<Size[]>()
+
+  const [title, setTitle] = useState('')
+  const [id, setId] = useState(0)
 
   const colorsModalRef = useRef<BottomSheetModal>(null)
   const breedsModalRef = useRef<BottomSheetModal>(null)
@@ -52,6 +56,9 @@ const MyAlert: React.FC<FiltersBottomSheetModalProps> = () => {
 
   useEffect(() => {
     setLocalPet(() => ({ ...((route.params as any).alert.pet as Pet) }))
+    setTitle(() => (route.params as any).alert.title as string)
+
+    setId(() => (route.params as any).alert.Id as number)
     const getParams = async () => {
       setColors(await dropDownService.getAllColors())
       setLenghts(await dropDownService.getAllLengths())
@@ -66,10 +73,21 @@ const MyAlert: React.FC<FiltersBottomSheetModalProps> = () => {
   const createAlert = async () => {
     try {
       if (localPet?.breed || localPet?.color || localPet?.furLength || localPet?.size) {
-        await alertService.update({ Id: (route.params as any).alert.Id, pet: localPet })
+        await alertService.update({ Id: (route.params as any).alert.Id, pet: localPet, title: title })
         if (user) setAlerts([...(await alertService.getAll(user.Id))])
         navigation.navigate('myAlerts')
       } else console.log('no no')
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
+  const deleteAlert = async () => {
+    try {
+      console.log(id)
+      await alertService.delete(id)
+      if (user) setAlerts([...(await alertService.getAll(user.Id))])
+      navigation.navigate('myAlerts')
     } catch (error) {
       console.log(error.message)
     }
@@ -80,6 +98,15 @@ const MyAlert: React.FC<FiltersBottomSheetModalProps> = () => {
   return (
     <BottomSheetModalProvider>
       <View>
+        <Input
+          /*      inputContainerStyle={{ borderBottomWidth: 0.5, alignSelf: 'center' }} */
+          onChangeText={setTitle}
+          inputStyle={{ fontSize: 16, color: theme.text }}
+          clearButtonMode="always"
+          placeholder="Titulo"
+          value={title}
+        ></Input>
+
         <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
           <MyText style={{ fontSize: 16 }}>Raza</MyText>
           <MyText style={{ fontSize: 16 }}>{localPet?.breed?.description ? localPet.breed.description : 'Ninguno'}</MyText>
@@ -127,6 +154,7 @@ const MyAlert: React.FC<FiltersBottomSheetModalProps> = () => {
             modalRef={breedsModalRef}
           />
           <MyButton onPress={createAlert} title="Crear Alerta"></MyButton>
+          <MyButton onPress={deleteAlert} title="Borrar Alerta"></MyButton>
         </ScrollView>
       </View>
     </BottomSheetModalProvider>

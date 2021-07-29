@@ -1,4 +1,5 @@
 export type ProfileStackParamList = {
   Main: undefined
-  Edit: undefined
+  EditProfile: undefined
+  ChangePassword: undefined
 }

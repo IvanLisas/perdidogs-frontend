@@ -10,6 +10,7 @@ import useTheme from '../hooks/useTheme'
 import { Input } from 'native-base'
 import Icon from './icons/index'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
+import MyInput from './MyThemedComponents/MyInput'
 
 interface SendAMessageBarProps {
   text: string
@@ -25,28 +26,29 @@ const SendAMessageBar: React.FC<SendAMessageBarProps> = (props) => {
   return (
     <View
       style={{
-        width: 50,
-        height: 50,
+        /*        width: 50,
+        height: 50, */
         borderRadius: 25,
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        bottom: 20,
-        right: 20
+        bottom: 0,
+        padding: 16
       }}
     >
       <Input
         h={45}
         selectionColor={theme.primary}
         bgColor={theme.primary}
-        w={Dimensions.get('window').width - 80}
-        mx={1}
+        w={Dimensions.get('window').width - 28 - 16}
         value={text}
         onChangeText={setText}
         borderColor={theme.primary}
         placeholder="Enviar un mensaje"
         placeholderTextColor={'black'}
       />
+
       <TouchableOpacity onPress={onPress}>
         <Icon style={{ color: theme.primary, fontSize: 28 }} name="arrow-pointing-up-hand-drawn-symbol" />
       </TouchableOpacity>

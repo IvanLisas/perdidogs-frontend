@@ -1,6 +1,6 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
 import React, { useState } from 'react'
-import { StyleSheet, View, Keyboard, TouchableOpacity, SafeAreaView } from 'react-native'
+import { StyleSheet, View, Keyboard, Image, SafeAreaView } from 'react-native'
 import googleService from '../../services/GoogleService'
 import { Prediction } from '../../types/models/Prediction'
 import { useDebounce } from '../../hooks/useDebounce'
@@ -12,6 +12,7 @@ import useTheme from '../../hooks/useTheme'
 import { Input } from 'react-native-elements'
 import MyIcon from '../MyThemedComponents/MyIcon'
 import PlaceBar from '../PlaceBar'
+import { Ionicons } from '@expo/vector-icons'
 
 interface SearchPlacesBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
@@ -22,8 +23,10 @@ interface SearchPlacesBottomSheetModalProps {
 const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> = ({ modalRef, handleGoToPlace, snapPoints }) => {
   const [search, setSearch] = useState({ term: '', fetchPredictions: true })
   const [predictions, setPredictions] = useState<Prediction[]>([])
-  const [showPredictions, setShowPredictions] = useState(true)
+  const [showPredictions, setShowPredictions] = useState(false)
   const theme = useTheme()
+
+  const labrador = require('../../assets/images/labrador-abajo.png')
 
   const handleModal = () => {
     modalRef.current?.expand()
@@ -84,8 +87,7 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
         }}
         /* returnKeyType="search" */
       />
-      {/*    </View> */}
-      {showPredictions && (
+      {search.term.length !== 0 ? (
         <BottomSheetFlatList
           data={predictions}
           scrollEnabled
@@ -94,7 +96,7 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
           renderItem={({ item }) => {
             return (
               <PlaceBar
-                style={{ marginLeft: 16, paddingVertical: 16, borderBottomWidth: 0.5, borderColor: 'black' }}
+                style={{ marginLeft: 16, paddingVertical: 16, borderBottomWidth: 0.5, borderColor: 'grey' }}
                 onPress={() => onPredictionTapped(item.place_id, item.structured_formatting.main_text, item.structured_formatting.secondary_text)}
                 primaryText={item.structured_formatting.main_text}
                 secondaryText={item.structured_formatting.secondary_text}
@@ -103,6 +105,14 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
           }}
           keyExtractor={(item: Prediction) => item.place_id}
         />
+      ) : (
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Image source={labrador} style={styles.labrador} />
+          <View style={{ marginTop: 64, alignItems: 'center', paddingHorizontal: 8 }}>
+            <Ionicons style={{ marginBottom: 8 }} size={44} color="#f0b966" name="search" />
+            <MyText style={{ fontSize: 17, textAlign: 'center' }}>Empieza buscando una zona</MyText>
+          </View>
+        </View>
       )}
     </BottomSheetModal>
   )
@@ -124,6 +134,17 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#E5E5EA',
     width: 234
+  },
+  labrador: {
+    width: 200,
+    height: 200,
+    marginLeft: 24,
+    marginTop: 50,
+    position: 'absolute',
+    bottom: -65,
+    /*     left: 50, */
+    /* transform: [{ rotate: '-180deg' }], */
+    alignSelf: 'center'
   }
 })
 

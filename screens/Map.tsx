@@ -11,7 +11,7 @@ import useTheme from '../hooks/useTheme'
 import { BottomSheetFlatList, BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { Post } from '../types/models/Post'
 import postService from '../services/PostService'
-import PostPreview from '../components/PostPreview'
+import PostPreview from '../components/BottomSheetModals/PostPreviewBottomSheetModal'
 import PostContext from '../contexts/PostContext'
 import Icon from '../components/icons/index'
 import { GooglePlaceData, GooglePlaceDetail } from 'react-native-google-places-autocomplete'
@@ -21,17 +21,19 @@ import { Extrapolate, interpolateNode, useSharedValue } from 'react-native-reani
 import PetCard from '../components/PetCard'
 import GooglePlacesSearch from '../components/BottomSheetModals/SearchPlacesBottomSheetModal'
 import SearchPlacesBottomSheetModal from '../components/BottomSheetModals/SearchPlacesBottomSheetModal'
-import PostResultsBottomSheetModal from '../components/BottomSheetModals/PostResultsBottomSheetModal'
 import FiltersBottomSheetModal from '../components/BottomSheetModals/FiltersBottomSheetModal'
 import { Filter } from '../types/models/Filter'
 import { Pet } from '../types/models/Pet'
 import MapContext from '../contexts/MapContext'
+import UserContext from '../contexts/UserContext'
+import ResultsBottomSheetModal from '../components/BottomSheetModals/ResultsBottomSheetModal'
+import PostPreviewBottomSheetModal from '../components/BottomSheetModals/PostPreviewBottomSheetModal'
 
 const initialRegion = {
-  latitude: -38.535532,
-  longitude: -58.541518,
-  latitudeDelta: 1.003,
-  longitudeDelta: 1.003
+  latitude: -34.65023240988638,
+  longitude: -58.495524767786264,
+  latitudeDelta: 0.36431004148501245,
+  longitudeDelta: 0.24489808827637916
 }
 
 export default function Map() {
@@ -43,6 +45,7 @@ export default function Map() {
   //Errors
   const [errorMessage, setErrorMessage] = useState('')
   //Contexts
+  const { user } = useContext(UserContext)
   const { setPost, posts, setPosts, post } = useContext(PostContext)
   const { setMapRef, handleNavigateToPoint } = useContext(MapContext)
   const { setSearchLocation, setSearchLocationDelta } = useContext(FiltersContext)
@@ -51,6 +54,9 @@ export default function Map() {
   const [currentSearchPlaceName, setCurrentSearchPlaceName] = useState({ primaryText: '', secondaryText: '' })
   //Hook's
   const { mapRef, handleNavigateToRegion } = useMap()
+  //Location
+  const [myLocation, setMyLocation] = useState({ lat: 0, long: 0 })
+
   //Modals Ref's
   const resultsModalRef = useRef<BottomSheetModal>(null)
   const postPreviewModalRef = useRef<BottomSheetModal>(null)
@@ -58,10 +64,12 @@ export default function Map() {
   const filtersModalRef = useRef<BottomSheetModal>(null)
   /*   const [filterModa, setFilterModa] = useState(false) */
   //Modal handle
-  const snapPoints = useMemo(() => [94, '45%', '90%'], [])
+  const snapPoints = useMemo(() => [94, 370, '90%'], [])
   //Pin
   const [myMarket, setMyMarket] = useState<any>()
-  const marketImage = require('../assets/images/dogPin2.png')
+  const searchResultPin = require('../assets/images/Group.png')
+  const myPostPin = require('../assets/images/Group-1.png')
+  const newPostPin = require('../assets/images/Group-2.png')
   const [customPostId, setCustomPostId] = useState(0)
   //Filters
   const [filter, setFilter] = useState<Filter>({
@@ -73,7 +81,7 @@ export default function Map() {
   const ASPECT_RATIO = width / height //No se usa
   //Others
   const [isMount, setIsMount] = useState(false)
-
+  let creating = false
   //Post
   const getPosts = async () => {
     try {
@@ -84,7 +92,11 @@ export default function Map() {
     }
   }
 
-  const createPost = () => navigation.navigate('CreatePost', myMarket)
+  const createPost = () => {
+    creating = true
+    setMyMarket(undefined)
+    navigation.navigate('CreatePost', myMarket)
+  }
 
   const createMarker = (event: any) => setMyMarket(event.nativeEvent.coordinate)
 
@@ -93,8 +105,9 @@ export default function Map() {
   const handleGoToPost = (post: Post) => {
     handleNavigateToPoint(post.location.lat, post.location.long)
     /* setPost(post) */
-    postPreviewModalRef.current?.snapToIndex(1)
+
     postPreviewModalRef.current?.present()
+    postPreviewModalRef.current?.snapToIndex(1)
   }
 
   const handleFiltersModal = () => {
@@ -129,6 +142,7 @@ export default function Map() {
     if (foregroundPermissionsStatus == PermissionStatus.GRANTED) {
       try {
         const location = (await getCurrentPositionAsync()).coords
+        setMyLocation({ lat: location.latitude, long: location.longitude })
         handleNavigateToPoint(location.latitude, location.longitude)
       } catch (error) {
         console.log('Error al obtener la localizacion:' + error.message)
@@ -169,13 +183,18 @@ export default function Map() {
     try {
       const { status } = await requestForegroundPermissionsAsync()
       setForegroundPermissionsStatus(status)
-      if (status !== 'granted') {
+      if (status === 'denied') {
         console.log('El permiso para obtener la localizacion fue denegado')
         return
       }
       //TODO guardala, lenta en IOS
+
       const location = (await getCurrentPositionAsync()).coords
+      console.log(location)
+      setFilter((prev) => ({ ...prev, myLocation: { lat: location.latitude, lng: location.longitude } }))
+
       handleNavigateToPoint(location.latitude, location.longitude)
+      console.log('paso')
     } catch (error) {
       console.log('Error al obtener los permisos de localizacion:' + error.message)
     }
@@ -183,15 +202,20 @@ export default function Map() {
 
   //UseEffect
   useLayoutEffect(() => {
+    console.log('hola')
     setMapRef(mapRef)
+
     searchModalRef.current?.present()
-    console.log('mount')
     const init = async () => {
       await getPosts()
       await askForLocationPermissions()
       setIsMount(true)
     }
     init()
+    return () => {
+      console.log('demontado modal')
+      postPreviewModalRef.current?.dismiss()
+    }
   }, [])
 
   useLayoutEffect(() => {
@@ -203,21 +227,44 @@ export default function Map() {
       search()
     }
   }, [filter])
+
   const route = useRoute()
   const param = route.params
 
   useFocusEffect(() => {
-    console.log('hola mapa', param)
     if ((param as any)?.postId) setCustomPostId((param as any)?.postId as number)
   })
 
-  useEffect(() => {
-    console.log('hola', customPostId)
-  }, [customPostId])
+  /*   useEffect(() => {
+
+  }, [customPostId]) */
 
   useEffect(() => {
-    if (post) handleGoToPost(post)
+    if (post && post.Id !== 0) handleGoToPost(post)
   }, [post])
+
+  useEffect(() => {
+    if (user) {
+      const init = async () => {
+        try {
+          setPosts(await postService.getPostByFilters(filter))
+        } catch (error) {
+          console.log(error.message)
+        }
+        const currentPost = user?.post?.find((x) => x.Id == post?.Id)
+        console.log(currentPost)
+        if (currentPost) setPost(user?.post?.find((x) => x.Id == post?.Id))
+        else {
+          postPreviewModalRef.current?.dismiss()
+          setPost({ Id: 0, pictures: [], location: { lat: 0, long: 0 } })
+        }
+      }
+      init()
+    } else {
+      console.log('entra')
+      postPreviewModalRef.current?.close()
+    }
+  }, [user])
 
   /* 
   const currentPosition = useSharedValue(0)
@@ -237,7 +284,14 @@ export default function Map() {
       <View style={StyleSheet.absoluteFillObject}>
         <MapView
           ref={mapRef}
-          /*onRegionChangeComplete={(event) => handleRegionChange(event)} */
+          onMarkerPress={() => {
+            if (post && post.Id !== 0 && !creating) {
+              postPreviewModalRef.current?.present()
+              postPreviewModalRef.current?.snapToIndex(1)
+            }
+            creating = false
+          }}
+          onRegionChangeComplete={(event) => console.log(event)}
           showsUserLocation={true}
           onLongPress={(event) => createMarker(event)}
           customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
@@ -247,35 +301,46 @@ export default function Map() {
           showsMyLocationButton={false}
           onTouchStart={() => dismissAll()}
           /*onPress={handleMapPress} */
-          initialRegion={{
-            latitude: -38.535532,
-            longitude: -58.541518,
-            latitudeDelta: 1.003,
-            longitudeDelta: 1.003
-          }}
+          initialRegion={initialRegion}
         >
-          {myMarket && <Marker onPress={createPost} coordinate={myMarket}></Marker>}
-          {post && (
+          {myMarket && <Marker image={newPostPin} onPress={createPost} coordinate={myMarket}></Marker>}
+          {post && post.Id !== 0 && (
             <MarkerAnimated
               onPress={() => setPost(post)}
               stopPropagation={true}
               key={post.Id + Math.floor(Math.random() * 16777215)}
-              pinColor={theme.primary}
               coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
               shouldRasterizeIOS
-              image={marketImage}
+              style={{ width: 50, height: 50 }}
+              image={searchResultPin}
             />
           )}
           {posts?.map((post, index) => (
             <MarkerAnimated
-              zIndex={index}
-              onPress={() => setPost(post)}
+              onPress={() => {
+                setPost(post)
+              }}
               stopPropagation={true}
               key={post.Id + Math.floor(Math.random() * 16777215)}
               pinColor={theme.primary}
               coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
               shouldRasterizeIOS
-              image={marketImage}
+              image={searchResultPin}
+            />
+          ))}
+
+          {user?.post?.map((post, index) => (
+            <MarkerAnimated
+              zIndex={100 + index}
+              onPress={() => {
+                setPost(post)
+              }}
+              stopPropagation={true}
+              key={post.Id + Math.floor(Math.random() * 16777215)}
+              pinColor={theme.primary}
+              coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
+              shouldRasterizeIOS
+              image={myPostPin}
             />
           ))}
         </MapView>
@@ -287,7 +352,8 @@ export default function Map() {
         <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
           <SearchPlacesBottomSheetModal handleGoToPlace={handleGoToPlace} snapPoints={snapPoints} modalRef={searchModalRef} />
 
-          <PostResultsBottomSheetModal
+          <ResultsBottomSheetModal
+            petFilter={filter.pet}
             handleGoToPost={handleGoToPost}
             handleFiltersModal={handleFiltersModal}
             snapPoints={snapPoints}
@@ -298,17 +364,7 @@ export default function Map() {
 
           <FiltersBottomSheetModal pet={filter.pet} handleApplyFilters={handleApplyFilters} modalRef={filtersModalRef} snapPoints={snapPoints} />
 
-          <BottomSheetModal
-            snapPoints={snapPoints}
-            key="PoiDetailsSheet2"
-            index={1}
-            ref={postPreviewModalRef}
-            stackBehavior="replace"
-            backgroundComponent={() => <View style={{ backgroundColor: theme.background }}></View>}
-            style={{ backgroundColor: theme.navigation, borderRadius: 5 }}
-          >
-            <PostPreview modalRef={postPreviewModalRef} />
-          </BottomSheetModal>
+          <PostPreviewBottomSheetModal modalRef={postPreviewModalRef} snapPoints={useMemo(() => [94, 370], [])} />
         </View>
       </View>
     </BottomSheetModalProvider>
