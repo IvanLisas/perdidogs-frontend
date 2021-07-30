@@ -22,9 +22,9 @@ type authScreenProp = StackNavigationProp<LoginStackParamList>
 export default function Login() {
   const { setUser } = useContext(UserContext)
 
-  const [email, setEmail] = useState('ivanelisas@gmail.com')
+  const [email, setEmail] = useState('')
 
-  const [password, setPassword] = useState('12345678')
+  const [password, setPassword] = useState('')
 
   const [loading, setLoading] = useState(false)
 
