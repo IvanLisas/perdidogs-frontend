@@ -112,7 +112,7 @@ const Post: React.FC<PostPreviewProps> = () => {
           {post.pictures.length > 0 ? (
             <ScrollView showsHorizontalScrollIndicator={false} style={styles(theme).carousel} horizontal>
               {post?.pictures.map((picture, index) => (
-                <View key={picture.url + 'container'}>
+                <View key={picture.url + 'container' + Math.floor(Math.random() * 16777215)}>
                   <ImageBackground
                     key={picture.url + 'photo'}
                     imageStyle={{ borderRadius: 12, width: '100%' }}
@@ -143,7 +143,7 @@ const Post: React.FC<PostPreviewProps> = () => {
           ) : (
             <View style={{ paddingVertical: 8 }}>
               <ImageBackground
-                key={'photo'}
+                key={'photo' + Math.floor(Math.random() * 16777215)}
                 imageStyle={{ borderRadius: 12, width: '100%' }}
                 style={{
                   width: Dimensions.get('window').width - 90,

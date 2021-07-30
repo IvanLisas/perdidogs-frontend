@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions } from 'react-native'
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions, ImageBackground } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import Icon from '../components/icons/index'
-import { FlatList } from 'react-native-gesture-handler'
+import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import UserContext from '../contexts/UserContext'
 import useTheme from '../hooks/useTheme'
 import { Post } from '../types/models/Post'
@@ -10,100 +10,122 @@ import MyText from '../components/MyThemedComponents/MyText'
 import { Avatar } from 'react-native-elements'
 import { useNavigation } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons'
+import { MyTheme } from '../styles/Theme'
+import PostContext from '../contexts/PostContext'
 
 const Profile: React.FC = () => {
   const { user, setUser } = useContext(UserContext)
+
+  const { setPost } = useContext(PostContext)
 
   if (!user) return null
 
   const theme = useTheme()
 
+  const stylesWithTheme = styles(theme)
+
   const navigation = useNavigation()
 
   const goToEditProfile = () => navigation.navigate('EditProfile')
 
-  const Card = (post: Post) => (
-    <TouchableOpacity style={{ paddingVertical: 8 }} key={post.Id + 'e'}>
-      <View
-        style={{
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 3
-          },
-          shadowOpacity: 0.29,
-          shadowRadius: 4.65,
-          borderRadius: 25,
+  const goToPost = (post: Post) => {
+    setPost({ ...post })
+    navigation.navigate('Mapa', {
+      screen: 'Post'
+    })
+  }
 
-          elevation: 7
-        }}
-      >
-        <Image
-          key={post.Id + 'photo'}
-          style={{
-            width: Dimensions.get('window').width - 32,
-            height: 200,
-            borderTopLeftRadius: 25,
-            borderTopRightRadius: 25
-            /*     position:'absolute', */
-          }}
-          onError={() => console.log('error al cargar')}
-          source={{
-            uri: post.pictures[0]
-              ? post.pictures[0].url
-              : 'https://as01.epimg.net/mexico/imagenes/2019/01/19/tikitakas/1547933521_851367_1547933683_noticia_normal_recorte1.jpg'
-          }}
-        />
-        <LinearGradient
-          key={post.Id + 'gradient'}
-          colors={['rgba(0,0,0,0.5)', 'transparent']}
-          style={{
-            position: 'absolute',
-            height: 200,
-            marginTop: 50,
-            width: Dimensions.get('window').width - 32,
-            borderRadius: 25
-          }}
-          start={{ x: 0, y: 1.0 }}
-          end={{ x: 0, y: 0 }}
-        />
-        <View
-          style={{
-            height: 60,
-            borderColor: theme.primary,
-            /*    borderEndWidth: 0.2,
-            borderBottomWidth: 0.2,
-            borderStartWidth: 0.2, */
-            borderBottomLeftRadius: 20,
-            borderBottomRightRadius: 20,
-            backgroundColor: theme.navigation,
-            justifyContent: 'center'
-          }}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', padding: 8, justifyContent: 'space-between' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              {/*        <Icon style={{ color: theme.primary, fontSize: 22 }} name="pin-hand-drawn-irregular-outline" />
-               */}
-              <MyText
-                numberOfLines={2}
+  const goToEdit = (post: Post) => {
+    setPost({ ...post })
+    navigation.navigate('Mapa', {
+      screen: 'EditPost'
+    })
+  }
+
+  const Card = (post: Post) => (
+    <View>
+      <View>
+        <View>
+          <MyText style={stylesWithTheme.description2}>{post?.description}</MyText>
+          {post.pictures.length > 0 ? (
+            <ScrollView showsHorizontalScrollIndicator={false} style={stylesWithTheme.carousel} horizontal>
+              {post?.pictures.map((picture, index) => (
+                <View key={picture.url + 'container'}>
+                  <ImageBackground
+                    key={picture.url + 'photo'}
+                    imageStyle={{ borderRadius: 12, width: '100%' }}
+                    style={{
+                      width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 32,
+                      height: 180,
+                      borderRadius: 20,
+                      marginRight: 8
+                    }}
+                    onError={() => console.log('error al cargar')}
+                    source={{ uri: picture.url }}
+                  />
+                  <LinearGradient
+                    colors={['rgba(0,0,0,0.5)', 'transparent']}
+                    style={{
+                      position: 'absolute',
+                      height: 150,
+                      width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 32,
+                      borderRadius: 12
+                    }}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          ) : (
+            <View style={{ paddingVertical: 8 }}>
+              <ImageBackground
+                key={'photo'}
+                imageStyle={{ borderRadius: 12, width: '100%' }}
                 style={{
-                  fontSize: 22,
-                  /*  padding: 16 */
-                  paddingLeft: 8
+                  width: Dimensions.get('window').width - 90,
+                  height: 150,
+                  borderRadius: 20,
+                  marginRight: 8
                 }}
-              >
-                {post?.pet?.breed?.description}
-              </MyText>
+                source={{ uri: 'https://somoswe1.com/Files/white-image.png' }}
+              />
+              <LinearGradient
+                colors={['rgba(0,0,0,0.5)', 'transparent']}
+                style={{
+                  position: 'absolute',
+                  height: 160,
+                  width: Dimensions.get('window').width - 90,
+                  borderRadius: 12
+                }}
+                start={{ x: 0, y: 1.0 }}
+                end={{ x: 0, y: 0 }}
+              />
             </View>
-            <Icon style={{ paddingRight: 8, color: theme.primary, fontSize: 22 }} name="arrow-point-hand-drawn-outline-pointing-to-right-direction" />
-          </View>
+          )}
         </View>
       </View>
-    </TouchableOpacity>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+        <TouchableOpacity onPress={() => goToPost(post)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Ionicons size={24} color="#8E8E93" name="document-text" />
+          <MyText style={{ fontSize: 16 }}> Ir a la publicacion</MyText>
+        </TouchableOpacity>
+
+        {post?.owner?.Id && post?.owner.Id !== user?.Id ? (
+          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons size={24} color="#8E8E93" name="chatbox" />
+            <MyText style={{ fontSize: 16 }}> Enviar un mensaje</MyText>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => goToEdit(post)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons size={24} color="#8E8E93" name="pencil" />
+            <MyText style={{ fontSize: 16, marginLeft: 4 }}>Modificar</MyText>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
   )
 
   return (
-    <View style={styles.root}>
+    <View style={stylesWithTheme.root}>
       <View style={{ flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
         <View>
           <Avatar
@@ -138,7 +160,7 @@ const Profile: React.FC = () => {
         showsHorizontalScrollIndicator
         /* persistentScrollbar */
         disableVirtualization={false}
-        keyExtractor={(item, index) => item.description}
+        keyExtractor={(item, index) => item.Id + 'Card'}
         renderItem={({ item }) => Card(item)}
         style={{ flex: 1 }}
       />
@@ -148,12 +170,29 @@ const Profile: React.FC = () => {
 
 export default Profile
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    padding: 16
-    /* 
+const styles = (theme: MyTheme) =>
+  StyleSheet.create({
+    root: {
+      flex: 1,
+      padding: 16
+      /* 
     alignItems: 'center',
     justifyContent: 'center' */
-  }
-})
+    },
+    description2: {
+      fontSize: 16
+
+      /*  paddingLeft: 48, */
+      /* borderBottomWidth: 0.5, */
+    },
+    carousel: {
+      /*  paddingBottom: 12, */
+
+      /*   marginBottom: 16, */
+      paddingVertical: 8,
+      /*   borderTopWidth: 1, */
+      /*    borderBottomWidth: 0.5, */
+      borderTopColor: '#E0E0E0',
+      borderBottomColor: '#E0E0E0'
+    }
+  })

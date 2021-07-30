@@ -153,14 +153,6 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef, snapPoints }) => {
                       )}
                     </View>
                   </View>
-                  {/*       {post?.comments?.map((comment, index) => (
-                <View style={{ marginBottom: 16 }} key={index + 'coments'}>
-                  <View style={{ paddingBottom: 4 }}>
-                    <UserAvatar user={comment.owner} />
-                  </View>
-                  <Text style={styles(theme).description}>{comment.text}</Text>
-                </View>
-              ))} */}
                   <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
                     <TouchableOpacity onPress={goToPost} style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <Ionicons size={24} color="#8E8E93" name="document-text" />

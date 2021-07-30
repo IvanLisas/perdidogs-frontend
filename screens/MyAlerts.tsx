@@ -74,7 +74,11 @@ const MyAlerts: React.FC = () => {
       )}
       <ScrollView showsVerticalScrollIndicator={false}>
         {alerts.map((alert, index) => (
-          <TouchableOpacity onPress={() => handleEditAlert(alert)} key={alert.Id + 'Alert'} style={styles.notification}>
+          <TouchableOpacity
+            onPress={() => handleEditAlert(alert)}
+            key={alert.Id + 'Alert' + Math.floor(Math.random() * 16777215)}
+            style={styles.notification}
+          >
             <Ionicons style={{ marginRight: 4 }} size={28} color="#8E8E93" name="notifications" />
             <View style={{ flexDirection: 'column', flex: 1, marginLeft: 8 }}>
               <MyText style={{ fontSize: 16, fontWeight: 'bold' }}>{alert.title}</MyText>
