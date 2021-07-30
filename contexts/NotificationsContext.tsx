@@ -27,13 +27,22 @@ export const NotificationsContextProvider: React.FC = ({ children }) => {
   const newNotification = notifications.filter((notification) => !notification.hasBeenRead).length
 
   useEffect(() => {
+    let isActive = true
+    let timer1 = setTimeout(() => {
+      if (!fetchFlag) setFetchFlag(true)
+    }, 1000)
+
     const getChat = async () => {
-      if (!fetchFlag) setTimeout(() => setFetchFlag(true), 1000)
-      else {
+      if (fetchFlag) {
         setFetchFlag(false)
+
         if (user) {
           try {
-            setNotifications([...(await alertService.getAllActiveAlerts(user?.Id))])
+            if (isActive) {
+              const chats = await chatService.getAll(user?.Id)
+
+              setNotifications([...(await alertService.getAllActiveAlerts(user?.Id))])
+            }
           } catch (error) {
             console.log('Fetching Fail')
             console.log(error.message)
@@ -42,6 +51,10 @@ export const NotificationsContextProvider: React.FC = ({ children }) => {
       }
     }
     getChat()
+    return () => {
+      clearTimeout(timer1)
+      isActive = false
+    }
   }, [fetchFlag])
 
   return <NotificationsContext.Provider value={{ notifications, setNotifications, newNotification }}>{children}</NotificationsContext.Provider>

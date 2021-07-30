@@ -33,15 +33,19 @@ export const ChatContextProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     let isActive = true
+    let timer1 = setTimeout(() => {
+      if (!fetchFlag) setFetchFlag(true)
+    }, 1000)
+
     const getChat = async () => {
-      if (!fetchFlag) setTimeout(() => setFetchFlag(true), 1000)
-      else {
+      if (fetchFlag) {
         setFetchFlag(false)
 
         if (user) {
           try {
-            const chats = await chatService.getAll(user?.Id)
             if (isActive) {
+              const chats = await chatService.getAll(user?.Id)
+
               setChats([...chats])
             }
           } catch (error) {
@@ -52,10 +56,10 @@ export const ChatContextProvider: React.FC = ({ children }) => {
       }
     }
     getChat()
-    /*     return () => {
- 
+    return () => {
+      clearTimeout(timer1)
       isActive = false
-    } */
+    }
   }, [fetchFlag])
 
   return <ChatContext.Provider value={{ newChats, chats, setChats, findChatId }}>{children}</ChatContext.Provider>

@@ -67,7 +67,6 @@ const Post: React.FC<PostPreviewProps> = () => {
   }
 
   useEffect(() => {
-    console.log('entra')
     isMount = true
     let timer1 = setTimeout(() => {
       if (!fetchFlag) setFetchFlag(true)
