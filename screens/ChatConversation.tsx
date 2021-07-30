@@ -30,7 +30,7 @@ const ChatConversation: React.FC = (props) => {
   const [text, setText] = useState('')
 
   const sendMessage = async () => {
-    await chatService.sendMessage({ adressee: addressee.Id, sender: user?.Id, chat: chat.Id ? chat.Id : 0, messageBody: text, read: false })
+    if (text) await chatService.sendMessage({ adressee: addressee.Id, sender: user?.Id, chat: chat.Id ? chat.Id : 0, messageBody: text, read: false })
     setText('')
   }
 

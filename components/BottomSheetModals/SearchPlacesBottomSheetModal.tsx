@@ -79,7 +79,7 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
         <View style={{ backgroundColor: 'grey', width: 48, height: 4, borderRadius: 50, marginBottom: 8 }}></View>
        */}
       <Input
-        placeholder="¿Donde perdiste tu mascota?"
+        placeholder="¿Dónde perdiste tu mascota?"
         style={stylesWithTheme.input}
         value={search.term}
         inputStyle={{ color: theme.text }}

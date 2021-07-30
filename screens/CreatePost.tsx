@@ -71,37 +71,42 @@ const CreatePost: React.FC = ({}) => {
   const createPost = async () => {
     setErrorMessage('')
     setIsLoading(true)
-    if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size && description) {
-      const im1 = await imageService.savePhoto(image1)
-      const im2 = await imageService.savePhoto(image2)
-      const im3 = await imageService.savePhoto(image3)
-      const im4 = await imageService.savePhoto(image4)
+    try {
+      if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size && description) {
+        const im1 = await imageService.savePhoto(image1)
+        const im2 = await imageService.savePhoto(image2)
+        const im3 = await imageService.savePhoto(image3)
+        const im4 = await imageService.savePhoto(image4)
 
-      if (im1 || im2 || im3 || im4) {
-        try {
-          const newPost = await postService.post({
-            pet: localPet,
-            description: description,
-            pictures: [im1 && { url: im1 }, im2 && { url: im2 }, im3 && { url: im3 }, im4 && { url: im4 }],
-            owner: user?.Id,
-            postStatus: 1,
-            location: { lat: myLocation.latitude, long: myLocation.longitude }
-          })
-          if (user) {
-            setPost({ ...newPost })
-            setUser(await userService.getUser(user?.Id))
+        if (im1 || im2 || im3 || im4) {
+          try {
+            const newPost = await postService.post({
+              pet: localPet,
+              description: description,
+              pictures: [im1 && { url: im1 }, im2 && { url: im2 }, im3 && { url: im3 }, im4 && { url: im4 }],
+              owner: user?.Id,
+              postStatus: 1,
+              location: { lat: myLocation.latitude, long: myLocation.longitude }
+            })
+            if (user) {
+              setPost({ ...newPost })
+              setUser(await userService.getUser(user?.Id))
 
-            console.log(newPost)
+              console.log(newPost)
 
-            navigation.navigate('Main')
+              navigation.navigate('Main')
+            }
+          } catch (error) {
+            console.log(error.message)
+          } finally {
+            setIsLoading(false)
           }
-        } catch (error) {
-          console.log(error.message)
-        } finally {
-          setIsLoading(false)
-        }
-      } else setErrorMessage('Suba por lo menos una imagen')
-    } else setErrorMessage('Faltan completar algunos datos')
+        } else setErrorMessage('Suba por lo menos una imagen')
+      } else setErrorMessage('Faltan completar algunos datos')
+    } catch (error) {
+      setErrorMessage(error.message)
+    }
+    setIsLoading(false)
   }
 
   useEffect(() => {

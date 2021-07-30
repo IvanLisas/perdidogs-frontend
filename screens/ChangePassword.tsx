@@ -15,6 +15,7 @@ import useTheme from '../hooks/useTheme'
 import userService from '../services/UserService'
 import MyButton from '../components/MyThemedComponents/MyButton'
 import { useNavigation } from '@react-navigation/native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 type RootStackParamList = {
   Profile: {}
@@ -50,7 +51,7 @@ export default function ChangePassword() {
   if (!user) return null
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    <KeyboardAwareScrollView>
       <View style={styles.container}>
         <View style={{ paddingVertical: 8 }}>
           {/*  <MyText style={{ fontSize: 20, fontWeight: 'bold', padding: 4, marginBottom: 8 }}> Contraseña actual</MyText> */}
@@ -81,7 +82,7 @@ export default function ChangePassword() {
           <MyButton onPress={() => changePassword()} title="Cambiar contraseña"></MyButton>
         </View>
       </View>
-    </TouchableWithoutFeedback>
+    </KeyboardAwareScrollView>
   )
 }
 

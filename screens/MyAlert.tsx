@@ -108,93 +108,95 @@ const MyAlert: React.FC<FiltersBottomSheetModalProps> = () => {
   return (
     <BottomSheetModalProvider>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} style={{ padding: 8 }}>
-        <Input
-          errorMessage={errorTitle}
-          autoCapitalize="sentences"
-          inputContainerStyle={{
-            marginTop: 8,
-
-            borderColor: 'grey',
-            borderBottomWidth: 0.5,
-            alignSelf: 'center',
-            paddingVertical: 0
-          }}
-          errorStyle={{ color: '#FF453A', fontSize: 15 }}
-          onChangeText={setTitle}
-          inputStyle={{ fontSize: 18, color: theme.text }}
-          clearButtonMode="always"
-          placeholder="Titulo de la alerta"
-          value={title}
-        ></Input>
-
-        <View>
-          <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
-            <MyText style={{ fontSize: 18, color: 'grey' }}>Raza</MyText>
-            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.breed?.description ? localPet.breed.description : 'Ninguno'}</MyText>
-          </TouchableOpacity>
-          <Text style={{ marginLeft: 16, marginTop: 16, color: '#FF453A', fontSize: 15 }}>{errorMessage}</Text>
-        </View>
-        <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={styles.row}>
-          <MyText style={{ fontSize: 18, color: 'grey' }}>Colores</MyText>
-          <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.color?.description ? localPet?.color?.description : 'Ninguno'}</MyText>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={styles.row}>
-          <MyText style={{ fontSize: 18, color: 'grey' }}>Pelaje</MyText>
-          <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.furLength?.description ? localPet?.furLength?.description : 'Ninguno'}</MyText>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={styles.row}>
-          <MyText style={{ fontSize: 18, color: 'grey' }}>Tamaño</MyText>
-          <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.size?.description ? localPet.size.description : 'Ninguno'}</MyText>
-        </TouchableOpacity>
-
         <ScrollView>
-          <SingleFilterBottomSheetModal
-            title="Colores"
-            list={colors}
-            setFilter={(color: Color) => setLocalPet((prev) => ({ ...prev, color: color }))}
-            filter={localPet?.color}
-            modalRef={colorsModalRef}
-          />
-          <SingleFilterBottomSheetModal
-            title="Pelaje"
-            list={lenghts}
-            setFilter={(length: FurLength) => setLocalPet((prev) => ({ ...prev, furLength: length }))}
-            filter={localPet?.furLength}
-            modalRef={lenghtsModalRef}
-          />
-          <SingleFilterBottomSheetModal
-            title="Tamaño"
-            list={sizes}
-            setFilter={(size: Size) => setLocalPet((prev) => ({ ...prev, size: size }))}
-            filter={localPet?.size}
-            modalRef={sizesModalRef}
-          />
-          <SingleFilterBottomSheetModal
-            title="Raza"
-            list={breeds}
-            setFilter={(breed: Breed) => setLocalPet((prev) => ({ ...prev, breed: breed }))}
-            filter={localPet?.breed}
-            modalRef={breedsModalRef}
-          />
+          <Input
+            errorMessage={errorTitle}
+            autoCapitalize="sentences"
+            inputContainerStyle={{
+              marginTop: 8,
 
-          <View style={{ marginTop: 16 }}>
-            <MyButton onPress={createAlert} title="Modificar Alerta"></MyButton>
+              borderColor: 'grey',
+              borderBottomWidth: 0.5,
+              alignSelf: 'center',
+              paddingVertical: 0
+            }}
+            errorStyle={{ color: '#FF453A', fontSize: 15 }}
+            onChangeText={setTitle}
+            inputStyle={{ fontSize: 18, color: theme.text }}
+            clearButtonMode="always"
+            placeholder="Titulo de la alerta"
+            value={title}
+          ></Input>
+
+          <View>
+            <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
+              <MyText style={{ fontSize: 18, color: 'grey' }}>Raza</MyText>
+              <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.breed?.description ? localPet.breed.description : 'Ninguno'}</MyText>
+            </TouchableOpacity>
+            <Text style={{ marginLeft: 16, marginTop: 16, color: '#FF453A', fontSize: 15 }}>{errorMessage}</Text>
           </View>
+          <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={styles.row}>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>Colores</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.color?.description ? localPet?.color?.description : 'Ninguno'}</MyText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={styles.row}>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>Pelaje</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.furLength?.description ? localPet?.furLength?.description : 'Ninguno'}</MyText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={styles.row}>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>Tamaño</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.size?.description ? localPet.size.description : 'Ninguno'}</MyText>
+          </TouchableOpacity>
 
-          <View style={{ marginTop: 16 }}>
-            <MyButton
-              buttonStyle={{
-                borderWidth: 1.5,
-                borderColor: '#FF453A',
-                padding: 12,
-                borderRadius: 18,
-                backgroundColor: 'transparent'
-              }}
-              titleStyle={{ color: '#FF453A', fontSize: 20 }}
-              title="Borrar"
-              onPress={deleteAlert}
+          <ScrollView>
+            <SingleFilterBottomSheetModal
+              title="Colores"
+              list={colors}
+              setFilter={(color: Color) => setLocalPet((prev) => ({ ...prev, color: color }))}
+              filter={localPet?.color}
+              modalRef={colorsModalRef}
             />
-          </View>
+            <SingleFilterBottomSheetModal
+              title="Pelaje"
+              list={lenghts}
+              setFilter={(length: FurLength) => setLocalPet((prev) => ({ ...prev, furLength: length }))}
+              filter={localPet?.furLength}
+              modalRef={lenghtsModalRef}
+            />
+            <SingleFilterBottomSheetModal
+              title="Tamaño"
+              list={sizes}
+              setFilter={(size: Size) => setLocalPet((prev) => ({ ...prev, size: size }))}
+              filter={localPet?.size}
+              modalRef={sizesModalRef}
+            />
+            <SingleFilterBottomSheetModal
+              title="Raza"
+              list={breeds}
+              setFilter={(breed: Breed) => setLocalPet((prev) => ({ ...prev, breed: breed }))}
+              filter={localPet?.breed}
+              modalRef={breedsModalRef}
+            />
+
+            <View style={{ marginTop: 16 }}>
+              <MyButton onPress={createAlert} title="Modificar Alerta"></MyButton>
+            </View>
+
+            <View style={{ marginTop: 16 }}>
+              <MyButton
+                buttonStyle={{
+                  borderWidth: 1.5,
+                  borderColor: '#FF453A',
+                  padding: 12,
+                  borderRadius: 18,
+                  backgroundColor: 'transparent'
+                }}
+                titleStyle={{ color: '#FF453A', fontSize: 20 }}
+                title="Borrar"
+                onPress={deleteAlert}
+              />
+            </View>
+          </ScrollView>
         </ScrollView>
       </TouchableWithoutFeedback>
     </BottomSheetModalProvider>

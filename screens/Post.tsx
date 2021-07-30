@@ -41,7 +41,7 @@ const Post: React.FC<PostPreviewProps> = () => {
   }
 
   const sendMessage = async () => {
-    if (user && post)
+    if (user && post && text)
       setPost(
         await commentService.save({ owner: { Id: user.Id, firstName: 'asd', lastName: 'asd', email: 'asd' }, text: text, post: { Id: post.Id } })
       )

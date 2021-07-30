@@ -28,6 +28,9 @@ import MapContext from '../contexts/MapContext'
 import UserContext from '../contexts/UserContext'
 import ResultsBottomSheetModal from '../components/BottomSheetModals/ResultsBottomSheetModal'
 import PostPreviewBottomSheetModal from '../components/BottomSheetModals/PostPreviewBottomSheetModal'
+import MyText from '../components/MyThemedComponents/MyText'
+import { Button } from 'react-native-elements'
+import { Ionicons } from '@expo/vector-icons'
 
 const initialRegion = {
   latitude: -34.65023240988638,
@@ -41,6 +44,7 @@ export default function Map() {
   const colorMode = Appearance.getColorScheme()
   const theme = useTheme()
   //Permissions
+  const [isLoading, setIsLoading] = useState(false)
   const [foregroundPermissionsStatus, setForegroundPermissionsStatus] = useState<PermissionStatus>(PermissionStatus.UNDETERMINED)
   //Errors
   const [errorMessage, setErrorMessage] = useState('')
@@ -51,7 +55,7 @@ export default function Map() {
   const { setSearchLocation, setSearchLocationDelta } = useContext(FiltersContext)
   //Navigation
   const navigation = useNavigation()
-  const [currentSearchPlaceName, setCurrentSearchPlaceName] = useState({ primaryText: '', secondaryText: '' })
+  const [currentSearchPlaceName, setCurrentSearchPlaceName] = useState({ primaryText: 'Lugar personalizado', secondaryText: 'Mascotas encontradas' })
   //Hook's
   const { mapRef, handleNavigateToRegion } = useMap()
   //Location
@@ -64,7 +68,7 @@ export default function Map() {
   const filtersModalRef = useRef<BottomSheetModal>(null)
   /*   const [filterModa, setFilterModa] = useState(false) */
   //Modal handle
-  const snapPoints = useMemo(() => [94, 370, '90%'], [])
+  const snapPoints = useMemo(() => [94, 370, '80%'], [])
   //Pin
   const [myMarket, setMyMarket] = useState<any>()
   const searchResultPin = require('../assets/images/Group.png')
@@ -76,6 +80,8 @@ export default function Map() {
     searchLocation: { lat: initialRegion.latitude, lng: initialRegion.longitude },
     deltaLocation: { lat: initialRegion.latitudeDelta, lng: initialRegion.longitudeDelta }
   })
+
+  const [region, setRegion] = useState<Region>(initialRegion)
   //Dimensions
   const { width, height } = Dimensions.get('window')
   const ASPECT_RATIO = width / height //No se usa
@@ -156,6 +162,7 @@ export default function Map() {
     } catch (error) {
       console.log(error)
     }
+    setIsLoading(false)
   }
 
   // TODO: No agarra los paises
@@ -217,6 +224,19 @@ export default function Map() {
       postPreviewModalRef.current?.dismiss()
     }
   }, [])
+
+  const handleSearchHere = () => {
+    setIsLoading(true)
+    setCurrentSearchPlaceName({ primaryText: 'Lugar personalizado', secondaryText: 'Mascotas encontradas' })
+    console.log(region)
+    if (region) {
+      setFilter((preState) => ({
+        ...preState,
+        searchLocation: { lat: region?.latitude, lng: region.longitude },
+        deltaLocation: { lat: region.latitudeDelta, lng: region.longitudeDelta }
+      }))
+    }
+  }
 
   useLayoutEffect(() => {
     if (isMount) {
@@ -292,11 +312,13 @@ export default function Map() {
             }
             creating = false
           }}
-          onRegionChangeComplete={(event) => console.log(event)}
+          onRegionChangeComplete={(region) => setRegion({ ...region })}
           showsUserLocation={true}
           onLongPress={(event) => createMarker(event)}
           customMapStyle={colorMode === 'dark' ? mapStyleNight : mapStyleDay}
           provider={PROVIDER_GOOGLE}
+          /*   mapPadding={{ bottom: 8, left: 32, right: 32, top: 32 }} */
+
           /*      onRegionChange={(event) => console.log(event)} */
           style={StyleSheet.absoluteFillObject}
           showsMyLocationButton={false}
@@ -351,6 +373,28 @@ export default function Map() {
               )
           )}
         </MapView>
+        <View style={styles.button2}>
+          <Button
+            buttonStyle={{
+              /*  borderWidth: 2, */
+              /*   borderColor: '#6879B1', */
+              /*   borderColor: theme.icon, */
+              padding: 8,
+              paddingHorizontal: 12,
+              borderRadius: 18,
+              backgroundColor: theme.background
+            }}
+            containerStyle={{
+              borderRadius: 18
+            }}
+            loading={isLoading}
+            titleStyle={{ fontSize: 14, fontStyle: 'normal', color: 'grey' }}
+            icon={<Ionicons style={{ marginRight: 4 }} size={18} color="#8E8E93" name="search" />}
+            title="Buscar en esta zona"
+            loadingProps={{ color: theme.text }}
+            onPress={handleSearchHere}
+          />
+        </View>
 
         <TouchableOpacity style={[styles.button, { top: 300 }]} onPress={handleGoToMyLocation}>
           <Icon style={styles.icon} name="target-hand-drawn-circle" />
@@ -392,12 +436,35 @@ const styles = StyleSheet.create({
       width: 0,
       height: 3
     },
+
     shadowOpacity: 0.29,
     shadowRadius: 4.65,
     borderRadius: 25,
     backgroundColor: 'yellow',
     padding: 8
   },
+  button2: {
+    position: 'absolute',
+    alignItems: 'center',
+    alignSelf: 'center',
+    /*   marginRight: Dimensions.get('window').width / 2 - 95, */
+    /*    right: 0, */
+    top: 50,
+    /*     width: '100%', */
+    height: '100%'
+    /*  shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3
+    },
+
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    borderRadius: 25,
+    backgroundColor: 'yellow'
+    /* padding: 8 */
+  },
+
   mapStyle: {
     width: '100%',
     height: '100%',

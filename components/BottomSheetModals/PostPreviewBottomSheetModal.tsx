@@ -174,7 +174,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef, snapPoints }) => {
                 </View>
               ) : (
                 <View style={{ flex: 1, justifyContent: 'center', paddingTop: 64, height: '100%', alignItems: 'center' }}>
-                  <MyText style={{ fontSize: 20, textAlign: 'center' }}>Se a elimiado tu publicacion</MyText>
+                  <MyText style={{ fontSize: 20, textAlign: 'center' }}>Se a eliminado tu publicacion</MyText>
                 </View>
               )}
             </ScrollView>

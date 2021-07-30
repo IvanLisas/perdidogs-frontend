@@ -18,6 +18,7 @@ import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet
 import BlurredBackground from '../components/BlurredBackground'
 import * as ImagePicker from 'expo-image-picker'
 import imageService from '../services/ImageService'
+import { ScrollView } from 'react-native-gesture-handler'
 
 type RootStackParamList = {
   Profile: {}
@@ -145,79 +146,81 @@ export default function EditProfile() {
           modalRef.current?.dismiss()
         }}
       >
-        <View style={styles.container}>
-          <Avatar
-            /*  size="medium" */
-            titleStyle={{ color: 'white' }}
-            containerStyle={{ marginTop: 8, alignSelf: 'center', marginBottom: 16 }}
-            size={120}
-            onPress={() => handleAvatarModal()}
-            source={{ uri: user.avatar }}
-            overlayContainerStyle={{ backgroundColor: 'grey' }}
-            rounded
-            title={user.firstName[0] + user.lastName[0]}
-          />
-          <View style={{ paddingVertical: 8 }}>
-            <MyText style={{ fontSize: 20, fontWeight: 'bold', padding: 4, marginBottom: 8 }}> Informacion personal</MyText>
-            <Input
-              inputContainerStyle={{ borderBottomWidth: 0.5, alignSelf: 'center', paddingVertical: 0 }}
-              onChangeText={setFirstName}
-              onEndEditing={() => update()}
-              inputStyle={{ fontSize: 18, color: theme.text }}
-              clearButtonMode="always"
-              placeholder="Nombre"
-              value={firstName}
-            ></Input>
-            <Input
-              placeholder="Apellido"
-              inputContainerStyle={{ borderBottomWidth: 0.5, alignSelf: 'center' }}
-              inputStyle={{ fontSize: 18, color: theme.text }}
-              onChangeText={setLastName}
-              onEndEditing={() => update()}
-              value={lastName}
-              errorStyle={{ color: 'red', fontSize: 14 }}
-              errorMessage={errorMessage}
-            ></Input>
+        <ScrollView>
+          <View style={styles.container}>
+            <Avatar
+              /*  size="medium" */
+              titleStyle={{ color: 'white' }}
+              containerStyle={{ marginTop: 8, alignSelf: 'center', marginBottom: 16 }}
+              size={120}
+              onPress={() => handleAvatarModal()}
+              source={{ uri: user.avatar }}
+              overlayContainerStyle={{ backgroundColor: 'grey' }}
+              rounded
+              title={user.firstName[0] + user.lastName[0]}
+            />
+            <View style={{ paddingVertical: 8 }}>
+              <MyText style={{ fontSize: 20, fontWeight: 'bold', padding: 4, marginBottom: 8 }}> Informacion personal</MyText>
+              <Input
+                inputContainerStyle={{ borderBottomWidth: 0.5, alignSelf: 'center', paddingVertical: 0 }}
+                onChangeText={setFirstName}
+                onEndEditing={() => update()}
+                inputStyle={{ fontSize: 18, color: theme.text }}
+                clearButtonMode="always"
+                placeholder="Nombre"
+                value={firstName}
+              ></Input>
+              <Input
+                placeholder="Apellido"
+                inputContainerStyle={{ borderBottomWidth: 0.5, alignSelf: 'center' }}
+                inputStyle={{ fontSize: 18, color: theme.text }}
+                onChangeText={setLastName}
+                onEndEditing={() => update()}
+                value={lastName}
+                errorStyle={{ color: 'red', fontSize: 14 }}
+                errorMessage={errorMessage}
+              ></Input>
+            </View>
+            <View style={{ paddingHorizontal: 4 }}>
+              <TouchableOpacity onPress={() => goToChangePassword()} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                {/*   <Ionicons size={24} color="#8E8E93" name="key" /> */}
+                <MyText style={{ fontSize: 16, color: '#0A84FF' }}> Cambiar contraseña</MyText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={showAlert} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                <MyText style={{ fontSize: 16, color: '#0A84FF' }}> Borrar cuenta</MyText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => logout()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {/*  <Ionicons size={24} color="#8E8E93" name="log-out" /> */}
+                <MyText style={{ fontSize: 16, color: '#0A84FF' }}> Salir</MyText>
+              </TouchableOpacity>
+              <BottomSheetModal
+                snapPoints={[120]}
+                index={0}
+                enableContentPanningGesture
+                key="resultsModal"
+                ref={modalRef}
+                stackBehavior="replace"
+                enableDismissOnClose={true}
+                backgroundComponent={BlurredBackground}
+                style={{ borderRadius: 25 }}
+              >
+                <View>
+                  <TouchableOpacity
+                    onPress={openCamera}
+                    style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, marginBottom: 16 }}
+                  >
+                    <Ionicons size={30} color="#8E8E93" name="camera" />
+                    <MyText style={{ fontSize: 20, marginLeft: 4 }}>Abrir camara</MyText>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={showImagePicker} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 }}>
+                    <Ionicons size={30} color="#8E8E93" name="image" />
+                    <MyText style={{ fontSize: 20, marginLeft: 0 }}> Galeria</MyText>
+                  </TouchableOpacity>
+                </View>
+              </BottomSheetModal>
+            </View>
           </View>
-          <View style={{ paddingHorizontal: 4 }}>
-            <TouchableOpacity onPress={() => goToChangePassword()} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-              {/*   <Ionicons size={24} color="#8E8E93" name="key" /> */}
-              <MyText style={{ fontSize: 16, color: '#0A84FF' }}> Cambiar contraseña</MyText>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={showAlert} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-              <MyText style={{ fontSize: 16, color: '#0A84FF' }}> Borrar cuenta</MyText>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => logout()} style={{ flexDirection: 'row', alignItems: 'center' }}>
-              {/*  <Ionicons size={24} color="#8E8E93" name="log-out" /> */}
-              <MyText style={{ fontSize: 16, color: '#0A84FF' }}> Salir</MyText>
-            </TouchableOpacity>
-            <BottomSheetModal
-              snapPoints={[120]}
-              index={0}
-              enableContentPanningGesture
-              key="resultsModal"
-              ref={modalRef}
-              stackBehavior="replace"
-              enableDismissOnClose={true}
-              backgroundComponent={BlurredBackground}
-              style={{ borderRadius: 25 }}
-            >
-              <View>
-                <TouchableOpacity
-                  onPress={openCamera}
-                  style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, marginBottom: 16 }}
-                >
-                  <Ionicons size={30} color="#8E8E93" name="camera" />
-                  <MyText style={{ fontSize: 20, marginLeft: 4 }}>Abrir camara</MyText>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={showImagePicker} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 }}>
-                  <Ionicons size={30} color="#8E8E93" name="image" />
-                  <MyText style={{ fontSize: 20, marginLeft: 0 }}> Galeria</MyText>
-                </TouchableOpacity>
-              </View>
-            </BottomSheetModal>
-          </View>
-        </View>
+        </ScrollView>
       </TouchableWithoutFeedback>
     </BottomSheetModalProvider>
   )

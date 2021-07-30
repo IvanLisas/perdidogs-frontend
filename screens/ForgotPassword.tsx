@@ -15,6 +15,7 @@ import Input from '../components/MyThemedComponents/MyInput'
 import LoginStackParamList from '../types/StackParamLists/LoginStackParamList'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import MyText from '../components/MyThemedComponents/MyText'
+import { ScrollView } from 'react-native-gesture-handler'
 
 type authScreenProp = StackNavigationProp<LoginStackParamList>
 
@@ -58,10 +59,10 @@ export default function ForgotPassword() {
 
   return (
     /*  <TouchableWithoutFeedback  onPress={() => Keyboard.dismiss() }> */
-    <LinearGradient colors={['#FFE5B2', '#EFB865']}>
+
+    <LinearGradient style={{ height: '100%' }} colors={['#FFE5B2', '#EFB865']}>
       <KeyboardAwareScrollView
         contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}
-        scrollEnabled={false}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.root}>
@@ -74,7 +75,7 @@ export default function ForgotPassword() {
                 }} */
           ></Image>
           <MyText style={{ marginBottom: 24, fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
-            Te enviarmos un codigo al correo asociado a tu cuenta
+            Te enviaremos un código al correo asociado a tu cuenta
           </MyText>
 
           <Input
@@ -105,6 +106,7 @@ export default function ForgotPassword() {
         </View>
       </KeyboardAwareScrollView>
     </LinearGradient>
+
     /*  </KeyboardAwareScrollView> */
   )
 }

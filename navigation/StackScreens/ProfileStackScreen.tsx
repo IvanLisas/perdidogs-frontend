@@ -30,11 +30,11 @@ function ProfileStackScreen() {
         headerBackTitleStyle: {
           fontFamily: 'LoveMeLikeASister'
         },
-        headerBackImage: () => (
+        /*         headerBackImage: () => (
           <View style={{ paddingHorizontal: 16 }}>
             <Icon style={{ color: colors.text, fontSize: 18 }} name="arrow-pointing-to-left-hand-drawn-outline" />
           </View>
-        ),
+        ), */
 
         headerBackTitleVisible: false
       }}

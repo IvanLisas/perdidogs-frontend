@@ -89,32 +89,41 @@ const EditPost: React.FC = ({}) => {
   const updatePost = async () => {
     setIsLoading(true)
     setErrorMessage('')
-    if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size && description) {
-      if (image1 || image2 || image3 || image4) {
-        const im1 = image1?.url ? image1 : await imageService.savePhoto(image1)
-        const im2 = image2?.url ? image2 : await imageService.savePhoto(image2)
-        const im3 = image3?.url ? image3 : await imageService.savePhoto(image3)
-        const im4 = image4?.url ? image4 : await imageService.savePhoto(image4)
-        console.log(image1, image2, image3, image4)
+    try {
+      if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size && description) {
+        if (image1 || image2 || image3 || image4) {
+          const im1 = image1?.url ? image1 : await imageService.savePhoto(image1)
+          const im2 = image2?.url ? image2 : await imageService.savePhoto(image2)
+          const im3 = image3?.url ? image3 : await imageService.savePhoto(image3)
+          const im4 = image4?.url ? image4 : await imageService.savePhoto(image4)
+          console.log(image1, image2, image3, image4)
 
-        const pictures = [im1?.url ? im1 : { url: im1 }, im2?.url ? im2 : { url: im2 }, im3?.url ? im3 : { url: im3 }, im4?.url ? im4 : { url: im4 }]
-        console.log(pictures)
-        console.log(pictures.filter((x) => x.uri || x.url))
-        try {
-          await postService.update({
-            ...post,
-            description: description,
-            pet: localPet,
-            pictures: pictures.filter((x) => x.uri || x.url)
-          })
+          const pictures = [
+            im1?.url ? im1 : { url: im1 },
+            im2?.url ? im2 : { url: im2 },
+            im3?.url ? im3 : { url: im3 },
+            im4?.url ? im4 : { url: im4 }
+          ]
+          console.log(pictures)
+          console.log(pictures.filter((x) => x.uri || x.url))
+          try {
+            await postService.update({
+              ...post,
+              description: description,
+              pet: localPet,
+              pictures: pictures.filter((x) => x.uri || x.url)
+            })
 
-          if (user) setUser(await userService.getUser(user?.Id))
-        } catch (error) {
-          console.log(error.message)
-        }
-        navigation.navigate('Main')
-      } else setErrorMessage('Suba por lo menos una imagen')
-    } else setErrorMessage('Faltan completar algunos datos')
+            if (user) setUser(await userService.getUser(user?.Id))
+          } catch (error) {
+            console.log(error.message)
+          }
+          navigation.navigate('Main')
+        } else setErrorMessage('Suba por lo menos una imagen')
+      } else setErrorMessage('Faltan completar algunos datos')
+    } catch (error) {
+      setErrorMessage(error.message)
+    }
     setIsLoading(false)
   }
 
