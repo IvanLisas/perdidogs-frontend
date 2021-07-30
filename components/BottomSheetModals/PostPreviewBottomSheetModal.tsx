@@ -92,67 +92,68 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef, snapPoints }) => {
         {user && (
           <BottomSheetScrollView style={{ height: '100%' }}>
             <ScrollView style={styles(theme).root}>
-              <View>
+              {post?.postStatus?.Id !== 2 ? (
                 <View>
                   <View>
-                    <Text style={styles(theme).description2}>{post?.description}</Text>
-                    {post.pictures.length > 0 ? (
-                      <ScrollView showsHorizontalScrollIndicator={false} style={styles(theme).carousel} horizontal>
-                        {post?.pictures.map((picture, index) => (
-                          <View key={picture.url + 'container'}>
-                            <ImageBackground
-                              key={picture.url + 'photo'}
-                              imageStyle={{ borderRadius: 12, width: '100%' }}
-                              style={{
-                                width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 32,
-                                height: 180,
-                                borderRadius: 20,
-                                marginRight: 8
-                              }}
-                              onError={() => console.log('error al cargar')}
-                              source={{ uri: picture.url }}
-                            />
-                            <LinearGradient
-                              colors={['rgba(0,0,0,0.5)', 'transparent']}
-                              style={{
-                                position: 'absolute',
-                                height: 150,
-                                width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 32,
-                                borderRadius: 12
-                              }}
-                            />
-                          </View>
-                        ))}
-                      </ScrollView>
-                    ) : (
-                      <View style={{ paddingVertical: 8 }}>
-                        <ImageBackground
-                          key={'photo'}
-                          imageStyle={{ borderRadius: 12, width: '100%' }}
-                          style={{
-                            width: Dimensions.get('window').width - 90,
-                            height: 150,
-                            borderRadius: 20,
-                            marginRight: 8
-                          }}
-                          source={{ uri: 'https://somoswe1.com/Files/white-image.png' }}
-                        />
-                        <LinearGradient
-                          colors={['rgba(0,0,0,0.5)', 'transparent']}
-                          style={{
-                            position: 'absolute',
-                            height: 160,
-                            width: Dimensions.get('window').width - 90,
-                            borderRadius: 12
-                          }}
-                          start={{ x: 0, y: 1.0 }}
-                          end={{ x: 0, y: 0 }}
-                        />
-                      </View>
-                    )}
+                    <View>
+                      <Text style={styles(theme).description2}>{post?.description}</Text>
+                      {post.pictures.length > 0 ? (
+                        <ScrollView showsHorizontalScrollIndicator={false} style={styles(theme).carousel} horizontal>
+                          {post?.pictures.map((picture, index) => (
+                            <View key={picture.url + 'container'}>
+                              <ImageBackground
+                                key={picture.url + 'photo'}
+                                imageStyle={{ borderRadius: 12, width: '100%' }}
+                                style={{
+                                  width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 32,
+                                  height: 180,
+                                  borderRadius: 20,
+                                  marginRight: 8
+                                }}
+                                onError={() => console.log('error al cargar')}
+                                source={{ uri: picture.url }}
+                              />
+                              <LinearGradient
+                                colors={['rgba(0,0,0,0.5)', 'transparent']}
+                                style={{
+                                  position: 'absolute',
+                                  height: 150,
+                                  width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 32,
+                                  borderRadius: 12
+                                }}
+                              />
+                            </View>
+                          ))}
+                        </ScrollView>
+                      ) : (
+                        <View style={{ paddingVertical: 8 }}>
+                          <ImageBackground
+                            key={'photo'}
+                            imageStyle={{ borderRadius: 12, width: '100%' }}
+                            style={{
+                              width: Dimensions.get('window').width - 90,
+                              height: 150,
+                              borderRadius: 20,
+                              marginRight: 8
+                            }}
+                            source={{ uri: 'https://somoswe1.com/Files/white-image.png' }}
+                          />
+                          <LinearGradient
+                            colors={['rgba(0,0,0,0.5)', 'transparent']}
+                            style={{
+                              position: 'absolute',
+                              height: 160,
+                              width: Dimensions.get('window').width - 90,
+                              borderRadius: 12
+                            }}
+                            start={{ x: 0, y: 1.0 }}
+                            end={{ x: 0, y: 0 }}
+                          />
+                        </View>
+                      )}
+                    </View>
                   </View>
-                </View>
-                {/*       {post?.comments?.map((comment, index) => (
+                  {/*       {post?.comments?.map((comment, index) => (
                 <View style={{ marginBottom: 16 }} key={index + 'coments'}>
                   <View style={{ paddingBottom: 4 }}>
                     <UserAvatar user={comment.owner} />
@@ -160,25 +161,30 @@ const PostPreview: React.FC<PostPreviewProps> = ({ modalRef, snapPoints }) => {
                   <Text style={styles(theme).description}>{comment.text}</Text>
                 </View>
               ))} */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-                  <TouchableOpacity onPress={goToPost} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons size={24} color="#8E8E93" name="document-text" />
-                    <MyText style={{ fontSize: 16 }}> Ir a la publicacion</MyText>
-                  </TouchableOpacity>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+                    <TouchableOpacity onPress={goToPost} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Ionicons size={24} color="#8E8E93" name="document-text" />
+                      <MyText style={{ fontSize: 16 }}> Ir a la publicacion</MyText>
+                    </TouchableOpacity>
 
-                  {post?.owner?.Id && post?.owner.Id !== user?.Id ? (
-                    <TouchableOpacity onPress={sendChatMenssage} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Ionicons size={24} color="#8E8E93" name="chatbox" />
-                      <MyText style={{ fontSize: 16 }}> Enviar un mensaje</MyText>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity onPress={goToEdit} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Ionicons size={24} color="#8E8E93" name="pencil" />
-                      <MyText style={{ fontSize: 16, marginLeft: 4 }}>Modificar</MyText>
-                    </TouchableOpacity>
-                  )}
+                    {post?.owner?.Id && post?.owner.Id !== user?.Id ? (
+                      <TouchableOpacity onPress={sendChatMenssage} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Ionicons size={24} color="#8E8E93" name="chatbox" />
+                        <MyText style={{ fontSize: 16 }}> Enviar un mensaje</MyText>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity onPress={goToEdit} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Ionicons size={24} color="#8E8E93" name="pencil" />
+                        <MyText style={{ fontSize: 16, marginLeft: 4 }}>Modificar</MyText>
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 </View>
-              </View>
+              ) : (
+                <View style={{ flex: 1, justifyContent: 'center', paddingTop: 64, height: '100%', alignItems: 'center' }}>
+                  <MyText style={{ fontSize: 20, textAlign: 'center' }}>Se a elimiado tu publicacion</MyText>
+                </View>
+              )}
             </ScrollView>
           </BottomSheetScrollView>
         )}

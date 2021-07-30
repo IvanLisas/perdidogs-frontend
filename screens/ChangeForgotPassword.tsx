@@ -55,17 +55,23 @@ export default function ChangeForgotPassword() {
       setMailWasSend(true)
     } catch (error) {
       setErrorMessage(showError(error))
-      console.log(error.message)
+      /* console.log(error) */
     }
   }
 
   const changePassword = async () => {
-    try {
-      await userService.changePasswordWithToken(email, password, token1 + token2 + token3 + token4 + token5 + token6)
-      setUser(await userService.login(email, password))
-    } catch (error) {
-      console.log(error.message)
-    }
+    setErrorMessage('')
+    if (password || repeatPassword) {
+      if (password === repeatPassword) {
+        try {
+          await userService.changePasswordWithToken(email, password, token1 + token2 + token3 + token4 + token5 + token6)
+          setUser(await userService.login(email, password))
+        } catch (error) {
+          console.log(error.message)
+          setErrorMessage(showError(error))
+        }
+      } else setErrorMessage('Las contraseñas no coinciden')
+    } else setErrorMessage('Ingrese la nueva contraseña')
   }
   /* 
   const login = async () => {
@@ -91,10 +97,10 @@ export default function ChangeForgotPassword() {
       >
         <View style={styles.root}>
           <View>
-            <MyText style={{ marginBottom: 8 }}>Te enviamos un correo a </MyText>
+            {/*    <MyText style={{ marginBottom: 8 }}>Te enviamos un correo a </MyText>
             <View>
               <Input textContentType="emailAddress" placeholder="Email" autoCompleteType="email" onChangeText={setEmail} value={email} />
-            </View>
+            </View> */}
             <MyText style={{ marginBottom: 8 }}>Ingresa el codigo que recibiste </MyText>
 
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
@@ -198,13 +204,31 @@ export default function ChangeForgotPassword() {
 
             <MyText style={{ marginBottom: 8 }}>Ingresa tu nueva contraseña </MyText>
             <View>
-              <Input textContentType="newPassword" placeholder="Contraseña" onChangeText={setPassword} value={password} />
+              <Input secureTextEntry={true} textContentType="newPassword" placeholder="Contraseña" onChangeText={setPassword} value={password} />
             </View>
             <View>
-              <Input textContentType="password" placeholder="Repetir contraseña" onChangeText={setRepeatPassword} value={repeatPassword} />
+              <Input
+                errorMessage={errorMessage}
+                textContentType="password"
+                placeholder="Repetir contraseña"
+                onChangeText={setRepeatPassword}
+                secureTextEntry={true}
+                value={repeatPassword}
+              />
             </View>
             <View style={styles.button}>
-              <MyButton onPress={() => changePassword()} title="Cambiar contraseña" />
+              <MyButton
+                buttonStyle={{
+                  borderWidth: 1,
+                  borderColor: '#343434',
+                  padding: 12,
+                  borderRadius: 18,
+                  backgroundColor: 'transparent'
+                }}
+                titleStyle={{ color: '#343434', fontSize: 20, fontWeight: 'normal' }}
+                onPress={() => changePassword()}
+                title="Cambiar contraseña"
+              />
             </View>
           </View>
         </View>
@@ -223,6 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   button: {
+    marginTop: 16,
     alignSelf: 'stretch'
   },
   labrador: {

@@ -7,6 +7,7 @@ import MyText from './MyThemedComponents/MyText'
 import UserAvatar from './UserAvatar'
 import Icon from './icons/index'
 import { Ionicons } from '@expo/vector-icons'
+import { borderRadius } from 'styled-system'
 
 interface PetCardProps {
   post: Post
@@ -16,7 +17,11 @@ interface PetCardProps {
 const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
   const theme = useTheme()
   return (
-    <TouchableOpacity style={{ paddingHorizontal: 16, paddingVertical: 8 }} key={post.Id + 'e'} onPress={() => handleOnPress(post)}>
+    <TouchableOpacity
+      style={{ borderBottomWidth: 0.5, borderColor: '#ECECEC', paddingHorizontal: 16, paddingVertical: 8 }}
+      key={post.Id + 'e'}
+      onPress={() => handleOnPress(post)}
+    >
       <View
         style={
           {
@@ -36,7 +41,7 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
         <View
           style={{
             height: 60,
-            borderColor: theme.primary,
+
             /*    borderEndWidth: 0.2,
             borderBottomWidth: 0.2,
             borderStartWidth: 0.2, */
@@ -55,7 +60,9 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
             style={{
               width: Dimensions.get('window').width - 32,
               height: 200,
-              borderRadius: 20
+              /*   borderRadius: 20 */
+              borderRadius: 20,
+              borderTopRightRadius: 20
 
               /*     position:'absolute', */
             }}
@@ -71,9 +78,9 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
             colors={['rgba(0,0,0,0.5)', 'transparent']}
             style={{
               position: 'absolute',
-              height: 250,
-              borderRadius: 20,
-              borderBottomEndRadius: 20,
+              height: 200,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
               width: Dimensions.get('window').width - 32
             }}
           />
@@ -86,18 +93,7 @@ const PetCard: React.FC<PetCardProps> = ({ post, handleOnPress }) => {
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', padding: 8, justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              {/*        <Icon style={{ color: theme.primary, fontSize: 22 }} name="pin-hand-drawn-irregular-outline" />
-               */}
-              {/*         <MyText
-                numberOfLines={2}
-                style={{
-                  fontSize: 22
-        
-                }}
-              >
-                {post.pet.breed?.description}
-              </MyText> */}
-              <Ionicons style={{ marginRight: 4 }} size={24} color="#8E8E93" name="compass" />
+              <Ionicons style={{ marginRight: 4 }} size={24} color={theme.primary} name="compass" />
               {post.distance && <MyText style={{ fontSize: 16 }}>A {Math.round(post.distance)} Kilometros de distancia</MyText>}
             </View>
             {/* <Icon style={{ paddingRight: 8, color: theme.primary, fontSize: 22 }} name="arrow-point-hand-drawn-outline-pointing-to-right-direction" /> */}

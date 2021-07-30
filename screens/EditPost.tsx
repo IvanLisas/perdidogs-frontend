@@ -12,7 +12,7 @@ import UserAvatar from '../components/UserAvatar'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import PostContext from '../contexts/PostContext'
 /* import Input from '../../components/MyThemedComponents/Input' */
-import { Center, CheckIcon, Input, Select, Stack, TextArea, useColorModeValue } from 'native-base'
+import { Center, CheckIcon, Select, Stack, TextArea, useColorModeValue } from 'native-base'
 import { background, backgroundColor } from 'styled-system'
 import dropDownService from '../services/DropDownService'
 import { Color } from '../types/models/Color'
@@ -33,6 +33,7 @@ import MyButton from '../components/MyThemedComponents/MyButton'
 import MyText from '../components/MyThemedComponents/MyText'
 import MyInput from '../components/MyThemedComponents/MyInput'
 import userService from '../services/UserService'
+import { Input } from 'react-native-elements'
 /* interface PostPageProps {
   post: Post | undefined
 } */
@@ -42,8 +43,10 @@ const EditPost: React.FC = ({}) => {
   const { user, setUser } = useContext(UserContext)
   const { post, setPost } = useContext(PostContext)
 
+  const [errorMessage, setErrorMessage] = useState('')
+
   const [localPet, setLocalPet] = useState<Pet | undefined>(post?.pet)
-  const [localDescription, setLocalDescription] = useState(post?.description)
+  /*   const [localDescription, setLocalDescription] = useState(post?.description) */
   const [colors, setColors] = useState<Color[]>()
   const [breeds, setBreeds] = useState<Breed[]>()
   const [lenghts, setLenghts] = useState<FurLength[]>()
@@ -58,54 +61,61 @@ const EditPost: React.FC = ({}) => {
   const [image2, setImage2] = useState(post?.pictures[1])
   const [image3, setImage3] = useState(post?.pictures[2])
   const [image4, setImage4] = useState(post?.pictures[3])
-  const [description, setDescription] = useState('')
+  const [description, setDescription] = useState(post?.description)
   const [isLoading, setIsLoading] = useState(false)
+
+  const stylesWithTheme = styles(theme)
 
   const navigation = useNavigation()
   const route = useRoute()
   const myLocation = route.params as any
 
   const deletePost = async () => {
+    setIsLoading(true)
     try {
       if (post) {
-        await postService.delete(post?.Id)
+        setPost({ ...(await postService.delete(post?.Id)) })
         console.log('borrado')
       }
-      if (user) setUser(await userService.getUser(user?.Id))
+      if (user) setUser({ ...(await userService.getUser(user?.Id)) })
       navigation.navigate('Main')
     } catch (error) {
       console.log(error.message)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const updatePost = async () => {
-    if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size) {
-      setIsLoading(true)
-      console.log(image1, image2, image3, image4)
-      const im1 = image1?.url ? image1 : await imageService.savePhoto(image1)
-      const im2 = image2?.url ? image2 : await imageService.savePhoto(image2)
-      const im3 = image3?.url ? image3 : await imageService.savePhoto(image3)
-      const im4 = image4?.url ? image4 : await imageService.savePhoto(image4)
-      console.log(image1, image2, image3, image4)
+    setIsLoading(true)
+    setErrorMessage('')
+    if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size && description) {
+      if (image1 || image2 || image3 || image4) {
+        const im1 = image1?.url ? image1 : await imageService.savePhoto(image1)
+        const im2 = image2?.url ? image2 : await imageService.savePhoto(image2)
+        const im3 = image3?.url ? image3 : await imageService.savePhoto(image3)
+        const im4 = image4?.url ? image4 : await imageService.savePhoto(image4)
+        console.log(image1, image2, image3, image4)
 
-      const pictures = [im1?.url ? im1 : { url: im1 }, im2?.url ? im2 : { url: im2 }, im3?.url ? im3 : { url: im3 }, im4?.url ? im4 : { url: im4 }]
-      console.log(pictures)
-      console.log(pictures.filter((x) => x.uri || x.url))
-      try {
-        await postService.update({
-          ...post,
+        const pictures = [im1?.url ? im1 : { url: im1 }, im2?.url ? im2 : { url: im2 }, im3?.url ? im3 : { url: im3 }, im4?.url ? im4 : { url: im4 }]
+        console.log(pictures)
+        console.log(pictures.filter((x) => x.uri || x.url))
+        try {
+          await postService.update({
+            ...post,
+            description: description,
+            pet: localPet,
+            pictures: pictures.filter((x) => x.uri || x.url)
+          })
 
-          description: localDescription,
-          pet: localPet,
-          pictures: pictures.filter((x) => x.uri || x.url)
-        })
-
-        if (user) setUser(await userService.getUser(user?.Id))
-      } catch (error) {
-        console.log(error.message)
-      }
-      navigation.navigate('Main')
-    }
+          if (user) setUser(await userService.getUser(user?.Id))
+        } catch (error) {
+          console.log(error.message)
+        }
+        navigation.navigate('Main')
+      } else setErrorMessage('Suba por lo menos una imagen')
+    } else setErrorMessage('Faltan completar algunos datos')
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -120,25 +130,45 @@ const EditPost: React.FC = ({}) => {
 
   return (
     <BottomSheetModalProvider>
-      <ScrollView style={styles.root}>
+      <ScrollView style={stylesWithTheme.root}>
         <View>
-          <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
-            <MyText style={{ fontSize: 16 }}>Raza</MyText>
-            <MyText style={{ fontSize: 16 }}>{localPet?.breed?.description ? localPet.breed.description : 'Seleccionar'}</MyText>
+          <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={stylesWithTheme.row}>
+            <MyText style={{ fontSize: 18 }}>Raza</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.breed?.description ? localPet.breed.description : 'Seleccionar'}</MyText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={styles.row}>
-            <MyText style={{ fontSize: 16 }}>Colores</MyText>
-            <MyText style={{ fontSize: 16 }}>{localPet?.color?.description ? localPet?.color?.description : 'Seleccionar'}</MyText>
+          <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={stylesWithTheme.row}>
+            <MyText style={{ fontSize: 18 }}>Colores</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.color?.description ? localPet?.color?.description : 'Seleccionar'}</MyText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={styles.row}>
-            <MyText style={{ fontSize: 16 }}>Pelaje</MyText>
-            <MyText style={{ fontSize: 16 }}>{localPet?.furLength?.description ? localPet?.furLength?.description : 'Seleccionar'}</MyText>
+          <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={stylesWithTheme.row}>
+            <MyText style={{ fontSize: 18 }}>Pelaje</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>
+              {localPet?.furLength?.description ? localPet?.furLength?.description : 'Seleccionar'}
+            </MyText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={styles.row}>
-            <MyText style={{ fontSize: 16 }}>Tamaño</MyText>
-            <MyText style={{ fontSize: 16 }}>{localPet?.size?.description ? localPet.size.description : 'Seleccionar'}</MyText>
+          <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={stylesWithTheme.row}>
+            <MyText style={{ fontSize: 18 }}>Tamaño</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.size?.description ? localPet.size.description : 'Seleccionar'}</MyText>
           </TouchableOpacity>
-          <MyInput value={localDescription} onChangeText={(text) => setLocalDescription(text)}></MyInput>
+          {/*     <MyInput value={localDescription} onChangeText={(text) => setLocalDescription(text)}></MyInput>*/}
+          <Input
+            inputContainerStyle={{
+              marginTop: 8,
+              marginLeft: 4,
+              borderColor: 'grey',
+              borderBottomWidth: 0.5,
+              alignSelf: 'center',
+              paddingVertical: 0
+            }}
+            inputStyle={{ fontSize: 18, color: theme.text }}
+            numberOfLines={2}
+            autoCapitalize="sentences"
+            clearButtonMode="always"
+            placeholderTextColor="grey"
+            placeholder="Contanos como la encontraste"
+            value={description}
+            onChangeText={setDescription}
+          ></Input>
 
           <SingleFilterBottomSheetModal
             title="Colores"
@@ -178,43 +208,60 @@ const EditPost: React.FC = ({}) => {
           <ImageChooser pickedImagePath={image3} setPickedImagePath={setImage3} />
           <ImageChooser pickedImagePath={image4} setPickedImagePath={setImage4} />
         </View>
+        <Text style={{ marginLeft: 16, marginVertical: 16, color: '#FF453A', fontSize: 17 }}>{errorMessage}</Text>
 
-        <View style={styles.button}>
+        <View style={stylesWithTheme.button}>
           <MyButton title="Modificar" loading={isLoading} onPress={updatePost} />
         </View>
-        <View style={styles.button}>
-          <MyButton title="Borrar" loading={isLoading} onPress={deletePost} />
+        <View style={stylesWithTheme.button}>
+          <MyButton
+            buttonStyle={{
+              borderWidth: 1.5,
+              borderColor: '#FF453A',
+              padding: 12,
+              borderRadius: 18,
+              backgroundColor: 'transparent'
+            }}
+            titleStyle={{ color: '#FF453A', fontSize: 20 }}
+            title="Borrar"
+            loading={isLoading}
+            onPress={deletePost}
+          />
         </View>
       </ScrollView>
     </BottomSheetModalProvider>
   )
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1
-  },
-  title: {
-    fontSize: 24,
-    /*  fontFamily: 'LoveMeLikeASister', */
-    paddingBottom: 16
-  },
-  input: {
-    paddingHorizontal: 16
-  },
-  button: {
-    alignSelf: 'stretch',
-    marginTop: 8,
-    padding: 16
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
-    padding: 16,
-    alignItems: 'center'
-  }
-})
+const styles = (theme: MyTheme) =>
+  StyleSheet.create({
+    root: {
+      flex: 1
+    },
+    title: {
+      fontSize: 24,
+      /*  fontFamily: 'LoveMeLikeASister', */
+      paddingBottom: 16
+    },
+    input: {
+      paddingHorizontal: 16
+    },
+    button: {
+      alignSelf: 'stretch',
+      /*   marginTop: 8 */
+      paddingHorizontal: 8,
+      paddingBottom: 16
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      borderBottomWidth: 1,
+      borderColor: theme.border,
+      margin: 8,
+      marginHorizontal: 16,
+      paddingBottom: 16,
+      alignItems: 'center'
+    }
+  })
 
 export default EditPost

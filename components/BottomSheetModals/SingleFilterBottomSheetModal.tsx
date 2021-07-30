@@ -43,15 +43,16 @@ const SingleFilterBottomSheetModal: React.FC<SingleFilterBottomSheetModalProps> 
   const TopBar = (
     <View style={styles.handleRoot}>
       <TouchableOpacity
+        style={{ padding: 16 }}
         onPress={() => {
           modalRef.current?.dismiss()
         }}
-        style={styles.button}
       >
-        <Ionicons size={24} color="#8E8E93" name="close" />
+        <Ionicons size={28} color="#8E8E93" name="close" />
       </TouchableOpacity>
-      <MyText style={{ fontSize: 18 }}>{title}</MyText>
+      <MyText style={{ fontSize: 18, padding: 16 }}>{title}</MyText>
       <TouchableOpacity
+        style={{ padding: 16 }}
         onPress={() => {
           setFilter({ ...localFilter })
 
@@ -59,9 +60,8 @@ const SingleFilterBottomSheetModal: React.FC<SingleFilterBottomSheetModalProps> 
 
           modalRef.current?.dismiss()
         }}
-        style={styles.button}
       >
-        <Ionicons size={24} color="#8E8E93" name="checkmark" />
+        <Ionicons size={28} color="#8E8E93" name="checkmark" />
       </TouchableOpacity>
     </View>
   )
@@ -119,7 +119,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 0.5,
     /*    backgroundColor: a, */
-    padding: 16,
     borderTopLeftRadius: 12,
     borderColor: 'grey',
     borderTopRightRadius: 12,

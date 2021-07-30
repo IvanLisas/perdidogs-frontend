@@ -2,7 +2,6 @@ import * as React from 'react'
 import { StyleSheet, View, Image } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Text from '../components/MyThemedComponents/MyText'
-
 import { StackNavigationProp } from '@react-navigation/stack'
 import { useContext, useState } from 'react'
 import UserContext from '../contexts/UserContext'
@@ -15,6 +14,7 @@ import Input from '../components/MyThemedComponents/MyInput'
 import LoginStackParamList from '../types/StackParamLists/LoginStackParamList'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import * as Google from 'expo-google-app-auth'
+import { SERVER_URL } from '../constants/Rest'
 /* import { IOS_CLIENT_ID, AND_CLIENT_ID } from 'react-native-dotenv'
  */
 type authScreenProp = StackNavigationProp<LoginStackParamList>
@@ -73,14 +73,15 @@ export default function Login() {
       setErrorMessage('')
       setUser(await userService.login(email, password))
     } catch (error) {
+      console.log(error.message)
       setErrorMessage(showError(error))
     }
     setLoading(false)
   }
-
+  /*   '#9f77e0', '#8BA5F8' */
   return (
     /*  <TouchableWithoutFeedback  onPress={() => Keyboard.dismiss() }> */
-    <LinearGradient colors={['#9f77e0', '#8BA5F8']} style={styles.background}>
+    <LinearGradient colors={['#FFE5B2', '#EFB865']} style={styles.background}>
       <KeyboardAwareScrollView
         contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', height: '100%' }}
         scrollEnabled={false}
@@ -118,18 +119,35 @@ export default function Login() {
               />
 
               <View style={styles.button}>
-                <MyButton title="Ingresar" loading={loading} onPress={login} />
+                <MyButton
+                  buttonStyle={{
+                    borderWidth: 1,
+                    width: 256,
+                    /*   borderColor: '#6879B1', */
+                    borderColor: '#343434',
+                    padding: 12,
+                    borderRadius: 18,
+                    backgroundColor: 'transparent'
+                  }}
+                  titleStyle={{ color: '#343434', fontSize: 20, fontWeight: 'normal' }}
+                  title="Ingresar"
+                  loading={loading}
+                  onPress={login}
+                />
               </View>
 
               <View style={styles.registerContainer}>
-                <Text style={styles.link}>Sin cuenta? </Text>
-                <Text onPress={() => navigation.navigate('Registration')} style={styles.register}>
-                  Registrate!
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={styles.link}>Sin cuenta? </Text>
+                  <Text onPress={() => navigation.navigate('Registration')} style={styles.register}>
+                    Registrate!
+                  </Text>
+                </View>
+                <TouchableOpacity onPress={goToForgotPassword} style={styles.forgotPasswordContainer}>
+                  <Text style={styles.link}>Olvidaste tu contraseña?</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={goToForgotPassword} style={styles.forgotPasswordContainer}>
-                <Text style={styles.link}>Olvidaste tu contraseña?</Text>
-              </TouchableOpacity>
+
               {/*               <TouchableOpacity onPress={() => signInWithGoogleAsync()} style={styles.forgotPasswordContainer}>
                 <Text style={styles.link}>GOOOOOGLE</Text>
               </TouchableOpacity> */}
@@ -182,7 +200,8 @@ const styles = StyleSheet.create({
 
   button: {
     alignSelf: 'stretch',
-    marginTop: 8
+    marginTop: 16,
+    alignItems: 'center'
   },
   titleContainer: {
     display: 'flex',
@@ -215,16 +234,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'black',
     /*     fontFamily: 'LoveMeLikeASister', */
-    fontSize: 18
+    fontSize: 16
   },
   registerContainer: {
-    flexDirection: 'row',
-    paddingTop: 18,
+    paddingTop: 32,
     alignItems: 'center'
   },
   register: {
     /*     fontFamily: 'LoveMeLikeASister', */
-    fontSize: 18,
+    fontSize: 16,
     color: 'blue'
   },
   forgotPasswordContainer: {

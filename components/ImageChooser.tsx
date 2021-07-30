@@ -6,6 +6,8 @@ import * as ImagePicker from 'expo-image-picker'
 import { LinearGradient } from 'expo-linear-gradient'
 import { paddingRight } from 'styled-system'
 import Icon from './icons/index'
+import useTheme from '../hooks/useTheme'
+import { Ionicons } from '@expo/vector-icons'
 
 interface ImageChooserProps {
   pickedImagePath: any
@@ -20,6 +22,8 @@ const ImageChooser: React.FC<ImageChooserProps> = (props) => {
   const deletePhoto = () => {
     setPickedImagePath(undefined)
   }
+
+  const theme = useTheme()
 
   // This function is triggered when the "Select an image" button pressed
   const showImagePicker = async () => {
@@ -65,8 +69,10 @@ const ImageChooser: React.FC<ImageChooserProps> = (props) => {
         <View
           style={{
             justifyContent: 'center',
-            backgroundColor: '#C5BBBB',
+            backgroundColor: 'transparent',
+            borderColor: theme.primary,
             height: 180,
+            borderWidth: 1,
             /*  borderWidth: 0.5, */
             width: Dimensions.get('window').width / 2 - 24,
             borderRadius: 13
@@ -76,10 +82,12 @@ const ImageChooser: React.FC<ImageChooserProps> = (props) => {
             {/*  <Button onPress={showImagePicker} title="Select an image" />
         <Button onPress={openCamera} title="Open camera" /> */}
             <TouchableOpacity onPress={openCamera}>
-              <Icon style={{ color: 'white', fontSize: 28, padding: 8 }} name="instagram-hand-drawn-logo" />
+              {/*  <Icon style={{ color: 'white', fontSize: 28, padding: 8 }} name="instagram-hand-drawn-logo" /> */}
+              <Ionicons style={{ marginRight: 16 }} size={34} color="grey" name="camera" />
             </TouchableOpacity>
             <TouchableOpacity onPress={showImagePicker}>
-              <Icon style={{ color: 'white', fontSize: 28, padding: 8 }} name="picture-hanging-in-a-frame-hand-drawn-symbol" />
+              {/*   <Icon style={{ color: 'white', fontSize: 28, padding: 8 }} name="picture-hanging-in-a-frame-hand-drawn-symbol" /> */}
+              <Ionicons style={{ marginRight: 0 }} size={34} color="grey" name="image" />
             </TouchableOpacity>
           </View>
         </View>
@@ -103,7 +111,7 @@ const ImageChooser: React.FC<ImageChooserProps> = (props) => {
         >
           <LinearGradient
             /*   colors={['rgba(0,0,0,0.5)', 'transparent']} */
-            colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.9)']}
+            colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.6)']}
             style={{
               position: 'absolute',
               height: 180,

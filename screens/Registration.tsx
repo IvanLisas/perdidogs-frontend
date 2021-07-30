@@ -10,6 +10,7 @@ import { User } from '../types/models/User'
 import UserContext from '../contexts/UserContext'
 import MyInput from '../components/MyThemedComponents/MyInput'
 import showError from '../utils/Erros'
+import { LinearGradient } from 'expo-linear-gradient'
 
 type ProfileScreenNavigationProp = StackNavigationProp<LoginStackParamList, 'Registration'>
 
@@ -124,65 +125,80 @@ export default function Registration({ navigation }: Props) {
   /*  const hasErrors2 = Object.values(form.error).some((value) => value !== '') */
 
   return (
-    <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-      <Image source={labrador} style={styles.labrador} />
-      <View style={styles.root}>
-        {/*  <ScrollView style={{}} contentContainerStyle={styles.content}> */}
-        <MyInput
-          _ref={inputFirstName}
-          textContentType="name"
-          placeholder="Nombre"
-          autoCompleteType="name"
-          onChangeText={(text: string) => handleInputChange(text, 'firstName')}
-          value={form.data.firstName}
-          errorMessage={form.error.firstName}
-        />
-        <MyInput
-          _ref={inputLastName}
-          textContentType="familyName"
-          placeholder="Apellido"
-          onChangeText={(text: string) => handleInputChange(text, 'lastName')}
-          value={form.data.lastName}
-          errorMessage={form.error.lastName}
-        />
-        <MyInput
-          _ref={inputEmail}
-          textContentType="emailAddress"
-          placeholder="Email"
-          autoCompleteType="email"
-          onChangeText={(text: string) => handleInputChange(text, 'email')}
-          value={form.data.email}
-          errorMessage={form.error.email}
-        />
-        <MyInput
-          _ref={inputPassword}
-          textContentType="newPassword"
-          placeholder="Contraseña"
-          autoCompleteType="password"
-          onChangeText={(text: string) => handleInputChange(text, 'password')}
-          secureTextEntry={true}
-          value={form.data.password}
-          style={styles.input}
-          errorMessage={form.error.password}
-        />
+    <LinearGradient colors={['#FFE5B2', '#EFB865']} style={styles.background}>
+      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+        <Image source={labrador} style={styles.labrador} />
+        <View style={styles.root}>
+          {/*  <ScrollView style={{}} contentContainerStyle={styles.content}> */}
+          <MyInput
+            _ref={inputFirstName}
+            textContentType="name"
+            placeholder="Nombre"
+            autoCompleteType="name"
+            onChangeText={(text: string) => handleInputChange(text, 'firstName')}
+            value={form.data.firstName}
+            errorMessage={form.error.firstName}
+          />
+          <MyInput
+            _ref={inputLastName}
+            textContentType="familyName"
+            placeholder="Apellido"
+            onChangeText={(text: string) => handleInputChange(text, 'lastName')}
+            value={form.data.lastName}
+            errorMessage={form.error.lastName}
+          />
+          <MyInput
+            _ref={inputEmail}
+            textContentType="emailAddress"
+            placeholder="Email"
+            autoCompleteType="email"
+            onChangeText={(text: string) => handleInputChange(text, 'email')}
+            value={form.data.email}
+            errorMessage={form.error.email}
+          />
+          <MyInput
+            _ref={inputPassword}
+            textContentType="newPassword"
+            placeholder="Contraseña"
+            autoCompleteType="password"
+            onChangeText={(text: string) => handleInputChange(text, 'password')}
+            secureTextEntry={true}
+            value={form.data.password}
+            style={styles.input}
+            errorMessage={form.error.password}
+          />
 
-        <MyInput
-          _ref={inputRepetedPassword}
-          textContentType="password"
-          placeholder="Repetir contraseña"
-          onChangeText={(text: string) => handleInputChange(text, 'repetedPassword')}
-          value={form.data.repetedPassword}
-          secureTextEntry={true}
-          errorMessage={form.error.repetedPassword}
-        />
-        <Text style={{ color: 'red', fontSize: 14, marginBottom: 16 }}>{error}</Text>
-        <View style={styles.button}>
-          <MyButton loading={loading} title="Registrarse" onPress={registration} />
+          <MyInput
+            _ref={inputRepetedPassword}
+            textContentType="password"
+            placeholder="Repetir contraseña"
+            onChangeText={(text: string) => handleInputChange(text, 'repetedPassword')}
+            value={form.data.repetedPassword}
+            secureTextEntry={true}
+            errorMessage={form.error.repetedPassword}
+          />
+          <Text style={{ color: 'red', fontSize: 14, marginHorizontal: 16, marginBottom: 16 }}>{error}</Text>
+          <View style={styles.button}>
+            <MyButton
+              buttonStyle={{
+                borderWidth: 1,
+                borderColor: '#343434',
+
+                padding: 12,
+                borderRadius: 18,
+                backgroundColor: 'transparent'
+              }}
+              titleStyle={{ color: '#343434', fontSize: 20, fontWeight: 'normal' }}
+              loading={loading}
+              title="Registrarse"
+              onPress={registration}
+            />
+          </View>
         </View>
-      </View>
-      {/*    </ScrollView> */}
-      {/*   </LinearGradient> */}
-    </KeyboardAwareScrollView>
+        {/*    </ScrollView> */}
+        {/*   </LinearGradient> */}
+      </KeyboardAwareScrollView>
+    </LinearGradient>
   )
 }
 
@@ -227,8 +243,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch'
   },
   button: {
-    alignSelf: 'stretch',
-    marginTop: 8
+    paddingHorizontal: 16
   },
   titleContainer: {
     display: 'flex',

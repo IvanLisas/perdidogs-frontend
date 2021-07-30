@@ -1,16 +1,17 @@
 import React, { useContext } from 'react'
 import { Dimensions, StyleSheet, View } from 'react-native'
-import { Avatar } from 'react-native-elements'
+import { Avatar, Input } from 'react-native-elements'
 import UserContext from '../contexts/UserContext'
 import { User } from '../types/models/User'
 import Text from './MyThemedComponents/MyText'
 import { format } from 'date-fns'
 import moment from 'moment'
 import useTheme from '../hooks/useTheme'
-import { Input } from 'native-base'
+
 import Icon from './icons/index'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import MyInput from './MyThemedComponents/MyInput'
+import { Ionicons } from '@expo/vector-icons'
 
 interface SendAMessageBarProps {
   text: string
@@ -30,27 +31,47 @@ const SendAMessageBar: React.FC<SendAMessageBarProps> = (props) => {
         height: 50, */
         borderRadius: 25,
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
         alignItems: 'center',
         position: 'absolute',
         bottom: 0,
-        padding: 16
+        paddingVertical: 16,
+        paddingBottom: 8
       }}
     >
-      <Input
+      {/*       <Input
         h={45}
         selectionColor={theme.primary}
-        bgColor={theme.primary}
+        bgColor={theme.input}
         w={Dimensions.get('window').width - 28 - 16}
         value={text}
         onChangeText={setText}
-        borderColor={theme.primary}
+        borderRadius={25}
+
         placeholder="Enviar un mensaje"
         placeholderTextColor={'black'}
-      />
+      /> */}
+      <View style={{ width: Dimensions.get('window').width - 28 - 16 }}>
+        <Input
+          placeholder="Enviar un mensaje"
+          inputStyle={{ fontSize: 16, color: theme.text }}
+          onChangeText={setText}
+          value={text}
+          renderErrorMessage={false}
+          inputContainerStyle={{ borderBottomWidth: 0 }}
+          style={{
+            borderRadius: 15,
+            padding: 8,
 
+            paddingLeft: 16,
+
+            backgroundColor: theme.input
+          }}
+        ></Input>
+      </View>
       <TouchableOpacity onPress={onPress}>
-        <Icon style={{ color: theme.primary, fontSize: 28 }} name="arrow-pointing-up-hand-drawn-symbol" />
+        <Ionicons style={{ marginRight: 4 }} size={24} color="#5AC8FA" name="send" />
       </TouchableOpacity>
     </View>
   )

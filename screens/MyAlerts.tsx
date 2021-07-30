@@ -78,7 +78,7 @@ const MyAlerts: React.FC = () => {
             <Ionicons style={{ marginRight: 4 }} size={28} color="#8E8E93" name="notifications" />
             <View style={{ flexDirection: 'column', flex: 1, marginLeft: 8 }}>
               <MyText style={{ fontSize: 16, fontWeight: 'bold' }}>{alert.title}</MyText>
-              <MyText style={{ fontSize: 16 }}>Creada el {alert.creationDate}</MyText>
+              <MyText style={{ fontSize: 16 }}>Creada el {alert.creationDate?.toString().slice(0, 10)}</MyText>
             </View>
             {/*             <TouchableOpacity onPress={async () => handleRejectNotification(notification)} style={{ alignSelf: 'flex-start' }}>
               <Ionicons size={24} color="#8E8E93" name="close" />

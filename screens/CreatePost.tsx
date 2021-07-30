@@ -11,8 +11,8 @@ import Icon from '../components/icons/index'
 import UserAvatar from '../components/UserAvatar'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import PostContext from '../contexts/PostContext'
-/* import Input from '../../components/MyThemedComponents/Input' */
-import { Center, CheckIcon, Input, Select, Stack, TextArea, useColorModeValue } from 'native-base'
+import { Input } from 'react-native-elements'
+import { Center, CheckIcon, Select, Stack, TextArea, useColorModeValue } from 'native-base'
 import { background, backgroundColor } from 'styled-system'
 import dropDownService from '../services/DropDownService'
 import { Color } from '../types/models/Color'
@@ -31,7 +31,7 @@ import { Button, Box, NativeBaseProvider } from 'native-base'
 import SingleFilterBottomSheetModal from '../components/BottomSheetModals/SingleFilterBottomSheetModal'
 import MyButton from '../components/MyThemedComponents/MyButton'
 import MyText from '../components/MyThemedComponents/MyText'
-import MyInput from '../components/MyThemedComponents/MyInput'
+
 import userService from '../services/UserService'
 /* interface PostPageProps {
   post: Post | undefined
@@ -64,10 +64,14 @@ const CreatePost: React.FC = ({}) => {
   const route = useRoute()
   const myLocation = route.params as any
 
-  const createPost = async () => {
-    if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size && description) {
-      /*   setIsLoading(true) */
+  const [errorMessage, setErrorMessage] = useState('')
 
+  const stylesWithTheme = styles(theme)
+
+  const createPost = async () => {
+    setErrorMessage('')
+    setIsLoading(true)
+    if (localPet?.color && localPet?.breed && localPet?.furLength && localPet?.size && description) {
       const im1 = await imageService.savePhoto(image1)
       const im2 = await imageService.savePhoto(image2)
       const im3 = await imageService.savePhoto(image3)
@@ -93,9 +97,11 @@ const CreatePost: React.FC = ({}) => {
           }
         } catch (error) {
           console.log(error.message)
+        } finally {
+          setIsLoading(false)
         }
-      }
-    }
+      } else setErrorMessage('Suba por lo menos una imagen')
+    } else setErrorMessage('Faltan completar algunos datos')
   }
 
   useEffect(() => {
@@ -110,27 +116,48 @@ const CreatePost: React.FC = ({}) => {
 
   return (
     <BottomSheetModalProvider>
-      <ScrollView style={styles.root}>
+      <ScrollView style={stylesWithTheme.root}>
         <View>
-          <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
-            <MyText style={{ fontSize: 16 }}>Raza</MyText>
-            <MyText style={{ fontSize: 16 }}>{localPet?.breed?.description ? localPet.breed.description : 'Seleccionar'}</MyText>
+          <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={stylesWithTheme.row}>
+            <MyText style={{ fontSize: 18 }}>Raza</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.breed?.description ? localPet.breed.description : 'Seleccionar'}</MyText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={styles.row}>
-            <MyText style={{ fontSize: 16 }}>Colores</MyText>
-            <MyText style={{ fontSize: 16 }}>{localPet?.color?.description ? localPet?.color?.description : 'Seleccionar'}</MyText>
+          <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={stylesWithTheme.row}>
+            <MyText style={{ fontSize: 18 }}>Colores</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.color?.description ? localPet?.color?.description : 'Seleccionar'}</MyText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={styles.row}>
-            <MyText style={{ fontSize: 16 }}>Pelaje</MyText>
-            <MyText style={{ fontSize: 16 }}>{localPet?.furLength?.description ? localPet?.furLength?.description : 'Seleccionar'}</MyText>
+          <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={stylesWithTheme.row}>
+            <MyText style={{ fontSize: 18 }}>Pelaje</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>
+              {localPet?.furLength?.description ? localPet?.furLength?.description : 'Seleccionar'}
+            </MyText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={styles.row}>
-            <MyText style={{ fontSize: 16 }}>Tamaño</MyText>
-            <MyText style={{ fontSize: 16 }}>{localPet?.size?.description ? localPet.size.description : 'Seleccionar'}</MyText>
+          <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={stylesWithTheme.row}>
+            <MyText style={{ fontSize: 18 }}>Tamaño</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.size?.description ? localPet.size.description : 'Seleccionar'}</MyText>
           </TouchableOpacity>
 
-          <MyInput value={description} onChangeText={(text) => setDescription(text)}></MyInput>
+          {/*  <MyInput value={description} onChangeText={(text) => setDescription(text)}></MyInput>
+           */}
 
+          <Input
+            inputContainerStyle={{
+              marginTop: 8,
+              marginLeft: 4,
+              borderColor: 'grey',
+              borderBottomWidth: 0.5,
+              alignSelf: 'center',
+              paddingVertical: 0
+            }}
+            inputStyle={{ fontSize: 18, color: theme.text }}
+            numberOfLines={2}
+            autoCapitalize="sentences"
+            clearButtonMode="always"
+            placeholderTextColor="grey"
+            placeholder="Contanos como la encontraste"
+            value={description}
+            onChangeText={setDescription}
+          ></Input>
           <SingleFilterBottomSheetModal
             title="Colores"
             list={colors}
@@ -169,7 +196,8 @@ const CreatePost: React.FC = ({}) => {
           <ImageChooser pickedImagePath={image3} setPickedImagePath={setImage3} />
           <ImageChooser pickedImagePath={image4} setPickedImagePath={setImage4} />
         </View>
-        <View style={styles.button}>
+        <Text style={{ marginLeft: 16, marginTop: 16, color: '#FF453A', fontSize: 17 }}>{errorMessage}</Text>
+        <View style={stylesWithTheme.button}>
           <MyButton title="Crear" loading={isLoading} onPress={createPost} />
         </View>
       </ScrollView>
@@ -177,31 +205,35 @@ const CreatePost: React.FC = ({}) => {
   )
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1
-  },
-  title: {
-    fontSize: 24,
-    /*  fontFamily: 'LoveMeLikeASister', */
-    paddingBottom: 16
-  },
-  input: {
-    paddingHorizontal: 16
-  },
-  button: {
-    alignSelf: 'stretch',
-    marginTop: 8,
-    padding: 16
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
-    padding: 16,
-    alignItems: 'center'
-  }
-})
+const styles = (theme: MyTheme) =>
+  StyleSheet.create({
+    root: {
+      flex: 1,
+      paddingVertical: 16
+    },
+    title: {
+      fontSize: 24,
+      /*  fontFamily: 'LoveMeLikeASister', */
+      paddingBottom: 16
+    },
+    input: {
+      paddingHorizontal: 16
+    },
+    button: {
+      alignSelf: 'stretch',
+      marginVertical: 8,
+      padding: 16
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      borderBottomWidth: 1,
+      borderColor: theme.border,
+      margin: 8,
+      marginHorizontal: 16,
+      paddingBottom: 16,
+      alignItems: 'center'
+    }
+  })
 
 export default CreatePost

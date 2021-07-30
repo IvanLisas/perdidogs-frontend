@@ -8,17 +8,17 @@ function MyButton(props: ButtonProps) {
   const theme = useTheme()
   return (
     <Button
-      {...props}
       buttonStyle={styles(theme).button}
       disabledStyle={{
         borderWidth: 1,
-        borderColor: '#000',
+        borderColor: 'grey',
         borderRadius: 25
       }}
       containerStyle={{}}
-      loadingProps={{ color: 'black' }}
+      loadingProps={{ color: theme.text }}
       disabledTitleStyle={{ color: '#00F' }}
-      titleStyle={{ color: theme.primary, fontSize: 20 }}
+      titleStyle={{ color: theme.icon, fontSize: 20 }}
+      {...props}
     />
   )
 }
@@ -26,9 +26,9 @@ function MyButton(props: ButtonProps) {
 const styles = (theme: MyTheme) =>
   StyleSheet.create({
     button: {
-      borderWidth: 1.2,
+      borderWidth: 2,
       /*   borderColor: '#6879B1', */
-      borderColor: theme.primary,
+      borderColor: theme.icon,
       padding: 12,
       borderRadius: 18,
       backgroundColor: 'transparent'

@@ -1,11 +1,9 @@
-import React, { useContext, useRef, useState } from 'react'
-import { View, StyleSheet, ImageBackground, TouchableOpacity, Dimensions } from 'react-native'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { View, StyleSheet, ImageBackground, TouchableOpacity, Dimensions, Platform, Keyboard } from 'react-native'
 import useTheme from '../hooks/useTheme'
-
 import { LinearGradient } from 'expo-linear-gradient'
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { ScrollView } from 'react-native-gesture-handler'
-
 import { Ionicons } from '@expo/vector-icons'
 import PostContext from '../contexts/PostContext'
 import UserContext from '../contexts/UserContext'
@@ -17,6 +15,8 @@ import MyText from '../components/MyThemedComponents/MyText'
 import SendAMessageBar from '../components/SendAMessageBar'
 import postService from '../services/PostService'
 import userService from '../services/UserService'
+import { KeyboardAvoidingView } from 'native-base'
+import UserAvatarMini from '../components/UserAvatarMini'
 interface PostPreviewProps {}
 
 const Post: React.FC<PostPreviewProps> = () => {
@@ -25,6 +25,10 @@ const Post: React.FC<PostPreviewProps> = () => {
   const { user, setUser } = useContext(UserContext)
   const navigation = useNavigation()
   const theme = useTheme()
+
+  let isMount = true
+
+  const [fetchFlag, setFetchFlag] = useState<boolean>(true)
 
   const [text, setText] = useState('')
 
@@ -41,6 +45,8 @@ const Post: React.FC<PostPreviewProps> = () => {
       setPost(
         await commentService.save({ owner: { Id: user.Id, firstName: 'asd', lastName: 'asd', email: 'asd' }, text: text, post: { Id: post.Id } })
       )
+    scrollViewRef.current?.scrollToEnd({ animated: true })
+    Keyboard.dismiss()
     setText('')
   }
 
@@ -56,32 +62,49 @@ const Post: React.FC<PostPreviewProps> = () => {
     }
   }
 
+  useEffect(() => {
+    const getChat = async () => {
+      if (!fetchFlag) setTimeout(() => setFetchFlag(true), 1000)
+      else {
+        setFetchFlag(false)
+        if (user) {
+          try {
+            if (post && isMount) setPost(await postService.get(post?.Id))
+          } catch (error) {
+            console.log('Fetching Fail')
+            console.log(error.message)
+          }
+        }
+      }
+    }
+    getChat()
+    return () => {
+      setFetchFlag(false)
+      isMount = false
+    }
+  }, [fetchFlag])
+
   const scrollViewRef = useRef<ScrollView>(null)
 
   if (!post) return null
   else
     return (
-      <View style={{ height: '100%', paddingBottom: 48 }}>
-        <ScrollView onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })} ref={scrollViewRef} style={styles(theme).root}>
+      <View style={{ height: '100%', paddingBottom: post.postStatus?.Id == 2 || post.postStatus?.Id == 4 ? 48 : 0 }}>
+        <ScrollView ref={scrollViewRef} style={styles(theme).root}>
           <View
             style={{
               marginHorizontal: 16,
               marginTop: 16,
+              marginBottom: 8,
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'center'
             }}
           >
             <UserAvatar user={post?.owner ? post?.owner : user} />
-            {post?.owner?.Id && post?.owner.Id !== user?.Id ? (
+            {post?.owner?.Id && post?.owner.Id !== user?.Id && (
               <TouchableOpacity onPress={sendChatMenssage} style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Ionicons size={24} color="#8E8E93" name="chatbox" />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={handleChangeStatus}>
-                <MyText>{post.postStatus?.description}</MyText>
-                {/* {console.log(post)} */}
-                <Ionicons size={24} color="#8E8E93" name="paw" />
               </TouchableOpacity>
             )}
           </View>
@@ -143,22 +166,53 @@ const Post: React.FC<PostPreviewProps> = () => {
               />
             </View>
           )}
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity
+              style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', paddingHorizontal: 16, paddingVertical: 8 }}
+              onPress={handleChangeStatus}
+            >
+              <MyText style={{ fontSize: 18 }}>Estado: {post.postStatus?.description}</MyText>
+              {(post.postStatus?.Id == 1 || post.postStatus?.Id == 4) && <Ionicons size={28} color="#8E8E93" name="swap-horizontal-outline" />}
+            </TouchableOpacity>
+          </View>
 
-          {post?.comments?.map((comment, index) => (
-            <View style={{ marginBottom: 16, paddingHorizontal: 16 }} key={index + 'coments'}>
-              <View style={{ paddingBottom: 4 }}>
-                <UserAvatar user={comment.owner} />
+          <MyText style={{ fontSize: 22, fontWeight: 'bold', paddingHorizontal: 16, paddingBottom: 8 }}>Comentarios</MyText>
+          {post.comments?.length !== 0 ? (
+            post?.comments?.map((comment, index) => (
+              <View style={{ marginBottom: 16, paddingHorizontal: 16 }} key={index + 'coments'}>
+                <View style={{ paddingBottom: 4 }}>
+                  <UserAvatarMini user={comment.owner} />
+                </View>
+                <MyText style={styles(theme).description}>{comment.text}</MyText>
               </View>
-              <MyText style={styles(theme).description}>{comment.text}</MyText>
-            </View>
-          ))}
-          <View
+            ))
+          ) : (
+            <MyText style={{ fontSize: 22, fontWeight: 'normal', paddingHorizontal: 16, paddingVertical: 48, alignSelf: 'center' }}>
+              Sin comentarios
+            </MyText>
+          )}
+          {/*           <View
             style={{ flexDirection: 'row', justifyContent: post?.owner?.Id && post?.owner.Id !== user?.Id ? 'space-evenly' : 'flex-start' }}
-          ></View>
+          ></View> */}
         </ScrollView>
-        <SendAMessageBar onPress={sendMessage} setText={setText} text={text}></SendAMessageBar>
+        {/*   <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}
+        {post.postStatus?.Id == 1 || post.postStatus?.Id == 4 ? (
+          <SendAMessageBar onPress={sendMessage} setText={setText} text={text}></SendAMessageBar>
+        ) : (
+          <MyText style={{ fontSize: 18, textAlign: 'center', padding: 16 }}> No se pueden realizar comentarios en esta publicacion</MyText>
+        )}
+
+        {/* </KeyboardAvoidingView> */}
       </View>
     )
+}
+
+{
+  /* <TouchableOpacity onPress={handleChangeStatus}>
+<MyText>Estado: {post.postStatus?.description}</MyText>
+
+<Ionicons size={24} color="#8E8E93" name="swap-horizontal-outline" />
+</TouchableOpacity> */
 }
 
 const styles = (theme: MyTheme) =>
@@ -221,14 +275,16 @@ const styles = (theme: MyTheme) =>
     },
     description: {
       fontSize: 16,
-      paddingBottom: 8
-      /*   paddingLeft: 48 */
+      marginLeft: 38,
+      paddingBottom: 16,
+      borderBottomWidth: 0.5,
+      borderColor: '#E5E5EA'
     },
-    description2: {
-      fontSize: 16
 
-      /*  paddingLeft: 48, */
-      /* borderBottomWidth: 0.5, */
+    description2: {
+      fontSize: 16,
+      paddingLeft: 48
+      /*   borderBottomWidth: 0.5 */
     },
 
     tinyDescription: {

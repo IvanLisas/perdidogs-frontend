@@ -15,6 +15,7 @@ import { Color } from '../../types/models/Color'
 import SingleFilterBottomSheetModal from './SingleFilterBottomSheetModal'
 import { color } from 'react-native-elements/dist/helpers'
 import MyButton from '../MyThemedComponents/MyButton'
+import BlurredBackground from '../BlurredBackground'
 
 interface FiltersBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
@@ -58,16 +59,18 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
   const TopBar = (
     <View style={styles.handleRoot}>
       <TouchableOpacity
+        style={{ padding: 16 }}
         onPress={() => {
           modalRef.current?.dismiss()
           /*      setFilterModa(false) */
         }}
         /* style={styles.iconButton} */
       >
-        <Ionicons size={24} color="#8E8E93" name="close" />
+        <Ionicons size={28} color="#8E8E93" name="close" />
       </TouchableOpacity>
-      <MyText style={{ fontSize: 18 }}>Filtros</MyText>
+      <MyText style={{ fontSize: 18, paddingVertical: 16 }}>Filtros</MyText>
       <TouchableOpacity
+        style={{ padding: 16 }}
         onPress={() => {
           setLocalPet((prev) => ({ ...localPet }))
           handleApplyFilters(localPet)
@@ -76,7 +79,7 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
         }}
         /*   style={styles.iconButton} */
       >
-        <Ionicons size={24} color="#8E8E93" name="checkmark" />
+        <Ionicons size={28} color="#8E8E93" name="checkmark" />
       </TouchableOpacity>
     </View>
   )
@@ -95,28 +98,42 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = ({ pet, 
         /*  setChange(false) */
       }}
       stackBehavior="replace"
-      backgroundComponent={() => <View style={{ backgroundColor: 'black' }}></View>}
+      backgroundComponent={BlurredBackground}
       style={{ backgroundColor: theme.navigation, borderRadius: 12 }}
       handleComponent={() => TopBar}
     >
-      <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
-        <MyText style={{ fontSize: 16 }}>Raza</MyText>
-        <MyText style={{ fontSize: 16 }}>{localPet?.breed?.description ? localPet.breed.description : 'Ninguno'}</MyText>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={styles.row}>
-        <MyText style={{ fontSize: 16 }}>Colores</MyText>
-        <MyText style={{ fontSize: 16 }}>{localPet?.color?.description ? localPet?.color?.description : 'Ninguno'}</MyText>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={styles.row}>
-        <MyText style={{ fontSize: 16 }}>Pelaje</MyText>
-        <MyText style={{ fontSize: 16 }}>{localPet?.furLength?.description ? localPet?.furLength?.description : 'Ninguno'}</MyText>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={styles.row}>
-        <MyText style={{ fontSize: 16 }}>Tamaño</MyText>
-        <MyText style={{ fontSize: 16 }}>{localPet?.size?.description ? localPet.size.description : 'Ninguno'}</MyText>
-      </TouchableOpacity>
-      <MyButton onPress={cleanFilters} title="Limpiar filtros"></MyButton>
-
+      <View style={{ padding: 8 }}>
+        <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
+          <MyText style={{ fontSize: 16 }}>Raza</MyText>
+          <MyText style={{ fontSize: 16 }}>{localPet?.breed?.description ? localPet.breed.description : 'Ninguno'}</MyText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={styles.row}>
+          <MyText style={{ fontSize: 16 }}>Colores</MyText>
+          <MyText style={{ fontSize: 16 }}>{localPet?.color?.description ? localPet?.color?.description : 'Ninguno'}</MyText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={styles.row}>
+          <MyText style={{ fontSize: 16 }}>Pelaje</MyText>
+          <MyText style={{ fontSize: 16 }}>{localPet?.furLength?.description ? localPet?.furLength?.description : 'Ninguno'}</MyText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={styles.row}>
+          <MyText style={{ fontSize: 16 }}>Tamaño</MyText>
+          <MyText style={{ fontSize: 16 }}>{localPet?.size?.description ? localPet.size.description : 'Ninguno'}</MyText>
+        </TouchableOpacity>
+        <View style={{ marginVertical: 16 }}>
+          <MyButton
+            buttonStyle={{
+              borderWidth: 1,
+              borderColor: '#FF453A',
+              padding: 12,
+              borderRadius: 18,
+              backgroundColor: 'transparent'
+            }}
+            titleStyle={{ color: '#FF453A', fontSize: 20, fontWeight: 'normal' }}
+            onPress={cleanFilters}
+            title="Limpiar filtros"
+          ></MyButton>
+        </View>
+      </View>
       <BottomSheetScrollView style={{ padding: 16 }}>
         <SingleFilterBottomSheetModal
           title="Colores"
@@ -155,7 +172,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 0.5,
     borderColor: 'grey',
-    padding: 16,
+    /*   padding: 16, */
     alignContent: 'center',
     justifyContent: 'space-between'
   },

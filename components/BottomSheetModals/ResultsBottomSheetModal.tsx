@@ -81,8 +81,8 @@ const ResultsBottomSheetModal: React.FC<PostResultsBottomSheetModalProps> = (pro
               </View>
             )}
           </View>
-          <TouchableOpacity onPress={handleFiltersModal} style={styles.iconButton}>
-            <Ionicons size={24} color="#8E8E93" name="filter-outline" />
+          <TouchableOpacity onPress={handleFiltersModal}>
+            <Ionicons size={28} color="#8E8E93" name="filter-outline" />
           </TouchableOpacity>
         </View>
 

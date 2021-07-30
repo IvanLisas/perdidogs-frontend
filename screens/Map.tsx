@@ -240,6 +240,7 @@ export default function Map() {
   }, [customPostId]) */
 
   useEffect(() => {
+    console.log('post render', post?.postStatus?.Id)
     if (post && post.Id !== 0) handleGoToPost(post)
   }, [post])
 
@@ -247,7 +248,7 @@ export default function Map() {
     if (user) {
       const init = async () => {
         try {
-          setPosts(await postService.getPostByFilters(filter))
+          setPosts([...(await postService.getPostByFilters(filter))])
         } catch (error) {
           console.log(error.message)
         }
@@ -304,7 +305,7 @@ export default function Map() {
           initialRegion={initialRegion}
         >
           {myMarket && <Marker image={newPostPin} onPress={createPost} coordinate={myMarket}></Marker>}
-          {post && post.Id !== 0 && (
+          {post && post.Id !== 0 && post.Id !== 2 && (
             <MarkerAnimated
               onPress={() => setPost(post)}
               stopPropagation={true}
@@ -315,34 +316,40 @@ export default function Map() {
               image={searchResultPin}
             />
           )}
-          {posts?.map((post, index) => (
-            <MarkerAnimated
-              onPress={() => {
-                setPost(post)
-              }}
-              stopPropagation={true}
-              key={post.Id + Math.floor(Math.random() * 16777215)}
-              pinColor={theme.primary}
-              coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
-              shouldRasterizeIOS
-              image={searchResultPin}
-            />
-          ))}
+          {posts?.map(
+            (post, index) =>
+              post.postStatus?.Id !== 2 && (
+                <MarkerAnimated
+                  onPress={() => {
+                    setPost(post)
+                  }}
+                  stopPropagation={true}
+                  key={post.Id + Math.floor(Math.random() * 16777215)}
+                  pinColor={theme.primary}
+                  coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
+                  shouldRasterizeIOS
+                  image={searchResultPin}
+                />
+              )
+          )}
 
-          {user?.post?.map((post, index) => (
-            <MarkerAnimated
-              zIndex={100 + index}
-              onPress={() => {
-                setPost(post)
-              }}
-              stopPropagation={true}
-              key={post.Id + Math.floor(Math.random() * 16777215)}
-              pinColor={theme.primary}
-              coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
-              shouldRasterizeIOS
-              image={myPostPin}
-            />
-          ))}
+          {user?.post?.map(
+            (post, index) =>
+              post.postStatus?.Id !== 2 && (
+                <MarkerAnimated
+                  zIndex={100 + index}
+                  onPress={() => {
+                    setPost(post)
+                  }}
+                  stopPropagation={true}
+                  key={post.Id + Math.floor(Math.random() * 16777215)}
+                  pinColor={theme.primary}
+                  coordinate={{ latitude: post.location.lat, longitude: post.location.long }}
+                  shouldRasterizeIOS
+                  image={myPostPin}
+                />
+              )
+          )}
         </MapView>
 
         <TouchableOpacity style={[styles.button, { top: 300 }]} onPress={handleGoToMyLocation}>

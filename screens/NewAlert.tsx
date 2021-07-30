@@ -1,9 +1,9 @@
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View, Text, Keyboard } from 'react-native'
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { PermissionStatus } from 'unimodules-permissions-interface'
-import { ScrollView } from 'react-native-gesture-handler'
+import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import { Pet } from '../types/models/Pet'
 import { Color } from '../types/models/Color'
 import { Location } from '../types/models/Location'
@@ -35,7 +35,8 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
   const [breeds, setBreeds] = useState<Breed[]>()
   const [lenghts, setLenghts] = useState<FurLength[]>()
   const [sizes, setSizes] = useState<Size[]>()
-
+  const [errorTitle, setErrorTitle] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
   const [title, setTitle] = useState('')
 
   const colorsModalRef = useRef<BottomSheetModal>(null)
@@ -79,12 +80,19 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
   }, [])
 
   const createAlert = async () => {
-    try {
-      await alertService.create({ pet: localPet, location: myLocation, owner: user, title: title })
-      if (user) setAlerts([...(await alertService.getAll(user.Id))])
-      navigation.goBack()
-    } catch (error) {
-      console.log(error.message)
+    setErrorMessage('')
+    setErrorTitle('')
+    if (title && localPet?.breed) {
+      try {
+        await alertService.create({ pet: localPet, location: myLocation, owner: user, title: title })
+        if (user) setAlerts([...(await alertService.getAll(user.Id))])
+        navigation.goBack()
+      } catch (error) {
+        console.log(error.message)
+      }
+    } else {
+      if (!title) setErrorTitle('Ingrese un titulo')
+      if (!localPet?.breed) setErrorMessage('Ingrese una raza')
     }
   }
 
@@ -92,30 +100,43 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
 
   return (
     <BottomSheetModalProvider>
-      <View style={{ padding: 8 }}>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} style={{ padding: 8 }}>
         <Input
-          /*      inputContainerStyle={{ borderBottomWidth: 0.5, alignSelf: 'center' }} */
+          errorMessage={errorTitle}
+          autoCapitalize="sentences"
+          inputContainerStyle={{
+            marginTop: 8,
+
+            borderColor: 'grey',
+            borderBottomWidth: 0.5,
+            alignSelf: 'center',
+            paddingVertical: 0
+          }}
+          errorStyle={{ color: '#FF453A', fontSize: 15 }}
           onChangeText={setTitle}
-          inputStyle={{ fontSize: 16, color: theme.text }}
+          inputStyle={{ fontSize: 18, color: theme.text }}
           clearButtonMode="always"
-          placeholder="Titulo"
+          placeholder="Titulo de la alerta"
           value={title}
         ></Input>
-        <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
-          <MyText style={{ fontSize: 16 }}>Raza</MyText>
-          <MyText style={{ fontSize: 16 }}>{localPet?.breed?.description ? localPet.breed.description : 'Ninguno'}</MyText>
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity onPress={() => breedsModalRef.current?.present()} style={styles.row}>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>Raza</MyText>
+            <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.breed?.description ? localPet.breed.description : 'Ninguno'}</MyText>
+          </TouchableOpacity>
+          <Text style={{ marginLeft: 16, marginTop: 16, color: '#FF453A', fontSize: 15 }}>{errorMessage}</Text>
+        </View>
         <TouchableOpacity onPress={() => colorsModalRef.current?.present()} style={styles.row}>
-          <MyText style={{ fontSize: 16 }}>Colores</MyText>
-          <MyText style={{ fontSize: 16 }}>{localPet?.color?.description ? localPet?.color?.description : 'Ninguno'}</MyText>
+          <MyText style={{ fontSize: 18, color: 'grey' }}>Colores</MyText>
+          <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.color?.description ? localPet?.color?.description : 'Ninguno'}</MyText>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => lenghtsModalRef.current?.present()} style={styles.row}>
-          <MyText style={{ fontSize: 16 }}>Pelaje</MyText>
-          <MyText style={{ fontSize: 16 }}>{localPet?.furLength?.description ? localPet?.furLength?.description : 'Ninguno'}</MyText>
+          <MyText style={{ fontSize: 18, color: 'grey' }}>Pelaje</MyText>
+          <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.furLength?.description ? localPet?.furLength?.description : 'Ninguno'}</MyText>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => sizesModalRef.current?.present()} style={styles.row}>
-          <MyText style={{ fontSize: 16 }}>Tamaño</MyText>
-          <MyText style={{ fontSize: 16 }}>{localPet?.size?.description ? localPet.size.description : 'Ninguno'}</MyText>
+          <MyText style={{ fontSize: 18, color: 'grey' }}>Tamaño</MyText>
+          <MyText style={{ fontSize: 18, color: 'grey' }}>{localPet?.size?.description ? localPet.size.description : 'Ninguno'}</MyText>
         </TouchableOpacity>
 
         <ScrollView>
@@ -147,11 +168,12 @@ const FiltersBottomSheetModal: React.FC<FiltersBottomSheetModalProps> = () => {
             filter={localPet?.breed}
             modalRef={breedsModalRef}
           />
+
           <View style={{ marginTop: 16 }}>
             <MyButton onPress={createAlert} title="Crear Alerta"></MyButton>
           </View>
         </ScrollView>
-      </View>
+      </TouchableWithoutFeedback>
     </BottomSheetModalProvider>
   )
 }
@@ -161,6 +183,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderColor: '#DEDEDE',
     padding: 16,
+
     alignContent: 'center',
     justifyContent: 'space-between'
   },
@@ -179,7 +202,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderBottomWidth: 0.5,
     borderColor: 'grey',
-    padding: 16,
+    paddingVertical: 16,
+    marginHorizontal: 16,
     alignItems: 'center'
   },
   chipText: {

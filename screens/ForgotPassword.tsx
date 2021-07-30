@@ -37,7 +37,7 @@ export default function ForgotPassword() {
       await userService.sendToken(email)
       navigation.navigate('ChangeForgotPassword', { email: email })
     } catch (error) {
-      setErrorMessage(showError(error))
+      setErrorMessage('Este email no tiene una cuenta asociada')
       console.log(error.message)
     }
   }
@@ -89,7 +89,18 @@ export default function ForgotPassword() {
           />
 
           <View style={styles.button}>
-            <MyButton onPress={() => sendToken()} title="Enviar codigo" />
+            <MyButton
+              buttonStyle={{
+                borderWidth: 1,
+                borderColor: '#343434',
+                padding: 12,
+                borderRadius: 18,
+                backgroundColor: 'transparent'
+              }}
+              titleStyle={{ color: '#343434', fontSize: 20, fontWeight: 'normal' }}
+              onPress={() => sendToken()}
+              title="Enviar codigo"
+            />
           </View>
         </View>
       </KeyboardAwareScrollView>
@@ -107,7 +118,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   button: {
-    alignSelf: 'stretch'
+    /*    alignItems: 'center', */
+    width: '100%',
+    paddingHorizontal: 16
   },
   labrador: {
     marginBottom: 16

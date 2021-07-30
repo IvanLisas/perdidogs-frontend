@@ -13,6 +13,7 @@ import { Input } from 'react-native-elements'
 import MyIcon from '../MyThemedComponents/MyIcon'
 import PlaceBar from '../PlaceBar'
 import { Ionicons } from '@expo/vector-icons'
+import { MyTheme } from '../../styles/Theme'
 
 interface SearchPlacesBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
@@ -25,6 +26,8 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
   const [predictions, setPredictions] = useState<Prediction[]>([])
   const [showPredictions, setShowPredictions] = useState(false)
   const theme = useTheme()
+
+  const stylesWithTheme = styles(theme)
 
   const labrador = require('../../assets/images/labrador-abajo.png')
 
@@ -77,8 +80,9 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
        */}
       <Input
         placeholder="¿Donde perdiste tu mascota?"
-        style={styles.input}
+        style={stylesWithTheme.input}
         value={search.term}
+        inputStyle={{ color: theme.text }}
         inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
         onTouchStart={() => handleModal()}
         onChange={(text) => {
@@ -107,7 +111,7 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
         />
       ) : (
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Image source={labrador} style={styles.labrador} />
+          <Image source={labrador} style={stylesWithTheme.labrador} />
           <View style={{ marginTop: 64, alignItems: 'center', paddingHorizontal: 8 }}>
             <Ionicons style={{ marginBottom: 8 }} size={44} color="#f0b966" name="search" />
             <MyText style={{ fontSize: 17, textAlign: 'center' }}>Empieza buscando una zona</MyText>
@@ -117,35 +121,36 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
     </BottomSheetModal>
   )
 }
-const styles = StyleSheet.create({
-  predictionRow: {
-    paddingVertical: 16,
-    marginLeft: 16,
-    borderBottomWidth: 1,
-    borderColor: '#DEDEDE',
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  result: {
-    fontSize: 20
-  },
-  input: {
-    borderRadius: 15,
-    padding: 16,
-    backgroundColor: '#E5E5EA',
-    width: 234
-  },
-  labrador: {
-    width: 200,
-    height: 200,
-    marginLeft: 24,
-    marginTop: 50,
-    position: 'absolute',
-    bottom: -65,
-    /*     left: 50, */
-    /* transform: [{ rotate: '-180deg' }], */
-    alignSelf: 'center'
-  }
-})
+const styles = (theme: MyTheme) =>
+  StyleSheet.create({
+    predictionRow: {
+      paddingVertical: 16,
+      marginLeft: 16,
+      borderBottomWidth: 1,
+      borderColor: '#DEDEDE',
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    result: {
+      fontSize: 20
+    },
+    input: {
+      borderRadius: 15,
+      padding: 16,
+      backgroundColor: theme.input,
+      width: 234
+    },
+    labrador: {
+      width: 200,
+      height: 200,
+      marginLeft: 24,
+      marginTop: 50,
+      position: 'absolute',
+      bottom: -65,
+      /*     left: 50, */
+      /* transform: [{ rotate: '-180deg' }], */
+      alignSelf: 'center'
+    }
+  })
 
 export default SearchPlacesBottomSheetModal
