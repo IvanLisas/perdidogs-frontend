@@ -10,12 +10,14 @@ import ProfileStackScreen from './StackScreens/ProfileStackScreen'
 import AlertsStackScreen from './StackScreens/AlertsStackScreen'
 import { Ionicons } from '@expo/vector-icons'
 import NotificationsContext from '../contexts/NotificationsContext'
+import ChatContext from '../contexts/ChatsContext'
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
 
 export default function BottomTabNavigator() {
   const theme = useTheme()
   const { newNotification } = useContext(NotificationsContext)
+  const { newChats } = useContext(ChatContext)
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} enabled={true}>
@@ -37,7 +39,7 @@ export default function BottomTabNavigator() {
           name="Chats"
           component={ChatsStackScreen}
           options={{
-            tabBarBadge: 2,
+            tabBarBadge: newChats,
             tabBarIcon: ({ color }) => <Ionicons style={[{ color: color }, styles.icon]} color={theme.primary} name="chatbox" />
           }}
         />

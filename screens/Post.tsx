@@ -17,6 +17,7 @@ import postService from '../services/PostService'
 import userService from '../services/UserService'
 import { KeyboardAvoidingView } from 'native-base'
 import UserAvatarMini from '../components/UserAvatarMini'
+import { Button } from 'react-native-elements'
 interface PostPreviewProps {}
 
 const Post: React.FC<PostPreviewProps> = () => {
@@ -29,6 +30,8 @@ const Post: React.FC<PostPreviewProps> = () => {
   let isMount = true
 
   const [fetchFlag, setFetchFlag] = useState<boolean>(true)
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [text, setText] = useState('')
 
@@ -51,25 +54,36 @@ const Post: React.FC<PostPreviewProps> = () => {
   }
 
   const handleChangeStatus = async () => {
+    setIsLoading(true)
     try {
       if (user) {
         if (post?.postStatus?.Id == 1) setPost({ ...(await postService.changeoStatusToFound(post?.Id, user?.Id)) })
         if (post?.postStatus?.Id == 4) setPost({ ...(await postService.changeoStatusToNotFound(post?.Id, user?.Id)) })
-        setUser(await userService.getUser(user?.Id))
       }
     } catch (error) {
       console.log(error.message)
     }
+    setIsLoading(false)
   }
 
   useEffect(() => {
+    console.log('entra')
+    isMount = true
+    let timer1 = setTimeout(() => {
+      if (!fetchFlag) setFetchFlag(true)
+    }, 1000)
     const getChat = async () => {
-      if (!fetchFlag) setTimeout(() => setFetchFlag(true), 1000)
-      else {
+      if (fetchFlag) {
         setFetchFlag(false)
         if (user) {
           try {
-            if (post && isMount) setPost(await postService.get(post?.Id))
+            if (post && isMount) {
+              /*     console.log(postUpdate) */
+              console.log((await postService.get(post?.Id)).postStatus?.Id)
+              setPost({ ...(await postService.get(post?.Id)) })
+
+              console.log(post.postStatus?.Id)
+            }
           } catch (error) {
             console.log('Fetching Fail')
             console.log(error.message)
@@ -79,7 +93,7 @@ const Post: React.FC<PostPreviewProps> = () => {
     }
     getChat()
     return () => {
-      setFetchFlag(false)
+      clearTimeout(timer1)
       isMount = false
     }
   }, [fetchFlag])
@@ -118,7 +132,7 @@ const Post: React.FC<PostPreviewProps> = () => {
                     imageStyle={{ borderRadius: 12, width: '100%' }}
                     style={{
                       width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 32,
-                      height: 180,
+                      height: 280,
 
                       borderRadius: 20,
                       marginRight: 8,
@@ -166,7 +180,7 @@ const Post: React.FC<PostPreviewProps> = () => {
               />
             </View>
           )}
-          <View style={{ flexDirection: 'row' }}>
+          {/*       <View style={{ flexDirection: 'row' }}>
             <TouchableOpacity
               style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', paddingHorizontal: 16, paddingVertical: 8 }}
               onPress={handleChangeStatus}
@@ -174,7 +188,30 @@ const Post: React.FC<PostPreviewProps> = () => {
               <MyText style={{ fontSize: 18 }}>Estado: {post.postStatus?.description}</MyText>
               {(post.postStatus?.Id == 1 || post.postStatus?.Id == 4) && <Ionicons size={28} color="#8E8E93" name="swap-horizontal-outline" />}
             </TouchableOpacity>
-          </View>
+          </View> */}
+          {(post.postStatus?.Id == 1 || post.postStatus?.Id == 4) && (post?.owner?.Id == user?.Id || !post?.owner?.Id) && (
+            <Button
+              buttonStyle={{
+                borderWidth: 1,
+                borderColor: '#6879B1',
+                /*   borderColor: theme.icon, */
+                padding: 8,
+                margin: 16,
+                paddingHorizontal: 12,
+                borderRadius: 18,
+                backgroundColor: theme.background
+              }}
+              containerStyle={{
+                borderRadius: 18
+              }}
+              loading={isLoading}
+              titleStyle={{ fontSize: 14, fontStyle: 'normal', color: 'grey' }}
+              icon={<Ionicons style={{ marginRight: 4 }} size={18} color="#8E8E93" name="paw" />}
+              title={post.postStatus?.Id == 4 ? 'Volver a publicar' : 'Fue encontrada'}
+              loadingProps={{ color: theme.text }}
+              onPress={handleChangeStatus}
+            />
+          )}
 
           <MyText style={{ fontSize: 22, fontWeight: 'bold', paddingHorizontal: 16, paddingBottom: 8 }}>Comentarios</MyText>
           {post.comments?.length !== 0 ? (
@@ -183,7 +220,9 @@ const Post: React.FC<PostPreviewProps> = () => {
                 <View style={{ paddingBottom: 4 }}>
                   <UserAvatarMini user={comment.owner} />
                 </View>
-                <MyText style={styles(theme).description}>{comment.text}</MyText>
+                <MyText style={{ fontSize: 16, marginLeft: 38, paddingBottom: 16, borderBottomWidth: 0.5, borderColor: theme.border }}>
+                  {comment.text}
+                </MyText>
               </View>
             ))
           ) : (
@@ -199,7 +238,10 @@ const Post: React.FC<PostPreviewProps> = () => {
         {post.postStatus?.Id == 1 || post.postStatus?.Id == 4 ? (
           <SendAMessageBar onPress={sendMessage} setText={setText} text={text}></SendAMessageBar>
         ) : (
-          <MyText style={{ fontSize: 18, textAlign: 'center', padding: 16 }}> No se pueden realizar comentarios en esta publicacion</MyText>
+          <View style={{ padding: 16, flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+            <Ionicons size={24} color="#FF453A" name="lock-closed" />
+            <MyText style={{ fontSize: 18, textAlign: 'center' }}> La publicacion aun no esta activa</MyText>
+          </View>
         )}
 
         {/* </KeyboardAvoidingView> */}
@@ -218,8 +260,8 @@ const Post: React.FC<PostPreviewProps> = () => {
 const styles = (theme: MyTheme) =>
   StyleSheet.create({
     root: {
-      flex: 1
-      /*    marginBottom: 444 */
+      flex: 1,
+      marginBottom: 44
       /* backgroundColor: theme.navigation, */
       /*   padding: 16 */
     },
@@ -241,7 +283,7 @@ const styles = (theme: MyTheme) =>
     handleRoot: {
       flexDirection: 'row',
       borderBottomWidth: 1,
-      borderColor: '#DEDEDE',
+      borderColor: 'grey',
       padding: 16,
       justifyContent: 'space-between'
     },

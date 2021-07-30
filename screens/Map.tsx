@@ -31,6 +31,8 @@ import PostPreviewBottomSheetModal from '../components/BottomSheetModals/PostPre
 import MyText from '../components/MyThemedComponents/MyText'
 import { Button } from 'react-native-elements'
 import { Ionicons } from '@expo/vector-icons'
+import MyInput from '../components/MyThemedComponents/MyInput'
+import { TextInput } from 'react-native-gesture-handler'
 
 const initialRegion = {
   latitude: -34.65023240988638,
@@ -48,6 +50,7 @@ export default function Map() {
   const [foregroundPermissionsStatus, setForegroundPermissionsStatus] = useState<PermissionStatus>(PermissionStatus.UNDETERMINED)
   //Errors
   const [errorMessage, setErrorMessage] = useState('')
+  const [search, setSearch] = useState('')
   //Contexts
   const { user } = useContext(UserContext)
   const { setPost, posts, setPosts, post } = useContext(PostContext)
@@ -68,7 +71,7 @@ export default function Map() {
   const filtersModalRef = useRef<BottomSheetModal>(null)
   /*   const [filterModa, setFilterModa] = useState(false) */
   //Modal handle
-  const snapPoints = useMemo(() => [94, 370, '80%'], [])
+  const snapPoints = useMemo(() => [75, 370, '80%'], [])
   //Pin
   const [myMarket, setMyMarket] = useState<any>()
   const searchResultPin = require('../assets/images/Group.png')
@@ -158,6 +161,7 @@ export default function Map() {
 
   const handleSearch = async () => {
     try {
+      setIsLoading(true)
       setPosts(await postService.getPostByFilters(filter))
     } catch (error) {
       console.log(error)
@@ -226,7 +230,6 @@ export default function Map() {
   }, [])
 
   const handleSearchHere = () => {
-    setIsLoading(true)
     setCurrentSearchPlaceName({ primaryText: 'Lugar personalizado', secondaryText: 'Mascotas encontradas' })
     console.log(region)
     if (region) {
@@ -373,6 +376,59 @@ export default function Map() {
               )
           )}
         </MapView>
+        <View
+          style={{
+            position: 'absolute',
+
+            /*   marginRight: Dimensions.get('window').width / 2 - 95, */
+            /*    right: 0, */
+            top: 50,
+            width: '100%',
+            /*     width: '100%', */
+            height: '100%'
+          }}
+        >
+          <TextInput
+            style={{
+              fontSize: 16,
+              /*    fontWeight: 'bold', */
+              fontStyle: 'normal',
+              fontFamily: 'sans-serif-medium',
+
+              color: 'grey',
+              marginHorizontal: 16,
+              padding: 8,
+              paddingHorizontal: 12,
+              borderRadius: 18,
+              backgroundColor: theme.background
+            }}
+            clearButtonMode="always"
+            placeholder="¿Dónde perdiste tu mascota?"
+            /*   style={stylesWithTheme.input} */
+            placeholderTextColor="grey"
+            value={search}
+            /*    onTouchStart={() => {
+              searchModalRef.current?.present()
+            }}
+            onFocus={() => {
+              searchModalRef.current?.collapse()
+            }} */
+
+            onBegan={() => {
+              /*  searchModalRef.current?.present() */
+              /*   dismissAll() */
+              resultsModalRef.current?.dismiss()
+              postPreviewModalRef.current?.dismiss()
+              searchModalRef.current?.snapToIndex(2)
+            }}
+            /*             
+            inputStyle={{ color: theme.text }}
+            inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }} */
+            /*      onTouchStart={() => handleModal()} */
+            onChangeText={setSearch}
+            /* returnKeyType="search" */
+          />
+        </View>
         <View style={styles.button2}>
           <Button
             buttonStyle={{
@@ -396,12 +452,34 @@ export default function Map() {
           />
         </View>
 
-        <TouchableOpacity style={[styles.button, { top: 300 }]} onPress={handleGoToMyLocation}>
-          <Icon style={styles.icon} name="target-hand-drawn-circle" />
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            marginRight: 16,
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            right: 0,
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 3
+            },
+
+            shadowOpacity: 0.29,
+            shadowRadius: 4.65,
+            borderRadius: 50,
+            backgroundColor: theme.background,
+            padding: 8,
+            top: 300
+          }}
+          onPress={handleGoToMyLocation}
+        >
+          <Ionicons size={24} color="#8E8E93" name="locate" />
         </TouchableOpacity>
 
         <View style={{ position: 'absolute', padding: 16, bottom: 0, width: '100%' }}>
-          <SearchPlacesBottomSheetModal handleGoToPlace={handleGoToPlace} snapPoints={snapPoints} modalRef={searchModalRef} />
+          <SearchPlacesBottomSheetModal search={search} handleGoToPlace={handleGoToPlace} snapPoints={snapPoints} modalRef={searchModalRef} />
 
           <ResultsBottomSheetModal
             petFilter={filter.pet}
@@ -429,7 +507,10 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    marginRight: 16,
+    /* marginRight: 16, */
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     right: 0,
     shadowColor: '#000',
     shadowOffset: {
@@ -439,8 +520,8 @@ const styles = StyleSheet.create({
 
     shadowOpacity: 0.29,
     shadowRadius: 4.65,
-    borderRadius: 25,
-    backgroundColor: 'yellow',
+    borderRadius: 50,
+    backgroundColor: '#5AC8FA',
     padding: 8
   },
   button2: {
@@ -449,7 +530,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     /*   marginRight: Dimensions.get('window').width / 2 - 95, */
     /*    right: 0, */
-    top: 50,
+    top: 100,
     /*     width: '100%', */
     height: '100%'
     /*  shadowColor: '#000',

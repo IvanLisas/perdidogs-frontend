@@ -10,18 +10,22 @@ interface ContextProps {
   readonly chats: Chat[]
   readonly setChats: (chats: Chat[]) => void
   readonly findChatId: (addresseeId: number) => number | undefined
+  readonly newChats: number
 }
 
 const ChatContext = createContext<ContextProps>({
   chats: [],
   setChats: () => null,
-  findChatId: (addresseeId: number) => addresseeId
+  findChatId: (addresseeId: number) => addresseeId,
+  newChats: 0
 })
 
 export const ChatContextProvider: React.FC = ({ children }) => {
   const [chats, setChats] = useState<Chat[]>([])
   const [fetchFlag, setFetchFlag] = useState<boolean>(true)
   const { user } = useContext(UserContext)
+
+  const newChats = chats.filter((chat) => chat.messageList.some((message) => !message.read)).length
 
   const findChatId = (addresseeId: number) =>
     chats.find((chat) => (chat.owner.Id == user?.Id && chat.owner2.Id == addresseeId) || (chat.owner2.Id == user?.Id && chat.owner.Id == addresseeId))
@@ -54,7 +58,7 @@ export const ChatContextProvider: React.FC = ({ children }) => {
     } */
   }, [fetchFlag])
 
-  return <ChatContext.Provider value={{ chats, setChats, findChatId }}>{children}</ChatContext.Provider>
+  return <ChatContext.Provider value={{ newChats, chats, setChats, findChatId }}>{children}</ChatContext.Provider>
 }
 
 export default ChatContext

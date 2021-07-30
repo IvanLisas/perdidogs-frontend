@@ -19,10 +19,11 @@ interface SearchPlacesBottomSheetModalProps {
   modalRef: React.RefObject<BottomSheetModalMethods>
   handleGoToPlace: (detail: GooglePlaceDetail, primaryPlaceText: string, secondaryPlaceText: string) => Promise<void>
   snapPoints: (string | number)[]
+  search: string
 }
 
-const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> = ({ modalRef, handleGoToPlace, snapPoints }) => {
-  const [search, setSearch] = useState({ term: '', fetchPredictions: true })
+const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> = ({ search, modalRef, handleGoToPlace, snapPoints }) => {
+  /*   const [search, setSearch] = useState({ term: '', fetchPredictions: true }) */
   const [predictions, setPredictions] = useState<Prediction[]>([])
   const [showPredictions, setShowPredictions] = useState(false)
   const theme = useTheme()
@@ -40,15 +41,15 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
       setShowPredictions(false)
       return
     } */
-    if (!search.fetchPredictions) return
+    /*     if (!search.fetchPredictions) return */
     try {
       setShowPredictions(true)
-      setPredictions((await googleService.getPredictions(search.term)).predictions)
+      setPredictions((await googleService.getPredictions(search)).predictions)
     } catch (error) {
       console.log(error)
     }
   }
-  useDebounce(onChangeText, 1000, [search.term])
+  useDebounce(onChangeText, 500, [search])
 
   const onPredictionTapped = async (placeId: string, primaryPlaceText: string, secondaryPlaceText: string) => {
     try {
@@ -78,20 +79,8 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
       {/*    <View style={{ paddingTop: 8, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
         <View style={{ backgroundColor: 'grey', width: 48, height: 4, borderRadius: 50, marginBottom: 8 }}></View>
        */}
-      <Input
-        placeholder="¿Dónde perdiste tu mascota?"
-        style={stylesWithTheme.input}
-        value={search.term}
-        inputStyle={{ color: theme.text }}
-        inputContainerStyle={{ borderBottomWidth: 0, alignSelf: 'center' }}
-        onTouchStart={() => handleModal()}
-        onChange={(text) => {
-          setSearch({ term: text.nativeEvent.text, fetchPredictions: true })
-          /*   onChangeText() */
-        }}
-        /* returnKeyType="search" */
-      />
-      {search.term.length !== 0 ? (
+
+      {search.length !== 0 ? (
         <BottomSheetFlatList
           data={predictions}
           scrollEnabled
@@ -110,11 +99,17 @@ const SearchPlacesBottomSheetModal: React.FC<SearchPlacesBottomSheetModalProps> 
           keyExtractor={(item: Prediction) => item.place_id}
         />
       ) : (
-        <View style={{ flex: 1, alignItems: 'center' }}>
+        <View style={{ flex: 1, paddingHorizontal: 16, alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+            {/*   <Ionicons style={{ marginRight: 8 }} size={25} color="#f0b966" name="paw" /> */}
+            <MyText style={{ fontSize: 16, textAlign: 'center', color: 'grey', fontFamily: 'sans-serif-medium' }}>
+              Manten pulsado en el mapa para crear una publicacion
+            </MyText>
+          </View>
           <Image source={labrador} style={stylesWithTheme.labrador} />
           <View style={{ marginTop: 64, alignItems: 'center', paddingHorizontal: 8 }}>
             <Ionicons style={{ marginBottom: 8 }} size={44} color="#f0b966" name="search" />
-            <MyText style={{ fontSize: 17, textAlign: 'center' }}>Empieza buscando una zona</MyText>
+            <MyText style={{ fontSize: 16, textAlign: 'center', color: 'grey', fontFamily: 'sans-serif-medium' }}>Empieza buscando una zona</MyText>
           </View>
         </View>
       )}

@@ -14,7 +14,7 @@ import { MyTheme } from '../styles/Theme'
 import PostContext from '../contexts/PostContext'
 
 const Profile: React.FC = () => {
-  const { user, setUser } = useContext(UserContext)
+  const { user, setUser, logout } = useContext(UserContext)
 
   const { setPost } = useContext(PostContext)
 
@@ -43,20 +43,21 @@ const Profile: React.FC = () => {
   }
 
   const Card = (post: Post) => (
-    <View>
+    <View style={{ borderBottomWidth: 1, marginBottom: 16, paddingBottom: 16, borderColor: theme.border }}>
       <View>
         <View>
-          <MyText style={stylesWithTheme.description2}>{post?.description}</MyText>
+          {/*    <MyText style={stylesWithTheme.description2}>{post?.description}</MyText> */}
           {post.pictures.length > 0 ? (
             <ScrollView showsHorizontalScrollIndicator={false} style={stylesWithTheme.carousel} horizontal>
               {post?.pictures.map((picture, index) => (
-                <View key={picture.url + 'container'}>
+                <TouchableOpacity onPress={() => goToPost(post)} key={picture.url + 'container'}>
                   <ImageBackground
+                    resizeMode="cover"
                     key={picture.url + 'photo'}
                     imageStyle={{ borderRadius: 12, width: '100%' }}
                     style={{
                       width: post?.pictures.length > 1 ? Dimensions.get('window').width - 180 : Dimensions.get('window').width - 32,
-                      height: 180,
+                      height: 280,
                       borderRadius: 20,
                       marginRight: 8
                     }}
@@ -72,16 +73,17 @@ const Profile: React.FC = () => {
                       borderRadius: 12
                     }}
                   />
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           ) : (
-            <View style={{ paddingVertical: 8 }}>
+            <TouchableOpacity onPress={() => goToPost(post)} style={{ paddingVertical: 8 }}>
               <ImageBackground
                 key={'photo'}
                 imageStyle={{ borderRadius: 12, width: '100%' }}
                 style={{
                   width: Dimensions.get('window').width - 90,
+
                   height: 150,
                   borderRadius: 20,
                   marginRight: 8
@@ -99,11 +101,11 @@ const Profile: React.FC = () => {
                 start={{ x: 0, y: 1.0 }}
                 end={{ x: 0, y: 0 }}
               />
-            </View>
+            </TouchableOpacity>
           )}
         </View>
       </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+      {/*     <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
         <TouchableOpacity onPress={() => goToPost(post)} style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Ionicons size={24} color="#8E8E93" name="document-text" />
           <MyText style={{ fontSize: 16 }}> Ir a la publicacion</MyText>
@@ -120,7 +122,7 @@ const Profile: React.FC = () => {
             <MyText style={{ fontSize: 16, marginLeft: 4 }}>Modificar</MyText>
           </TouchableOpacity>
         )}
-      </View>
+      </View> */}
     </View>
   )
 
@@ -137,24 +139,25 @@ const Profile: React.FC = () => {
             title={user.firstName[0] + user.lastName[0]}
           />
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View>
-            <MyText style={{ fontSize: 14, color: 'grey' }}> </MyText>
-          </View>
-          <View style={{ flexDirection: 'column' }}>
-            <MyText style={{ fontSize: 24, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName} </MyText>
-            <MyText style={{ fontSize: 24, fontWeight: 'bold' }}>{user.comments?.length} </MyText>
-
-            {/*    <MyText style={{ fontSize: 14, color: 'grey' }}>En linea </MyText> */}
-          </View>
-          <MyText style={{ fontSize: 24, fontWeight: 'bold' }}>{user.comments?.length} </MyText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', paddingHorizontal: 32, justifyContent: 'space-between' }}>
           <TouchableOpacity onPress={() => goToEditProfile()}>
-            <Ionicons size={24} color="#8E8E93" name="pencil" />
+            <Ionicons size={30} color={theme.primary} name="settings-outline" />
+          </TouchableOpacity>
+          <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+            <MyText style={{ fontSize: 24, fontWeight: 'bold' }}>{user.firstName + ' ' + user.lastName} </MyText>
+            <MyText style={{ fontSize: 14, color: 'grey' }}>En linea </MyText>
+          </View>
+          <TouchableOpacity onPress={() => logout()}>
+            <Ionicons size={30} color="#FF453A" name="exit-outline" />
           </TouchableOpacity>
         </View>
       </View>
-      <MyText style={{ fontSize: 24, fontWeight: 'bold' }}>Mis publicaciones </MyText>
-
+      <MyText style={{ fontSize: 24, fontWeight: 'bold', marginVertical: 16 }}>Mis publicaciones </MyText>
+      {user?.post?.length == 0 && (
+        <MyText style={{ fontSize: 18, fontWeight: 'normal', alignSelf: 'center', paddingTop: 32, marginVertical: 16 }}>
+          No tienes publicaciones activas{' '}
+        </MyText>
+      )}
       <FlatList
         data={user?.post}
         showsHorizontalScrollIndicator

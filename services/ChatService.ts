@@ -17,6 +17,10 @@ class ChatService {
   async getId(user1Id: ChatDTO): Promise<Number> {
     return (await axios.post<Number>(`${SERVER_URL}/chat/find`, user1Id, this.axiosConfig)).data
   }
+
+  async read(chatId: number): Promise<Number> {
+    return (await axios.put<Number>(`${SERVER_URL}/chat/${chatId}`, {}, this.axiosConfig)).data
+  }
 }
 
 const chatService = new ChatService()
