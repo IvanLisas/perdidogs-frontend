@@ -9,3 +9,5 @@ The "assets.json" file describes the assets that have been optimized through "ex
 > Should I commit the ".expo-shared" folder?
 
 Yes, you should share the ".expo-shared" folder with your collaborators.
+
+
