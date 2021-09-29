@@ -115,8 +115,10 @@ const EditPost: React.FC = ({}) => {
             })
 
             if (user) setUser(await userService.getUser(user?.Id))
-          } catch (error) {
-            console.log(error.message)
+          } catch (error: unknown) {
+            if (error instanceof Error) {
+              console.log(error.message)
+            }
           }
           navigation.navigate('Main')
         } else setErrorMessage('Suba por lo menos una imagen')

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { GOOGLE_PACES_API_BASE_URL } from '../constants/Rest'
 
 class GoogleService {
-  key = 'AIzaSyCahzx0wpr4G7jiI_LfsAUf0JWJ3-FZVDs'
+  key = 'AIzaSyD1GjXTowQyiuohojsHQ-Q-er9RJ4osIIQ'
 
   async getPredictions(keywork: string) {
     const apiUrl = `${GOOGLE_PACES_API_BASE_URL}/autocomplete/json?language=es-419&components=country:AR&key=${this.key}&input=${keywork}`
