@@ -17,11 +17,21 @@ Algunas caracteriscas a destacar:
 * Conexion de Cloudinary para el manejo de imagenes
 * UX intuitiva, modales que responden a eventos
 
-## Busqueda
+## Algunas imagenes
 
 <img src="videos/search.gif" width="250"/>
 
 ## Login
 
-
 <img src="images/login.png" width="250"/>
+
+## Chats
+<img src="images/chats.png" width="250"/>
+
+## Post preview
+
+<img src="images/post.png" width="250"/>
+
+## Recuperacion
+
+<img src="images/code.png" width="250"/>
