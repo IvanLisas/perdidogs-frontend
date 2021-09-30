@@ -3,4 +3,4 @@ const PORT = '13000'
 
 export const SERVER_URL = `${URL}:${PORT}`
 export const GOOGLE_PACES_API_BASE_URL = 'https://maps.googleapis.com/maps/api/place'
-export const API_GOOGLE = 'AIzaSyD1GjXTowQyiuohojsHQ-Q-er9RJ4osIIQ'
+export const API_GOOGLE = 'YOUR_KEY'
